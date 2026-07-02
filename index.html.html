@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>新品試產系統</title>
+<style>
+:root{
+  --ink:#1a1814;--paper:#f6f3ed;--paper-dim:#ede8df;--paper-mid:#e4ddd0;
+  --line:#cfc8b8;--teal:#2e7d6b;--teal-light:#e4f0ec;--teal-mid:#c2ddd6;
+  --amber:#b07d2a;--amber-light:#f5edda;--rust:#a84030;--ink-dim:#6b6256;
+  --sans:'Noto Sans TC','PingFang TC','Microsoft JhengHei',sans-serif;
+  --serif:'Noto Serif TC','Songti TC',serif;
+  --mono:'JetBrains Mono','SF Mono',Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{background:var(--paper);color:var(--ink);font-family:var(--sans);min-height:100vh;}
+
+.header{background:var(--teal);color:#fff;padding:24px 28px 20px;}
+.header-inner{max-width:880px;margin:0 auto;}
+.header h1{font-family:var(--serif);font-size:26px;font-weight:700;letter-spacing:.5px;margin-bottom:4px;}
+.header-sub{font-family:var(--mono);font-size:11px;letter-spacing:1.5px;opacity:.75;text-transform:uppercase;}
+.header-meta{margin-top:12px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;}
+.hbadge{font-family:var(--mono);font-size:11px;background:rgba(255,255,255,.15);padding:3px 10px;border-radius:12px;}
+.dot{width:6px;height:6px;border-radius:50%;background:#7dd4c0;display:inline-block;margin-right:5px;}
+.dot.busy{background:#f5c842;animation:pulse 1s infinite;}
+.dot.off{background:#e07060;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+.tabs{background:#fff;border-bottom:2px solid var(--line);position:sticky;top:0;z-index:10;}
+.tabs-inner{max-width:880px;margin:0 auto;display:flex;}
+.tab{font-family:var(--sans);font-size:13.5px;font-weight:500;padding:14px 22px;cursor:pointer;
+  border-bottom:3px solid transparent;color:var(--ink-dim);background:none;
+  border-top:none;border-left:none;border-right:none;}
+.tab:hover{color:var(--teal);}
+.tab.active{color:var(--teal);border-bottom-color:var(--teal);font-weight:600;}
+
+.wrap{max-width:880px;margin:0 auto;padding:32px 24px 80px;}
+
+.stitle{font-family:var(--mono);font-size:10.5px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--teal);border-bottom:1px solid var(--teal-mid);padding-bottom:7px;margin:28px 0 16px;}
+.stitle:first-child{margin-top:0;}
+
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 20px;}
+.form-grid.triple{grid-template-columns:1fr 1fr 1fr;}
+.form-grid.quad{grid-template-columns:1fr 1fr 1fr 1fr;}
+.form-grid.single{grid-template-columns:1fr;}
+
+.field{display:flex;flex-direction:column;gap:5px;}
+.field label{font-size:12px;font-family:var(--mono);color:var(--ink-dim);letter-spacing:.5px;}
+.field input,.field select,.field textarea{
+  font-family:var(--sans);font-size:14.5px;padding:10px 12px;
+  border:1.5px solid var(--line);border-radius:3px;background:#fff;color:var(--ink);}
+.field input:focus,.field select:focus,.field textarea:focus{
+  outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(46,125,107,.1);}
+.field textarea{resize:vertical;min-height:80px;line-height:1.6;}
+.optional{color:#aaa;font-size:10px;margin-left:4px;}
+
+.ing-block{border:1px solid var(--line);border-radius:4px;padding:18px 20px;background:#fff;margin-bottom:14px;}
+.ing-label{font-family:var(--serif);font-size:14px;font-weight:600;color:var(--teal);
+  margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;}
+.ing-label-left{display:flex;align-items:center;gap:8px;}
+.ing-num{width:22px;height:22px;border-radius:50%;background:var(--teal);color:#fff;
+  font-family:var(--mono);font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.remove-ing{font-family:var(--mono);font-size:11px;color:var(--rust);background:none;
+  border:1px solid var(--rust);border-radius:3px;padding:2px 8px;cursor:pointer;}
+.remove-ing:hover{background:var(--rust);color:#fff;}
+.add-ing-btn{font-family:var(--mono);font-size:12px;color:var(--teal);background:var(--teal-light);
+  border:1.5px dashed var(--teal-mid);border-radius:4px;padding:10px 16px;cursor:pointer;
+  width:100%;text-align:center;margin-bottom:14px;display:block;}
+.add-ing-btn:hover{background:var(--teal-mid);}
+
+.btn{font-family:var(--sans);font-weight:600;font-size:14px;padding:11px 26px;border-radius:3px;cursor:pointer;border:none;}
+.btn-primary{background:var(--teal);color:#fff;}
+.btn-primary:hover{background:#236155;}
+.btn-primary:disabled{background:#aaa;cursor:not-allowed;}
+.btn-secondary{background:var(--paper-dim);color:var(--ink);border:1.5px solid var(--line);}
+.btn-secondary:hover{background:var(--paper-mid);}
+.btn-row{display:flex;gap:10px;margin-top:24px;flex-wrap:wrap;}
+
+/* Records tab */
+.rec-card{background:#fff;border:1px solid var(--line);border-radius:4px;margin-bottom:14px;overflow:hidden;}
+.rec-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;
+  padding:14px 18px 10px;border-bottom:1px dashed var(--line);}
+.rec-name{font-family:var(--serif);font-size:17px;font-weight:600;}
+.rec-sku{font-family:var(--mono);font-size:11px;color:var(--ink-dim);margin-top:2px;}
+.rec-meta{font-family:var(--mono);font-size:11px;color:var(--ink-dim);text-align:right;white-space:nowrap;}
+.rec-body{padding:12px 18px 16px;}
+.rec-row{display:flex;gap:8px;margin-bottom:8px;font-size:13px;line-height:1.6;}
+.rec-row .k{font-family:var(--mono);font-size:10px;color:#9a9082;min-width:72px;padding-top:2px;text-transform:uppercase;letter-spacing:.5px;}
+.rec-row .v{flex:1;white-space:pre-line;}
+.status-badge{font-family:var(--mono);font-size:10px;padding:2px 8px;border-radius:10px;display:inline-block;}
+.status-badge.done{background:#e3ebe0;color:#4a7a5e;}
+.status-badge.wip{background:var(--amber-light);color:var(--amber);}
+.status-badge.review{background:#e8e0f0;color:#6b5a9b;}
+.status-badge.none{background:var(--paper-dim);color:#9a9082;}
+
+.empty-state{text-align:center;padding:60px 20px;color:#a89f8f;}
+.empty-state .glyph{font-size:30px;margin-bottom:10px;display:block;}
+.empty-state p{font-family:var(--mono);font-size:12px;letter-spacing:.5px;}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+  background:var(--ink);color:#fff;font-family:var(--mono);font-size:12px;
+  padding:10px 20px;border-radius:4px;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;}
+.toast.show{opacity:1;}
+
+/* 包材驗收比對結果 */
+.pkg-result{margin-top:8px;}
+.pkg-hit{background:#e4f0ec;border:1.5px solid var(--teal-mid);border-radius:3px;padding:10px 14px;}
+.pkg-hit-head{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;}
+.pkg-hit-title{font-family:var(--mono);font-size:10.5px;color:var(--teal);letter-spacing:1px;text-transform:uppercase;font-weight:600;}
+.pkg-hit-count{font-family:var(--mono);font-size:10px;color:var(--ink-dim);}
+.pkg-item{padding:6px 0;border-top:1px solid var(--teal-mid);font-size:12.5px;display:flex;gap:8px;flex-wrap:wrap;}
+.pkg-item:first-of-type{border-top:none;}
+.pkg-item .pk{font-family:var(--mono);font-size:10px;color:var(--ink-dim);min-width:52px;padding-top:1px;}
+.pkg-item .pv{flex:1;}
+.pkg-pass{color:#4a7a5e;font-weight:600;}
+.pkg-fail{color:var(--rust);font-weight:600;}
+.pkg-none{background:var(--paper-dim);border:1.5px solid var(--line);border-radius:3px;padding:9px 14px;
+  font-family:var(--mono);font-size:11.5px;color:var(--ink-dim);display:flex;align-items:center;gap:8px;}
+.pkg-link{font-family:var(--mono);font-size:10.5px;color:var(--teal);text-decoration:none;border-bottom:1px solid var(--teal-mid);}
+.pkg-link:hover{border-bottom-color:var(--teal);}
+
+@media(max-width:600px){
+  .header{padding:18px 16px 16px;}
+  .header h1{font-size:21px;}
+  .wrap{padding:22px 16px 60px;}
+  .tab{padding:12px 14px;font-size:13px;}
+  .form-grid,.form-grid.triple,.form-grid.quad{grid-template-columns:1fr;}
+  .ing-block{padding:14px;}
+  .rec-head{flex-direction:column;gap:6px;}
+  .rec-meta{text-align:left;white-space:normal;}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <h1>新品試產系統</h1>
+    <div class="header-sub">New Product Trial · 品管現場紀錄</div>
+    <div class="header-meta">
+      <span class="hbadge"><span class="dot" id="statusDot"></span><span id="statusText">連線中…</span></span>
+      <span class="hbadge" id="recCount">—</span>
+    </div>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tabs-inner">
+    <button class="tab active" onclick="switchTab('form')">＋ 新增試產</button>
+    <button class="tab" onclick="switchTab('records')">過去紀錄</button>
+  </div>
+</div>
+
+<!-- ===== FORM TAB ===== -->
+<div class="wrap" id="tab-form">
+
+  <div class="stitle">基本資訊</div>
+  <div class="form-grid triple">
+    <div class="field">
+      <label>試產日期</label>
+      <input type="date" id="f-date">
+    </div>
+    <div class="field">
+      <label>品名</label>
+      <input type="text" id="f-name" placeholder="例如：鮭魚凍乾零食 30g" oninput="searchPackaging()">
+      <div id="pkg-result" class="pkg-result"></div>
+    </div>
+    <div class="field">
+      <label>料號<span class="optional">選填</span></label>
+      <input type="text" id="f-sku" placeholder="例如：FP-20001">
+    </div>
+  </div>
+  <div class="form-grid" style="margin-top:14px;">
+    <div class="field">
+      <label>生產機台</label>
+      <input type="text" id="f-machine" placeholder="例如：包裝機A、充填機2號">
+    </div>
+    <div class="field">
+      <label>外包裝形式</label>
+      <select id="f-outpack">
+        <option value="">請選擇</option>
+        <option>單一袋裝</option><option>盒裝</option><option>袋裝+外盒</option>
+        <option>散裝</option><option>其他</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="stitle">效期打印</div>
+  <div class="form-grid quad">
+    <div class="field">
+      <label>印刷位置</label>
+      <select id="f-printside">
+        <option value="">請選擇</option>
+        <option>正面</option><option>背面</option><option>側面</option><option>底部</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>位置描述</label>
+      <input type="text" id="f-printdesc" placeholder="例如：右下角封口上方">
+    </div>
+    <div class="field">
+      <label>印刷方式</label>
+      <select id="f-printmethod">
+        <option value="">請選擇</option>
+        <option>碳帶</option><option>雷射</option><option>噴墨</option><option>熱燙</option><option>其他</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>印刷機台</label>
+      <input type="text" id="f-printmachine" placeholder="例如：碳帶機A">
+    </div>
+  </div>
+
+  <div class="stitle">內容物資訊</div>
+  <div id="ingContainer"></div>
+  <button class="add-ing-btn" onclick="addIngredient()">＋ 新增內容物</button>
+
+  <div class="stitle">試產記錄</div>
+  <div class="form-grid single">
+    <div class="field">
+      <label>調整內容</label>
+      <textarea id="f-adjust" placeholder="試產中做了哪些調整（機台參數、配方調整等）"></textarea>
+    </div>
+    <div class="field">
+      <label>遇到的問題／觀察</label>
+      <textarea id="f-issues" placeholder="試產過程中發現的問題或需要注意的觀察"></textarea>
+    </div>
+    <div class="field">
+      <label>處理方式</label>
+      <textarea id="f-handling" placeholder="針對上述問題的處理方式"></textarea>
+    </div>
+  </div>
+  <div class="form-grid triple" style="margin-top:14px;">
+    <div class="field">
+      <label>研發負責人</label>
+      <input type="text" id="f-rd" placeholder="研發姓名或簡稱">
+    </div>
+    <div class="field">
+      <label>PM</label>
+      <input type="text" id="f-pm" placeholder="PM姓名或簡稱">
+    </div>
+    <div class="field">
+      <label>狀態</label>
+      <select id="f-status">
+        <option value="">請選擇</option>
+        <option>進行中</option><option>已完成</option><option>待覆盤</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="saveRecord()">儲存紀錄到 Google Sheet</button>
+    <button class="btn btn-secondary" onclick="clearForm()">清除表單</button>
+  </div>
+
+</div>
+
+<!-- ===== RECORDS TAB ===== -->
+<div class="wrap" id="tab-records" style="display:none;">
+  <div class="stitle">過去試產紀錄</div>
+  <div id="recordsList">
+    <div class="empty-state"><span class="glyph">📋</span><p>載入中…</p></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx-aCi7zbWdeoSx8JGPY61ndoMJrKns2OQE98W8ifMbX45GkkCXjx6V-cHdIzfqCCBV/exec";
+let RECORDS = [];
+let PKG_DATA = [];
+let ingCount = 0;
+let pkgTimer = null;
+
+// ---- Tab ----
+function switchTab(tab){
+  document.querySelectorAll('.tab').forEach((t,i)=>{
+    t.classList.toggle('active',(i===0&&tab==='form')||(i===1&&tab==='records'));
+  });
+  document.getElementById('tab-form').style.display = tab==='form'?'block':'none';
+  document.getElementById('tab-records').style.display = tab==='records'?'block':'none';
+  if(tab==='records') renderRecords();
+}
+
+// ---- Status ----
+function setStatus(kind,text){
+  document.getElementById('statusDot').className='dot'+(kind==='busy'?' busy':kind==='off'?' off':'');
+  document.getElementById('statusText').textContent=text;
+}
+
+// ---- Dynamic ingredients ----
+function addIngredient(){
+  ingCount++;
+  const n = ingCount;
+  const div = document.createElement('div');
+  div.className='ing-block';
+  div.id='ing-block-'+n;
+  div.innerHTML=`
+    <div class="ing-label">
+      <div class="ing-label-left">
+        <span class="ing-num">${n}</span>內容物 ${n}
+      </div>
+      ${n>1?`<button class="remove-ing" onclick="removeIng(${n})">移除</button>`:''}
+    </div>
+    <div class="form-grid triple">
+      <div class="field"><label>品項名稱</label><input type="text" id="i${n}-item" placeholder="例如：鮭魚凍乾"></div>
+      <div class="field"><label>料號<span class="optional">選填</span></label><input type="text" id="i${n}-sku" placeholder="例如：RM-0012"></div>
+      <div class="field"><label>占比<span class="optional">選填</span></label><input type="text" id="i${n}-ratio" placeholder="例如：60%"></div>
+    </div>
+    <div class="form-grid" style="margin-top:12px;">
+      <div class="field"><label>內容物型態</label>
+        <select id="i${n}-form">
+          <option value="">請選擇</option>
+          <option>顆粒</option><option>塊狀</option><option>片狀</option>
+          <option>粉狀</option><option>液態</option><option>凍乾</option><option>其他</option>
+        </select>
+      </div>
+      <div class="field"><label>包裝形式</label>
+        <select id="i${n}-pack">
+          <option value="">請選擇</option>
+          <option>直接混合</option><option>內料包</option><option>獨立分裝</option><option>其他</option>
+        </select>
+      </div>
+      <div class="field"><label>製造日期</label><input type="date" id="i${n}-mfg"></div>
+      <div class="field"><label>有效日期</label><input type="date" id="i${n}-exp"></div>
+      <div class="field"><label>保存期限</label><input type="text" id="i${n}-shelf" placeholder="例如：18個月"></div>
+    </div>`;
+  document.getElementById('ingContainer').appendChild(div);
+}
+
+function removeIng(n){
+  const el=document.getElementById('ing-block-'+n);
+  if(el) el.remove();
+}
+
+// ---- Collect form ----
+function collectIngredients(){
+  const result=[];
+  document.querySelectorAll('[id^="ing-block-"]').forEach(block=>{
+    const n=block.id.replace('ing-block-','');
+    const item=document.getElementById('i'+n+'-item')?.value?.trim()||'';
+    if(!item) return;
+    result.push({
+      品項:item,
+      料號:document.getElementById('i'+n+'-sku')?.value||'',
+      占比:document.getElementById('i'+n+'-ratio')?.value||'',
+      型態:document.getElementById('i'+n+'-form')?.value||'',
+      包裝形式:document.getElementById('i'+n+'-pack')?.value||'',
+      製造日期:document.getElementById('i'+n+'-mfg')?.value||'',
+      有效日期:document.getElementById('i'+n+'-exp')?.value||'',
+      保存期限:document.getElementById('i'+n+'-shelf')?.value||''
+    });
+  });
+  return result;
+}
+
+function collectForm(){
+  const ings=collectIngredients();
+  const flat={};
+  ings.forEach((ing,i)=>{
+    const k=`內容物${i+1}`;
+    flat[k+'_品項']=ing.品項;
+    flat[k+'_料號']=ing.料號;
+    flat[k+'_占比']=ing.占比;
+    flat[k+'_型態']=ing.型態;
+    flat[k+'_包裝形式']=ing.包裝形式;
+    flat[k+'_製造日期']=ing.製造日期;
+    flat[k+'_有效日期']=ing.有效日期;
+    flat[k+'_保存期限']=ing.保存期限;
+  });
+  return {
+    '試產日期':document.getElementById('f-date').value,
+    '品名':document.getElementById('f-name').value,
+    '料號':document.getElementById('f-sku').value,
+    '生產機台':document.getElementById('f-machine').value,
+    '外包裝形式':document.getElementById('f-outpack').value,
+    '效期_印刷位置':document.getElementById('f-printside').value,
+    '效期_位置描述':document.getElementById('f-printdesc').value,
+    '效期_印刷機台':document.getElementById('f-printmachine').value,
+    '效期_印刷方式':document.getElementById('f-printmethod').value,
+    ...flat,
+    '調整內容':document.getElementById('f-adjust').value,
+    '遇到的問題':document.getElementById('f-issues').value,
+    '處理方式':document.getElementById('f-handling').value,
+    '研發負責人':document.getElementById('f-rd').value,
+    'PM':document.getElementById('f-pm').value,
+    '狀態':document.getElementById('f-status').value
+  };
+}
+
+// ---- Load packaging data ----
+async function loadPackaging(){
+  try{
+    const res=await fetch(APPS_SCRIPT_URL+'?action=getPackaging',{cache:'no-store'});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    PKG_DATA=await res.json();
+    console.log('包材驗收資料載入完成，共 '+PKG_DATA.length+' 筆');
+  }catch(e){
+    console.warn('包材驗收資料載入失敗：',e);
+  }
+}
+
+// ---- Fuzzy search packaging ----
+function searchPackaging(){
+  clearTimeout(pkgTimer);
+  pkgTimer = setTimeout(()=>{
+    const q=(document.getElementById('f-name').value||'').trim();
+    const el=document.getElementById('pkg-result');
+    if(!q || q.length<2){ el.innerHTML=''; return; }
+    const qn=q.replace(/\s+/g,'').toLowerCase();
+    const hits=PKG_DATA.filter(r=>{
+      const item=(r['品項']||'').replace(/\s+/g,'').toLowerCase();
+      return item.includes(qn) || qn.split('').every(c=>item.includes(c));
+    }).slice(0,3);
+    if(!hits.length){
+      el.innerHTML=`<div class="pkg-none">⚠ 包材驗收總表中查無「${esc(q)}」相關紀錄　<a class="pkg-link" href="https://docs.google.com/spreadsheets/d/1hpOmEJnz9vRSqfz7nsgctlu2B61eFlcJ7ag-M-F7cZ8/edit?gid=1167582221#gid=1167582221" target="_blank">前往驗收總表</a></div>`;
+      return;
+    }
+    let html='<div class="pkg-hit"><div class="pkg-hit-head"><span class="pkg-hit-title">✓ 找到包材驗收紀錄</span><span class="pkg-hit-count">'+hits.length+' 筆相符</span><a class="pkg-link" href="https://docs.google.com/spreadsheets/d/1hpOmEJnz9vRSqfz7nsgctlu2B61eFlcJ7ag-M-F7cZ8/edit?gid=1167582221#gid=1167582221" target="_blank">查看完整驗收表</a></div>';
+    hits.forEach(r=>{
+      const result=r['驗收結果']||'';
+      const resultClass=result.includes('通過')||result.includes('合格')?'pkg-pass':result?'pkg-fail':'';
+      html+=`<div class="pkg-item">
+        <span class="pk">品項</span><span class="pv">${esc(r['品項']||'')}${r['料號']?' · '+esc(r['料號']):''}${r['版次']?' 版次：'+esc(r['版次']):''}</span>
+      </div>
+      <div class="pkg-item">
+        <span class="pk">驗收</span><span class="pv ${resultClass}">${esc(result||'未填')}</span>
+        <span class="pk">日期</span><span class="pv">${esc(r['驗收日期']||r['進/回貨日期']||'—')}</span>
+        ${r['驗收人員']?`<span class="pk">人員</span><span class="pv">${esc(r['驗收人員'])}</span>`:''}
+      </div>`;
+    });
+    html+='</div>';
+    el.innerHTML=html;
+  }, 350);
+}
+
+// ---- Load records ----
+async function loadRecords(){
+  setStatus('busy','連線中…');
+  try{
+    const res=await fetch(APPS_SCRIPT_URL+'?action=getTrials',{cache:'no-store'});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    RECORDS=await res.json();
+    setStatus('ok','已連接 Google Sheet');
+    document.getElementById('recCount').textContent=RECORDS.length+' 筆試產紀錄';
+  }catch(e){
+    setStatus('off','無法連線');
+    document.getElementById('recCount').textContent='—';
+    console.warn(e);
+  }
+}
+
+// ---- Render records ----
+function esc(s){return (s||'').toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function statusBadge(s){
+  if(!s) return '<span class="status-badge none">未標記</span>';
+  if(s.includes('已完成')) return '<span class="status-badge done">已完成</span>';
+  if(s.includes('進行中')) return '<span class="status-badge wip">進行中</span>';
+  if(s.includes('待覆盤')) return '<span class="status-badge review">待覆盤</span>';
+  return `<span class="status-badge none">${esc(s)}</span>`;
+}
+
+function renderRecords(){
+  const el=document.getElementById('recordsList');
+  if(!RECORDS.length){
+    el.innerHTML=`<div class="empty-state"><span class="glyph">📋</span><p>尚無試產紀錄</p></div>`;
+    return;
+  }
+  el.innerHTML=[...RECORDS].reverse().map(r=>{
+    const ings=[];
+    for(let i=1;i<=8;i++){
+      const item=r[`內容物${i}_品項`];
+      if(item) ings.push([item, r[`內容物${i}_料號`]?`(${r[`內容物${i}_料號`]})`:'', r[`內容物${i}_型態`], r[`內容物${i}_占比`]].filter(Boolean).join(' '));
+    }
+    const people=[r['研發負責人']?'研發：'+r['研發負責人']:'', r['PM']?'PM：'+r['PM']:''].filter(Boolean).join('　');
+    return `<div class="rec-card">
+      <div class="rec-head">
+        <div>
+          <div class="rec-name">${esc(r['品名']||'未填品名')}</div>
+          ${r['料號']?`<div class="rec-sku">${esc(r['料號'])}</div>`:''}
+          ${ings.length?`<div style="font-size:12.5px;color:var(--ink-dim);margin-top:4px;">${ings.map(esc).join('<br>')}</div>`:''}
+        </div>
+        <div class="rec-meta">${esc(r['試產日期']||'')}<br>${esc(r['生產機台']||'')}<br>${statusBadge(r['狀態'])}</div>
+      </div>
+      <div class="rec-body">
+        ${r['外包裝形式']?`<div class="rec-row"><span class="k">外包裝</span><span class="v">${esc(r['外包裝形式'])}</span></div>`:''}
+        ${(r['效期_印刷位置']||r['效期_印刷方式'])?`<div class="rec-row"><span class="k">效期打印</span><span class="v">${[r['效期_印刷位置'],r['效期_位置描述'],r['效期_印刷方式'],r['效期_印刷機台']].filter(Boolean).map(esc).join('・')}</span></div>`:''}
+        ${r['調整內容']?`<div class="rec-row"><span class="k">調整內容</span><span class="v">${esc(r['調整內容'])}</span></div>`:''}
+        ${r['遇到的問題']?`<div class="rec-row"><span class="k">問題觀察</span><span class="v">${esc(r['遇到的問題'])}</span></div>`:''}
+        ${r['處理方式']?`<div class="rec-row"><span class="k">處理方式</span><span class="v">${esc(r['處理方式'])}</span></div>`:''}
+        ${people?`<div class="rec-row"><span class="k">負責人</span><span class="v">${esc(people)}</span></div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ---- Save ----
+async function saveRecord(){
+  const data=collectForm();
+  if(!data['品名']){showToast('請填入品名再儲存');return;}
+  try{
+    const res=await fetch(APPS_SCRIPT_URL,{method:'POST',body:JSON.stringify(data)});
+    const json=await res.json();
+    if(json.success){
+      showToast('✓ 已儲存到 Google Sheet');
+      await loadRecords();
+    } else {
+      showToast('儲存失敗：'+(json.error||'未知錯誤'));
+    }
+  }catch(e){
+    showToast('儲存失敗，請確認網路連線');
+  }
+}
+
+// ---- Clear form ----
+function clearForm(){
+  ['f-date','f-name','f-sku','f-machine','f-outpack','f-printside','f-printdesc',
+   'f-printmachine','f-printmethod','f-adjust','f-issues','f-handling','f-rd','f-pm','f-status']
+  .forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('ingContainer').innerHTML='';
+  ingCount=0;
+  addIngredient();
+  addIngredient();
+  document.getElementById('f-date').value=new Date().toISOString().split('T')[0];
+  showToast('表單已清除');
+}
+
+// ---- Toast ----
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// ---- Init ----
+document.getElementById('f-date').value=new Date().toISOString().split('T')[0];
+addIngredient();
+addIngredient();
+loadRecords();
+loadPackaging();
+</script>
+</body>
+</html>
