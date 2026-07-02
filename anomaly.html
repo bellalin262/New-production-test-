@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>異常案例查詢系統</title>
+<style>
+:root{
+  --ink:#1c1a17;
+  --paper:#f7f4ee;
+  --paper-dim:#ece7dc;
+  --line:#d8d0c0;
+  --rust:#b5502f;
+  --rust-deep:#8a3a20;
+  --moss:#5c6b4f;
+  --gold:#c08a2e;
+  --ok:#4a7a5e;
+  --warn:#b5502f;
+  --pending:#9b7a2e;
+  --mono:'JetBrains Mono','SF Mono',Consolas,monospace;
+  --serif:'Noto Serif TC','Songti TC',serif;
+  --sans:'Noto Sans TC','PingFang TC','Microsoft JhengHei',sans-serif;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);font-family:var(--sans);}
+body{min-height:100vh;}
+
+/* ---- Header ---- */
+.masthead{
+  border-bottom:3px solid var(--ink);
+  padding:28px 24px 18px;
+  background:var(--paper);
+  position:relative;
+}
+.masthead::after{
+  content:'';
+  position:absolute;
+  bottom:-3px;left:0;right:0;height:1px;
+  background:repeating-linear-gradient(90deg,var(--ink) 0 6px,transparent 6px 10px);
+}
+.masthead-row{
+  display:flex;justify-content:space-between;align-items:baseline;
+  max-width:920px;margin:0 auto;flex-wrap:wrap;gap:8px;
+}
+.masthead h1{
+  font-family:var(--serif);
+  font-size:28px;
+  font-weight:700;
+  margin:0;
+  letter-spacing:0.5px;
+}
+.masthead .tag{
+  font-family:var(--mono);
+  font-size:11px;
+  color:var(--rust-deep);
+  letter-spacing:1.5px;
+  text-transform:uppercase;
+}
+.masthead .meta{
+  font-family:var(--mono);
+  font-size:11px;
+  color:#80766a;
+}
+.status-line{
+  max-width:920px;margin:10px auto 0;
+  font-family:var(--mono);font-size:11.5px;color:#80766a;
+  display:flex;gap:14px;align-items:center;flex-wrap:wrap;
+}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--ok);display:inline-block;}
+.dot.off{background:#b0a890;}
+.dot.busy{background:var(--gold);animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+#refreshBtn{
+  font-family:var(--mono);font-size:11px;color:var(--rust-deep);
+  background:none;border:1px solid var(--line);padding:2px 8px;border-radius:3px;
+  cursor:pointer;
+}
+#refreshBtn:hover{background:var(--paper-dim);}
+
+/* ---- Main layout ---- */
+.wrap{max-width:920px;margin:0 auto;padding:32px 24px 80px;}
+
+.search-block{margin-bottom:8px;}
+.search-label{
+  font-family:var(--mono);font-size:11px;letter-spacing:1.5px;
+  text-transform:uppercase;color:var(--rust-deep);margin-bottom:8px;display:block;
+}
+.search-row{display:flex;gap:10px;}
+#queryInput{
+  flex:1;font-family:var(--serif);font-size:19px;
+  padding:14px 16px;border:2px solid var(--ink);border-radius:2px;
+  background:#fff;color:var(--ink);
+}
+#queryInput:focus{outline:none;border-color:var(--rust);box-shadow:0 0 0 3px rgba(181,80,47,0.12);}
+#searchBtn{
+  font-family:var(--sans);font-weight:600;font-size:15px;
+  padding:0 26px;border:2px solid var(--ink);background:var(--ink);color:var(--paper);
+  border-radius:2px;cursor:pointer;letter-spacing:0.5px;
+}
+#searchBtn:hover{background:var(--rust-deep);border-color:var(--rust-deep);}
+.hint{font-family:var(--mono);font-size:11.5px;color:#9a9082;margin-top:8px;}
+
+/* category chips */
+.chips{display:flex;gap:6px;margin-top:14px;flex-wrap:wrap;}
+.chip{
+  font-family:var(--mono);font-size:10.5px;padding:4px 10px;border:1px solid var(--line);
+  border-radius:14px;color:#5a5246;cursor:pointer;background:#fff;
+}
+.chip:hover{border-color:var(--rust);color:var(--rust-deep);}
+
+/* ---- Results ---- */
+.results{margin-top:34px;}
+.empty-state{
+  text-align:center;padding:60px 20px;color:#a89f8f;
+}
+.empty-state .glyph{font-size:34px;margin-bottom:10px;display:block;font-family:var(--serif);}
+.empty-state p{font-family:var(--mono);font-size:12.5px;letter-spacing:0.5px;}
+
+.section-title{
+  font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--rust-deep);border-bottom:1px solid var(--ink);padding-bottom:6px;margin:0 0 14px;
+  display:flex;justify-content:space-between;
+}
+
+/* Risk panel */
+.risk-panel{
+  border:2px solid var(--rust);background:#fbf1ec;padding:18px 20px;margin-bottom:28px;border-radius:2px;
+}
+.risk-panel .rp-head{
+  font-family:var(--mono);font-size:11px;letter-spacing:1.5px;color:var(--rust-deep);
+  text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px;
+}
+.risk-panel .rp-head::before{content:'⚠';font-size:14px;}
+.risk-panel h3{font-family:var(--serif);font-size:17px;margin:0 0 10px;color:var(--ink);}
+.risk-list{margin:0;padding-left:0;list-style:none;}
+.risk-list li{
+  font-size:14.5px;line-height:1.7;padding:7px 0 7px 22px;position:relative;
+  border-top:1px solid rgba(181,80,47,0.18);
+}
+.risk-list li:first-child{border-top:none;}
+.risk-list li::before{content:'›';position:absolute;left:2px;color:var(--rust);font-weight:700;}
+
+/* matched cases */
+.case-card{
+  border:1px solid var(--line);background:#fff;margin-bottom:14px;border-radius:2px;overflow:hidden;
+}
+.case-head{
+  display:flex;justify-content:space-between;align-items:flex-start;gap:12px;
+  padding:14px 18px 10px;border-bottom:1px dashed var(--line);
+}
+.case-head-main{flex:1;}
+.case-id-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.cat-icon{
+  font-size:16px;width:26px;height:26px;border-radius:50%;
+  background:var(--paper-dim);display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.case-title{font-family:var(--serif);font-size:17px;font-weight:600;color:var(--ink);}
+.case-sku{font-family:var(--mono);font-size:11px;color:#9a9082;}
+.case-desc-line{font-size:14px;color:var(--rust-deep);margin-top:2px;padding-left:34px;}
+.case-meta{font-family:var(--mono);font-size:11px;color:#8a8072;white-space:nowrap;text-align:right;}
+.case-score{
+  font-family:var(--mono);font-size:10px;color:var(--rust-deep);background:#f3e6dc;
+  padding:2px 7px;border-radius:10px;display:inline-block;margin-top:4px;
+}
+.case-body{padding:12px 18px 16px;}
+.case-row{display:flex;gap:8px;margin-bottom:8px;font-size:13.5px;line-height:1.6;}
+.case-row .k{font-family:var(--mono);font-size:10.5px;color:#9a9082;min-width:64px;padding-top:2px;text-transform:uppercase;letter-spacing:0.5px;}
+.case-row .v{flex:1;white-space:pre-line;}
+.badge{
+  font-family:var(--mono);font-size:10px;padding:2px 8px;border-radius:10px;display:inline-block;
+}
+.badge.done{background:#e3ebe0;color:var(--ok);}
+.badge.pending{background:#f5ebd6;color:var(--pending);}
+.badge.watch{background:#e6e0f0;color:#6b5a9b;}
+.badge.none{background:var(--paper-dim);color:#9a9082;}
+
+/* SOP card */
+.sop-card{
+  border-left:4px solid var(--moss);background:#fff;padding:16px 20px;margin-bottom:14px;
+}
+.sop-type{font-family:var(--serif);font-size:16px;font-weight:700;color:var(--moss);margin-bottom:6px;}
+.sop-desc{font-size:13.5px;color:#5a5246;margin-bottom:14px;font-style:italic;}
+.flow-wrap{display:flex;flex-direction:column;align-items:stretch;gap:0;}
+.flow-step{
+  display:flex;align-items:flex-start;gap:12px;
+  background:#f4f6f1;border:1px solid #d4ddcc;border-radius:4px;
+  padding:10px 14px;position:relative;
+}
+.flow-num{
+  font-family:var(--mono);font-size:13px;font-weight:700;color:#fff;
+  background:var(--moss);width:22px;height:22px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;
+}
+.flow-text{font-size:13.5px;line-height:1.55;color:var(--ink);padding-top:1px;}
+.flow-text b{color:var(--rust-deep);}
+.flow-arrow{
+  display:flex;justify-content:center;align-items:center;height:18px;color:#9bab8c;font-size:14px;
+}
+
+footer{
+  max-width:920px;margin:40px auto 0;padding:20px 24px 0;border-top:1px solid var(--line);
+  font-family:var(--mono);font-size:10.5px;color:#a89f8f;text-align:center;
+}
+
+/* ---- Mobile responsive ---- */
+@media (max-width: 640px){
+  .masthead{padding:20px 16px 14px;}
+  .masthead h1{font-size:22px;}
+  .masthead-row{flex-direction:column;align-items:flex-start;gap:2px;}
+  .status-line{flex-direction:column;align-items:flex-start;gap:8px;}
+  #refreshBtn{padding:5px 10px;}
+
+  .wrap{padding:22px 16px 60px;}
+
+  .search-row{flex-direction:column;}
+  #queryInput{font-size:16px;padding:12px 14px;}
+  #searchBtn{padding:12px 0;width:100%;}
+
+  .chips{gap:5px;}
+  .chip{font-size:10px;padding:5px 9px;}
+
+  .risk-panel{padding:14px 16px;}
+  .risk-panel h3{font-size:15px;}
+  .risk-list li{font-size:13.5px;padding-left:18px;}
+
+  .case-card{margin-bottom:12px;}
+  .case-head{flex-direction:column;padding:12px 14px 8px;gap:6px;}
+  .case-meta{text-align:left;white-space:normal;}
+  .case-desc-line{padding-left:0;font-size:13.5px;}
+  .case-id-row{flex-wrap:wrap;}
+  .case-title{font-size:16px;}
+  .case-body{padding:10px 14px 14px;}
+  .case-row{flex-direction:column;gap:2px;}
+  .case-row .k{min-width:0;}
+
+  .sop-card{padding:14px 16px;}
+  .flow-step{padding:9px 12px;gap:9px;}
+  .flow-text{font-size:13px;}
+
+  .section-title{font-size:10.5px;}
+}
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="masthead-row">
+    <h1>異常案例查詢台</h1>
+    <span class="tag">Anomaly Lookup · 品管現場速查</span>
+  </div>
+  <div class="masthead-row" style="margin-top:4px;">
+    <span class="meta" id="recordCount">載入中…</span>
+    <span class="meta" id="dateRange"></span>
+  </div>
+  <div class="status-line">
+    <span><span class="dot off" id="statusDot"></span> <span id="statusText">尚未連接資料來源</span></span>
+    <button id="refreshBtn">重新抓取最新資料</button>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="search-block">
+    <span class="search-label">輸入異常描述／品項關鍵字</span>
+    <div class="search-row">
+      <input type="text" id="queryInput" placeholder="例如：外箱發現蟲蟲、顆粒太大、封口有銀邊..." autocomplete="off">
+      <button id="searchBtn">查詢</button>
+    </div>
+    <div class="hint">系統會用關鍵字模糊比對「異常描述」與「品名」欄位，無須輸入完整句子。</div>
+    <div class="chips" id="chipRow"></div>
+  </div>
+
+  <div class="results" id="results">
+    <div class="empty-state">
+      <span class="glyph">— ⌗ —</span>
+      <p>輸入關鍵字開始查詢，或點選上方分類快速瀏覽</p>
+    </div>
+  </div>
+
+</div>
+
+<footer>資料來源：Google Sheet 即時同步 · 僅供內部品管參考，正式判定請依公司既有 SOP 與主管確認</footer>
+
+<script>
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyMaHUfWKOcBffluknDtlKLdjbwfyh8iKSGFWucgmrWjJF-EJwUYFlsG7_69cSNOt9_/exec";
+
+let CASES = [];
+let SOP_REF = [];
+
+// ---------- SOP reference (6 categories) — used as fallback / always loaded ----------
+const SOP_FALLBACK = [
+  {
+    type: "顏色相關",
+    keywords: ["顏色","色差","較深","較淺","變色","發黃","發黑"],
+    desc: "產品顏色較深、有色差或與標準顏色不符。",
+    steps: "1. 立即拍照記錄。\n2. 檢查生產批次，比對留樣或歷史數據。\n3. 通知品管或研發部門，判定色差是否超出可接受範圍。\n4. 若品質無虞，提供說明並回覆標準差異；若確認有問題，依內部標準進行報廢或限用，並追溯生產環節尋找根本原因。",
+    risks: ["色差是否在客戶可接受公差內，需研發/品管書面確認，避免口頭放行","若同批次有多包異常，要往前追加抽樣，不能只看單一包","留樣比對若無歷史留樣，難以判定是否劣化，需建立留樣機制"]
+  },
+  {
+    type: "質地/規格相關",
+    keywords: ["顆粒","太大","太小","水分","硬度","太硬","太軟","規格"],
+    desc: "產品水分超標、顆粒大小不對或硬度不符。",
+    steps: "1. 立即停止使用並隔離該批次產品。\n2. 複測水分、顆粒或硬度，確認是否超出標準公差。\n3. 若複測異常，通知生產單位檢討製程參數（如烘乾時間、研磨設定）或原料配比。\n4. 根據影響程度決定報廢或調整，並填寫製程異常報告，避免再發。",
+    risks: ["水分超標若同時水活性偏高，有微生物風險，不能只看單一數值就放行","若為原料端規格問題，需往供應商端追溯，不只是內部製程調整","\"特允\"放行需留下書面紀錄與簽核，避免日後追溯不到依據"]
+  },
+  {
+    type: "氣味/味道相關",
+    keywords: ["油耗味","異味","臭","味道","氣味"],
+    desc: "產品有油耗味較重、或有異味。",
+    steps: "1. 立即隔離該批次產品，避免擴大污染。\n2. 通知品管或研發部門進行氣味判定及檢測（如油脂酸敗度）。\n3. 判定異味來源（如原料問題、儲存環境、包裝材料）。\n4. 若為原料問題，追溯原料批號並聯繫供應商；若為儲存或包裝問題，檢討倉儲或包裝流程。\n5. 確定處理方式（報廢/限用）並回覆客戶。",
+    risks: ["油耗味通常代表油脂氧化，若已出貨需評估是否擴大回收範圍","異味來源不明前不應放行，避免事後才發現是更大範圍的污染","若牽涉寵物食品安全，異味問題比外觀問題優先等級更高"]
+  },
+  {
+    type: "異物/混入",
+    keywords: ["蟲","異物","紙張","毛髮","金屬","混入","蟲蟲"],
+    desc: "產品中出現非預期物質（如紙張、小蟲）。",
+    steps: "1. 立即將異常產品包裝隔離，並記錄發生地點及時間。\n2. 拍照記錄異物類型。\n3. 通知品管部門進行異物分析，並追溯生產線的異物管控點。\n4. 確認異物為製程中混入或環境污染，採取緊急消毒或清理措施。\n5. 該批次產品視情況報廢，並加強生產線的異物偵測與環境清潔檢查。",
+    risks: ["異物若為蟲類，需確認是外箱／倉儲污染還是製程中混入，處理範圍差很大","若已流入下游（混料、分裝），要往前往後都追溯，不能只隔離當下這包","客訴風險高，建議同步留樣保存證物，以備後續追查"]
+  },
+  {
+    type: "封口異常",
+    keywords: ["封口","銀邊","鋸齒","漏氣","沒封好"],
+    desc: "產品內袋或外包裝封口不完整、有鋸齒瑕疵、或封口位置異常。",
+    steps: "1. 記錄封口異常的具體狀況及程度。\n2. 檢查異常發生時的包裝機台狀況、封口參數（如溫度、壓力）及包裝袋供應商批次。\n3. 調整機台參數並進行測試，確認封口品質回復正常。\n4. 判定該批次產品是否需全部報廢或重新包裝（若可補救），填寫異常報告以追蹤改善。",
+    risks: ["封口不良影響保存期限與密封性，若已出貨需評估食安與保存期限風險","拉力測試合格不代表長期保存沒問題，必要時應加做加速老化測試","機台參數調整後務必留下測試紀錄，作為後續同類異常比對基準"]
+  },
+  {
+    type: "品項錯誤/混料",
+    keywords: ["混料","錯誤","品項","裝錯","撿貨","貼標","出貨錯誤"],
+    desc: "客戶收到的產品品項/數量與訂單不符，或發現錯誤物料混入（如混到其他產品的原料）。",
+    steps: "1. 核對資訊：核對客戶訂單、系統出貨單據及倉庫撿貨紀錄，確認錯誤環節。\n2. 原因分析：判斷是撿貨錯誤、貼標錯誤或裝箱錯誤（品項錯誤）；或投料錯誤（混料）。\n3. 立即修正：安排正確品項補寄，並協調回收錯誤產品。\n4. 流程檢討：根據錯誤原因，檢討倉儲/出貨流程覆核機制（品項錯誤），或檢討原料投料前的二次確認機制（混料）。",
+    risks: ["混料若牽涉過敏原（如不同蛋白來源），需立即評估客戶過敏風險，優先等級最高","錯誤已出貨者，要確認收件客戶清單與數量，避免漏通知","同一錯誤模式若過去發生過，要檢查上次的「再發防止」是否真正落實"]
+  }
+];
+
+function norm(s){ return (s||"").toString().toLowerCase().replace(/\s+/g,""); }
+
+// ---------- Data loading ----------
+async function loadData(){
+  setStatus("busy","正在抓取最新資料…");
+  try {
+    const res = await fetch(APPS_SCRIPT_URL, { cache: "no-store" });
+    if(!res.ok) throw new Error("HTTP "+res.status);
+    const json = await res.json();
+    parseJSON(json);
+    setStatus("ok","已連接 Google Sheet（Apps Script）· 即時資料");
+  } catch(e){
+    console.warn("Apps Script fetch failed:", e);
+    setStatus("off","無法連線，顯示備援資料（請點右上重新抓取）");
+    loadSeedData();
+  }
+  updateMeta();
+  buildChips();
+}
+
+function setStatus(kind, text){
+  const dot = document.getElementById("statusDot");
+  const t = document.getElementById("statusText");
+  dot.className = "dot " + (kind==="ok"?"":kind==="busy"?"busy":"off");
+  t.textContent = text;
+}
+
+function parseJSON(rows){
+  const out = [];
+  rows.forEach(r=>{
+    const desc = (r["異常描述"]||"").toString().trim();
+    if(!desc) return;
+    out.push({
+      date: (r["發生日期"]||"").toString().trim(),
+      loc: (r["發生地點"]||"").toString().trim(),
+      sku: (r["料號"]||"").toString().trim(),
+      cat: (r["產品類別"]||"").toString().trim(),
+      name: (r["品名"]||"").toString().trim(),
+      desc: desc,
+      handle: (r["處理方式"]||"").toString().trim(),
+      contact: (r["聯絡人"]||"").toString().trim(),
+      status: (r["分類"]||"").toString().trim(),
+      note: (r["備註"]||"").toString().trim()
+    });
+  });
+  CASES = out;
+}
+
+function loadSeedData(){
+  CASES = SEED_CASES;
+}
+
+function updateMeta(){
+  document.getElementById("recordCount").textContent = `共 ${CASES.length} 筆異常紀錄`;
+  const dates = CASES.map(c=>c.date).filter(Boolean);
+  if(dates.length){
+    document.getElementById("dateRange").textContent = `${dates[0]} ～ ${dates[dates.length-1]}`;
+  }
+}
+
+function buildChips(){
+  const row = document.getElementById("chipRow");
+  row.innerHTML = "";
+  SOP_FALLBACK.forEach(sop=>{
+    const c = document.createElement("button");
+    c.className = "chip";
+    c.textContent = sop.type;
+    c.onclick = ()=>{ document.getElementById("queryInput").value = sop.keywords[0]; runSearch(); };
+    row.appendChild(c);
+  });
+}
+
+// ---------- Matching ----------
+function matchSOP(query){
+  const q = norm(query);
+  let best = null, bestScore = 0;
+  SOP_FALLBACK.forEach(sop=>{
+    let score = 0;
+    sop.keywords.forEach(kw=>{ if(q.includes(norm(kw))) score += 2; });
+    if(norm(sop.type).includes(q) || q.includes(norm(sop.type))) score += 1;
+    if(score > bestScore){ bestScore = score; best = sop; }
+  });
+  return bestScore > 0 ? best : null;
+}
+
+function matchCases(query){
+  const q = norm(query);
+  const terms = q.split(/[\s,，、]+/).filter(Boolean);
+  const scored = CASES.map(c=>{
+    const hay = norm(c.desc + c.name + c.cat + c.note);
+    let score = 0;
+    if(hay.includes(q) && q.length>0) score += 5;
+    terms.forEach(t=>{ if(t.length>=1 && hay.includes(t)) score += 1; });
+    return {c, score};
+  }).filter(x=>x.score>0);
+  scored.sort((a,b)=>b.score-a.score);
+  return scored.slice(0,8);
+}
+
+function statusBadge(status){
+  if(!status) return '<span class="badge none">未標記</span>';
+  if(status.includes("已完成")) return '<span class="badge done">已完成</span>';
+  if(status.includes("待處理")) return '<span class="badge pending">待處理</span>';
+  if(status.includes("待觀察")) return '<span class="badge watch">待觀察</span>';
+  return `<span class="badge none">${status}</span>`;
+}
+
+function escapeHTML(s){
+  return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+const CAT_ICONS = {
+  "原料": "🌾",
+  "半成品": "⚙️",
+  "成品": "📦",
+  "包材": "🧻",
+  "設備": "🔧"
+};
+function catIcon(cat){
+  return CAT_ICONS[cat] || "❓";
+}
+
+function renderFlow(stepsText){
+  // split "1. xxx\n2. yyy\n3. zzz" into individual steps
+  const cleaned = stepsText.replace(/\\n/g,"\n");
+  const parts = cleaned.split(/\n+/).map(s=>s.trim()).filter(Boolean);
+  const steps = [];
+  parts.forEach(p=>{
+    const m = p.match(/^\*{0,2}(\d+)[\.\\]\*{0,2}\s*(.+)$/);
+    if(m){ steps.push(m[2]); }
+    else if(steps.length){ steps[steps.length-1] += " " + p; }
+    else { steps.push(p); }
+  });
+
+  let html = '<div class="flow-wrap">';
+  steps.forEach((s, i)=>{
+    const text = escapeHTML(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+    html += `<div class="flow-step"><span class="flow-num">${i+1}</span><span class="flow-text">${text}</span></div>`;
+    if(i < steps.length-1) html += '<div class="flow-arrow">↓</div>';
+  });
+  html += '</div>';
+  return html;
+}
+
+function runSearch(){
+  const query = document.getElementById("queryInput").value.trim();
+  const results = document.getElementById("results");
+  if(!query){
+    results.innerHTML = `<div class="empty-state"><span class="glyph">— ⌗ —</span><p>輸入關鍵字開始查詢，或點選上方分類快速瀏覽</p></div>`;
+    return;
+  }
+
+  const sop = matchSOP(query);
+  const cases = matchCases(query);
+
+  let html = "";
+
+  // SOP suggestion — shown first
+  if(sop){
+    html += `<div class="section-title"><span>建議處理流程（依分類SOP）</span></div>`;
+    html += `<div class="sop-card">
+      <div class="sop-type">${escapeHTML(sop.type)}</div>
+      <div class="sop-desc">${escapeHTML(sop.desc)}</div>
+      ${renderFlow(sop.steps)}
+    </div>`;
+  }
+
+  // Risk panel — always show if we have any signal (SOP match or cases found)
+  if(sop || cases.length){
+    const risks = sop ? sop.risks : ["未比對到明確分類，建議先以現場拍照記錄、隔離異常品為原則，再依異常性質判斷是否需要品管/研發/採購介入。","若此異常情形未曾出現過，建議完整記錄處理過程，作為日後比對基準。"];
+    html += `<div class="risk-panel" style="margin-top:${sop?'24px':'0'};">
+      <div class="rp-head">風險評估提醒</div>
+      <h3>${sop ? sop.type+'類異常 · 注意事項' : '尚未比對到標準分類 · 一般注意事項'}</h3>
+      <ul class="risk-list">${risks.map(r=>`<li>${escapeHTML(r)}</li>`).join("")}</ul>
+    </div>`;
+  }
+
+  // Matched historical cases — shown last
+  html += `<div class="section-title" style="margin-top:30px;"><span>過去相似案例</span><span>${cases.length} 筆</span></div>`;
+  if(cases.length){
+    cases.forEach(({c,score})=>{
+      html += `<div class="case-card">
+        <div class="case-head">
+          <div class="case-head-main">
+            <div class="case-id-row">
+              <span class="cat-icon" title="${escapeHTML(c.cat||'未分類')}">${catIcon(c.cat)}</span>
+              <span class="case-title">${escapeHTML(c.name||"（未填品名）")}</span>
+              ${c.sku ? `<span class="case-sku">${escapeHTML(c.sku)}</span>` : ""}
+            </div>
+            <div class="case-desc-line">${escapeHTML(c.desc)}</div>
+          </div>
+          <div class="case-meta">
+            ${escapeHTML(c.date)}<br>${escapeHTML(c.loc)}
+            <div class="case-score">比對分數 ${score}</div>
+          </div>
+        </div>
+        <div class="case-body">
+          ${c.handle ? `<div class="case-row"><span class="k">處理方式</span><span class="v">${escapeHTML(c.handle)}</span></div>` : ""}
+          ${c.contact ? `<div class="case-row"><span class="k">聯絡人</span><span class="v">${escapeHTML(c.contact)}</span></div>` : ""}
+          ${c.note ? `<div class="case-row"><span class="k">備註</span><span class="v">${escapeHTML(c.note)}</span></div>` : ""}
+          <div class="case-row"><span class="k">狀態</span><span class="v">${statusBadge(c.status)}</span></div>
+        </div>
+      </div>`;
+    });
+  } else {
+    html += `<div class="empty-state"><p>查無相似案例，這可能是新類型的異常，請完整記錄處理過程</p></div>`;
+  }
+
+  results.innerHTML = html;
+}
+
+document.getElementById("searchBtn").addEventListener("click", runSearch);
+document.getElementById("queryInput").addEventListener("keydown", e=>{ if(e.key==="Enter") runSearch(); });
+document.getElementById("refreshBtn").addEventListener("click", loadData);
+
+// Seed data (fallback if live fetch fails) — trimmed snapshot from uploaded records
+const SEED_CASES = [{"date": "2025/9/17", "loc": "包裝室", "sku": "", "cat": "半成品", "name": "填心糧", "desc": "混料時發現有一包飼料過油", "handle": "1.加抽\n2.發現只有那一包過油，其餘正常\n3.通知採購請廠商下次補寄一包，並了解異常原因", "contact": "詠萱", "status": "已完成", "note": ""}, {"date": "2025/9/18", "loc": "包裝室", "sku": "r90000003", "cat": "原料", "name": "美國凍乾-貓雞", "desc": "外箱發現蟲蟲", "handle": "", "contact": "", "status": "", "note": ""}, {"date": "2025/9/19", "loc": "包裝室", "sku": "", "cat": "半成品", "name": "填心糧", "desc": "顏色較深", "handle": "1.現場採樣\n2.和小杜小馬討論\n3.和研發討論，推測因為添加卵磷脂只大部分的雞肉鬆都在填心糧中間，不像之前雞肉鬆會散落，所以整體才看起來比較黑\n4.和產品部33討論後放行", "contact": "小杜\n小馬\n阿干\n33", "status": "已完成", "note": ""}, {"date": "2025/9/30", "loc": "包裝室", "sku": "", "cat": "半成品", "name": "角落凍乾蔬菜袋子", "desc": "袋子打孔偏下，導致封口異常", "handle": "袋子報廢，請wolf填再發防止", "contact": "", "status": "已完成", "note": ""}, {"date": "2025/10/2", "loc": "處理室", "sku": "", "cat": "半成品", "name": "犬牛魚糧", "desc": "顆粒太大", "handle": "重新成型", "contact": "小杜\n阿干", "status": "已完成", "note": ""}, {"date": "2025/10/9", "loc": "驗收", "sku": "", "cat": "半成品", "name": "貓雞糧", "desc": "喬文驗收發現7mm魚刺", "handle": "紀錄並觀察是否有客訴", "contact": "", "status": "待觀察", "note": ""}, {"date": "2025/10/13", "loc": "包裝室", "sku": "", "cat": "半成品", "name": "狗雞糧", "desc": "同一批色差", "handle": "1.半品30包有4包顏色較深\n2.驗水分水活與淺色無異\n3.10%混料但不出差異\n4.判斷放行", "contact": "", "status": "已完成", "note": ""}, {"date": "2025/10/22", "loc": "包裝室", "sku": "", "cat": "成品", "name": "貓寶雞試吃包", "desc": "封口有銀邊", "handle": "1.拉力測試封口正常\n2.傳給產品部詢問是否允收", "contact": "產品部", "status": "已完成", "note": ""}, {"date": "2025/11/3", "loc": "處理室", "sku": "", "cat": "半成品", "name": "貓幼雞糧", "desc": "要烤的肉糧發現好幾盤發霉", "handle": "1.判斷不能使用，請產線不要烘烤\n2.告訴雅玲情況，請他們視情況重新排程\n3.驗水活性0.98\n4.調監視器，發現是幾車從冷凍推出來沒有近冷藏而是待在拆箱區2小時\n5.開異常單，並請聖評那些都報廢", "contact": "雅玲\n聖評", "status": "已完成", "note": ""}, {"date": "2025/11/7", "loc": "驗收", "sku": "", "cat": "原料", "name": "Kika乾飼料-T2185小犬雞", "desc": "詠庭檢驗發現水分超標", "handle": "1.加抽大貨，依照抽樣計劃又多加抽8包，發現6包水分超標(8.04, 7.59, 9.22, 8.40, 8.31, 8.33, 8.53, 7.51)\n2.也有同步驗水活性，都<0.6，跟小杜討論是特允\n3.請採購詢問廠商\n4.廠商回覆認為水分在標準7%±1%都可以，然後9.22%那個是個案。\n5.把廠商回覆口頭告訴詠庭", "contact": "詠庭\n詠萱\n小杜", "status": "已完成", "note": ""}, {"date": "2025/11/12", "loc": "包裝室", "sku": "R14000044", "cat": "半成品", "name": "凍乾胡蘿蔔丁", "desc": "色差", "handle": "深淺分開包裝", "contact": "", "status": "已完成", "note": ""}, {"date": "2025/11/13", "loc": "驗收", "sku": "", "cat": "成品", "name": "小犬肉鬆中", "desc": "喬文成品驗收發現3包當中有1包打印模糊", "handle": "1.和小杜討論後需要加抽\n2.跟包裝室詢問包好的東西位置，1302包加抽20包，也看一下還沒包的袋子\n3.用手套摩擦，確定20包都合格之後放行\n4.請喬文成品改合格", "contact": "", "status": "已完成", "note": ""}, {"date": "2025/11/13", "loc": "包裝室", "sku": "H14000009", "cat": "半成品", "name": "凍乾綠櫛瓜", "desc": "包裝室驗水分發現超標", "handle": "幫驗水活性，合格後特允", "contact": "", "status": "已完成", "note": ""}, {"date": "2025/11/13", "loc": "包裝室", "sku": "", "cat": "半成品", "name": "腸胃麵小", "desc": "包裝袋內層是白色", "handle": "1.小杜代為群問採購，因為PM沒有說改袋子。\n2.等待回覆", "contact": "", "status": "已完成", "note": ""}, {"date": "2025/11/14", "loc": "驗收", "sku": "JS130", "cat": "成品", "name": "小犬肉鬆雞中", "desc": "成品檢驗有明顯酸味", "handle": "1.觀察前一批次味道，確實偏酸\n2.取樣給喬文、研發和小杜聞\n3.給VOVO吃：吃\n4.驗水分汗水活性都跟前一批相近\n5.放行", "contact": "阿干", "status": "已完成", "note": ""}, {"date": "2025/11/19", "loc": "包裝室", "sku": "", "cat": "半成品", "name": "樹莓碎", "desc": "水分超標", "handle": "水活性0.32、0.29，放行", "contact": "", "status": "已完成", "note": ""}, {"date": "2025/11/21", "loc": "倉庫", "sku": "", "cat": "半成品", "name": "怪貓雞糧-未包", "desc": "高度約10mm，超出驗收規範6-8mm", "handle": "1.通知生管回添\n2.發異常單並複印黏貼到貨上\n3.貼黃色膠帶(平行繞一圈即可)，跟阿明說", "contact": "生管\n阿明", "status": "已完成", "note": ""}, {"date": "2025/11/24", "loc": "包裝室", "sku": "JS132", "cat": "成品", "name": "小犬肉鬆羊中", "desc": "成品包裝完發現多發90公斤", "handle": "1.確認成品抽樣重量都正常有多\n2.放行", "contact": "", "status": "已完成", "note": "後來發現相同異常，追查原因發現是因為後來配方多加雞肉鬆，但總重不變，但媛媛領料的公式並沒有把飼料的重量減少，所以才會退料這麼多"}, {"date": "2025/11/25", "loc": "包裝室", "sku": "", "cat": "半成品", "name": "凍乾地瓜丁", "desc": "有一些表面有綠色", "handle": "非發霉，是地瓜栽種深度淺，照到陽光導致葉綠素增長，請包裝室看到挑起來即可", "contact": "", "status": "已完成", "note": ""}, {"date": "2025/11/27", "loc": "驗收", "sku": "R90000002", "cat": "原料", "name": "美國凍乾-貓兔", "desc": "60~75%飼料超過1.3cm，最常有到2.2cm(COA規範85~90%的飼料落在1.0~1.3cm)", "handle": "1.加抽\n2.特允，和採購反應\n3.廠商回覆會換刀片", "contact": "詠萱", "status": "已完成", "note": ""}, {"date": "2025/12/1", "loc": "倉庫", "sku": "", "cat": "半成品", "name": "護眼肉餅半成品", "desc": "盤點發現過期半品", "handle": "紀錄正確方式\n1.確認是否有入帳，以及所有過期的數量、效期\n2.請倉庫各個效期拿一根先放冷藏，退冰大概1小時再拿菜刀去取一小段\n3.驗總生+大腸，並詢問小杜小馬這批之前訂效期的情況\n4.後來決定效起可以展延到1年，請雅玲在效期內排程完畢\n5.釐清沒有當時半成品沒有入帳(小馬代為查帳的)，開矯正單給倉庫\n", "contact": "雅玲\n小宇\n小杜\n小馬", "status": "已完成", "note": ""}, {"date": "2025/12/1", "loc": "倉庫", "sku": "", "cat": "半成品", "name": "凍乾虱魚", "desc": "成品發現有異味，且廠內還有另一個效期的半成品", "handle": "1.開異常單，去包裝室黏暫存待卻\n2.確認成品水分、水活正常\n3.和研發討論去化，建議以2%回添到貓魚糧\n4.確認倉庫半品的風味，請周明拉出來\n5.檢驗結果回報生管和研發", "contact": "周明\n小馬\n阿干(改工單)\n丁丁\n戴戴\n禮志\n雅玲\n智元\n麵\n婉鈞", "status": "已完成", "note": ""}, {"date": "2025/12/8", "loc": "處理室", "sku": "", "cat": "半成品", "name": "犬雞糧", "desc": "顏色焦黑，吃起來有苦味，水分低(0.51%)", "handle": "1.詢問阿干，發現可能是烤箱問題，可以改120/60Hz/3次\n2.焦黑的丁丁決定回填", "contact": "阿干", "status": "已完成", "note": ""}, {"date": "2025/12/11", "loc": "包裝室", "sku": "", "cat": "", "name": "犬肉鬆魚小/中", "desc": "退料70公斤", "handle": "1.驗成品重量\n2.確認成品正常放行", "contact": "", "status": "已完成", "note": "後來發現相同異常，追查原因發現是因為後來配方多加雞肉鬆，但總重不變，但媛媛領料的公式並沒有把飼料的重量減少，所以才會退料這麼多"}, {"date": "2025/12/16", "loc": "驗收", "sku": "", "cat": "成品", "name": "貓寶雞糧", "desc": "成品檢驗發現有明顯酸味異味", "handle": "1.未包裝剩3/3，發現有異味請他們不要包裝\n2.加抽成品：4板發現兩板有異味\n3.告知生管、喬文不要放行\n4.驗水分水活性都正常\n5.pH5.5~6.0稍微酸一點點\n6.請小滋開異常單不要出貨\n7.看廠內還有沒有未包的\n8.從三貴調5/2的一板回來(跟麥麥說)，檢查無異味\n9.送SGS外檢，填簡道雲，同步請小魚填單，因為常用的項目沒有我要的，所以小魚請我先填汞，他申請書再手改\n10.先通知生管送外檢，也給他們預計出報告的時間(通常會大於7天)\n11.報告回來正常，沒有腐敗，通知雅玲和戴戴結果，請他們放行。", "contact": "戴戴\n雅玲\n麥麥\n小魚", "status": "已完成", "note": ""}, {"date": "2026/12/19", "loc": "倉庫", "sku": "", "cat": "半成品", "name": "貓魚糧未包", "desc": "試量產，顏色太深", "handle": "回添貓魚糧", "contact": "阿干\n周明", "status": "已完成", "note": ""}, {"date": "2026/12/22", "loc": "包裝室", "sku": "", "cat": "半成品", "name": "貓魚糧未包", "desc": "1.有一些顏色過深\n2.有一些是星星孔盤\\", "handle": "1.顏色過深的回添\n2.星星孔盤的是之後改版後的版本，暫放倉庫，改版後出貨", "contact": "阿干\n周明", "status": "已完成", "note": ""}, {"date": "2026/12/23", "loc": "驗收", "sku": "", "cat": "原料", "name": "肉鬆", "desc": "抽3箱裡面有1箱，有蠻多肉鬆掉在紙箱內鋁袋外", "handle": "1.告知道小杜\n2.但因為數量太少，他決定人工擦掉就好，不用告知採購", "contact": "", "status": "已完成", "note": ""}, {"date": "2026/1/9", "loc": "包裝室", "sku": "", "cat": "半成品", "name": "爆毛肉餅-未包", "desc": "顏色過深", "handle": "1.取樣回來和留樣比對：確實比較深\n2.詢問產品部並說明原因：可允收\n3.回報包裝群組，並紀錄原因和效期", "contact": "產品-如如", "status": "已完成", "note": ""}, {"date": "2026/1/9", "loc": "包裝室", "sku": "", "cat": "半成品", "name": "犬肉鬆糧", "desc": "退料120公斤", "handle": "後來發現相同異常，追查原因發現是因為後來配方多加雞肉鬆，但總重不變，但媛媛領料的公式並沒有把飼料的重量減少，所以才會退料這麼多", "contact": "", "status": "已完成", "note": ""}, {"date": "2026/1/20", "loc": "處理室", "sku": "", "cat": "原料", "name": "鱈魚碎", "desc": "聖偉去產線，聞到奇怪的味道，請聖評通知品保確認", "handle": "1.回去拿取樣袋取樣\n2.驗RAC/EC\n3.確認合格，和小杜討論後放行", "contact": "", "status": "已完成", "note": ""}, {"date": "2026/1/26", "loc": "驗收", "sku": "", "cat": "半成品", "name": "貓鮭糧V2509-未包", "desc": "水分標準<5%，驗收5.01、4.97%", "handle": "1.通知戴戴跟聖評，重烘1小時再驗一次水分\n2.結果處理室再驗一次水分，沒有超標\n3.拿相同的一包去打樣室測水分，差了快1%\n4.緊急請怡文先校正處理室水分儀重量，然後再去凍乾爐那間測一次\n5.<5%允收\n6.請怡文和Penny討論要不要買新的一台，以及之後要不要在辦公室旁邊那間驗", "contact": "戴戴\n聖評\n周明", "status": "已完成", "note": ""}, {"date": "2026/2/4", "loc": "包裝室", "sku": "", "cat": "成品", "name": "貓晶球小人特", "desc": "內料包封口處有塑膠小碎片", "handle": "1.產線手工挑\n2.但下午去發現頭料的內料包還是有，再挑\n3.請阿國換刀片\n4.跟產品部討論是否拿掉內料包", "contact": "奕廷\n阿國\n美萱", "status": "待觀察", "note": ""}, {"date": "2026/2/5", "loc": "包裝室", "sku": "H60000259", "cat": "半成品", "name": "DC狗雞糧-未包", "desc": "混到狗牛魚糧", "handle": "1.去產線看混到料的比例，倒料60公斤約發現14g，約0.02%\n2.請產線先停線等通知\n3.跟研發確認，過敏風險極低，也找到文獻佐證\n4.和產線了解生產清潔狀況\n5.和產品部討論是否可放行\n6.請生管之後不要一天排2種口味\n7.產品部決議放行\n", "contact": "小滋\n聖評\n品品\n麵", "status": "已完成", "note": ""}, {"date": "2026/2/5", "loc": "包裝室", "sku": "H60000258", "cat": "半成品", "name": "DC狗牛魚糧-未包", "desc": "混到狗雞糧", "handle": "1.比例比狗雞糧混料(0.02%)還要低，而且碎屑小很不明顯\n2.判斷直接放行", "contact": " ", "status": "已完成", "note": ""}, {"date": "2026/2/5", "loc": "包裝室", "sku": "", "cat": "成品", "name": "犬蔬肉雞試", "desc": "封口邊邊鋸齒不美觀", "handle": "1.確認封口OK\n2.阿國換完刀片，邊邊偏平整只是不好撕\n3.換刀完側邊不好撕，但可以拉開\n4.放行", "contact": "小滋\n阿國", "status": "已完成", "note": ""}, {"date": "2026/2/5", "loc": "包裝室", "sku": "R90000002", "cat": "原料", "name": "美國凍乾-貓兔", "desc": "破包+有蟲蟲", "handle": "1.破包、有蟲蟲(擬穀盜)的那包直接報廢\n2.全檢再次確認沒有破包跟蟲蟲，好了封膠膜+噴酒精\n3.有蟲蟲用新的箱子封死，外面纏膠膜，開異常單放外包外面\n4.紙箱先拿去垃圾場丟掉\n5.混料開包之前通知我，再次確認有無蟲蟲\n6.跟採購反應", "contact": "詠萱\nIvy", "status": "待觀察", "note": ""}, {"date": "2026/2/10", "loc": "包裝室", "sku": "H60000142", "cat": "半成品", "name": "貓魚糧-未包", "desc": "鋁袋內破包，切口完整像剪開的", "handle": "1.現場確認，目前只有發現一包，在一板的最上面，袋外箱是硬塑膠。\n2.距離製造日期有點久，也不確定破包時間，加上只有一包，就直接報廢", "contact": "", "status": "已完成", "note": ""}, {"date": "2026/2/10", "loc": "包裝室", "sku": "", "cat": "包材", "name": "800g貓糧袋子", "desc": "表面有紋路", "handle": "數量不多(<10)看到挑出即可", "contact": "", "status": "已完成", "note": ""}, {"date": "2026/2/23", "loc": "驗收", "sku": "R90000092", "cat": "原料", "name": "富崴乾飼料-雞肉全貓心型甜圈糧CP42", "desc": "1包鋁袋破小洞", "handle": "1.封膜沒破\n2.水5.97%，水活0.42放行\n3.紀錄觀察", "contact": "詠庭", "status": "已完成", "note": ""}, {"date": "2026/2/24", "loc": "包裝室", "sku": "H11000003", "cat": "半成品", "name": "半成品-凍乾雞肉鬆", "desc": "填心糧未填心數較高(標準<20顆/50g)，此批幾乎要接近20顆", "handle": "1.原攪拌1分30秒，產線提高至2分30秒\n2.發現異常先暫停混料\n3.檢測未填心顆數\n4.請生管先發別的效期的雞肉鬆，混料後發現原先為廠內製雞肉鬆，纖維較粗不易填入，換料後為場外購入之雞肉鬆，纖維較細可正常混料\n5.正常混料後將情形告訴智元\n6.開異常單，將此料號轉為H11000001A凍乾雞肉角料，將514.8KG用盡後將不再生產", "contact": "戴戴\n小杜\n智元\n婉鈞", "status": "已完成", "note": ""}, {"date": "2026/2/24", "loc": "處理室", "sku": "R15000004", "cat": "原料", "name": "OEM和牛牛油-3KG/包", "desc": "每包底部皆有黃褐色沉澱", "handle": "1.請產線和倉庫換料\n2.請小金魚(Elia)代為詢問廠商\n3.廠商回覆為瘦肉冷凍後沉澱，屬正常現象\n4.判斷正常，告知聖評和阿干日後可正常使用", "contact": "聖評\nElia\n阿干", "status": "已完成", "note": ""}, {"date": "2026/2/26", "loc": "驗收", "sku": "R29000012", "cat": "原料", "name": "凍乾南極蝦", "desc": "水分超標，水分10.91(標準<8%)", "handle": "1.重驗3次仍不合格\n2.詢問文歆表示，台灣的水分通常較高\n3.詢問雅玲此批後續用途，如為發給代工廠則可允收", "contact": "文歆\n雅玲", "status": "待觀察", "note": ""}, {"date": "2026/2/26", "loc": "驗收", "sku": "R19000007", "cat": "原料", "name": "凍乾赤蟲", "desc": "水分超標，驗3次合格", "handle": "1.重驗，標準<8%", "contact": "", "status": "待觀察", "note": ""}, {"date": "2026/3/9", "loc": "驗收", "sku": "H60000142", "cat": "半成品", "name": "小怪獸 怪貓魚糧V2512", "desc": "L值較低59.7(貓魚69.2~61.7)。3/6調降烤箱溫度從125到120，然隔天生產的烤箱溫度也調降120卻比較淺", "handle": "1.詢問聖評確認烤箱溫度\n2.詢問阿干星狀貓魚配方是否和貓魚不同\n3.確認有改配方，Lab和貓魚分開統計", "contact": "喬文\n聖評\n阿干", "status": "已完成", "note": ""}, {"date": "2026/3/10", "loc": "處理室", "sku": "", "cat": "半成品", "name": "雞牛鮮肉酥", "desc": "色差", "handle": "1.後面還會2次噴塗，看噴塗後的顏色\n2.用色差儀紀錄顏色。L:74.02, a:8.15, b:27.17\n3.噴塗後色差不嚴重", "contact": "聖評", "status": "已完成", "note": ""}, {"date": "2026/3/11", "loc": "包裝室", "sku": "H60000003", "cat": "半成品", "name": "未包護眼肉餅", "desc": "色差，2包較深1包較淺", "handle": "1.比對官網的照片，護眼顏色較深\n2.請產線分開包裝即可", "contact": "", "status": "已完成", "note": ""}, {"date": "2026/3/11", "loc": "包裝室", "sku": "H60000003", "cat": "半成品", "name": "未包護眼肉餅", "desc": "發現半透明片狀物，質地脆", "handle": "1.判斷應該非塑膠，用打火機燒發現是臭味，但非塑膠臭味\n2.只挑肉餅中中藥的部分，燒起來有同樣的臭味，應該是中藥材被壓碎擠出的汁液，集中凍乾後的樣子", "contact": "", "status": "已完成", "note": ""}, {"date": "2026/3/11", "loc": "包裝室", "sku": "H11000003", "cat": "半成品", "name": "半成品-凍乾雞肉鬆 Ji Song", "desc": "未填心比例稍微高，3~4顆/50g", "handle": "1.發現效期一樣但不同時間進貨和加工，但廠商效期都打同一批\n2.混不進去的顏色偏黃，質地粗一點點而已\n3.先確認過線性篩後，未填心比例不會太高，放行\n4.請詠庭在驗收的時候增加色差儀，以後可以用b*值比對", "contact": "", "status": "待觀察", "note": ""}, {"date": "2026/3/12", "loc": "包裝室", "sku": "R90000093", "cat": "原料", "name": "全魚全貓心型填圈糧CP42", "desc": "側邊封口處破包", "handle": "1.量測水分水活正常，但陰部確定破包時機，所以報廢", "contact": "", "status": "已完成", "note": ""}, {"date": "2026/3/13", "loc": "處理室", "sku": "", "cat": "半成品", "name": "貓雞糧", "desc": "緊急按鈕上面的塑膠掉落攪拌機", "handle": "1.發生當下一定要記得纏黃膠帶，後面分開烤也要記得外箱纏黃膠帶！\n2.170公斤，最好當下就報廢不要烤，才不會連正常品都不能用", "contact": "雅玲\n婉鈞\n阿澄", "status": "已完成", "note": ""}, {"date": "2026/3/20", "loc": "包裝室", "sku": "AF329", "cat": "半成品", "name": "倉鼠主食天然糧", "desc": "1.小量配料以手工混料\n2.飼料顆粒太小，易從倒料桶側邊溢出\n3.飼料易從八爪上方掉落\n4.封口不佳容易有皺摺(試量產未測試)\n5.花草包原料不足", "handle": "1.小量配料以手工混料→之後改用八角桶1分30秒\n2.飼料顆粒太小，易從倒料桶側邊溢出→前段調機時人工擋一下,後面條快輸送帶速度即可\n3.飼料易從八爪上方掉落→無解，但後來就好了，可能是前面底層料太少，碰到金屬直接彈飛\n4.封口不佳容易有皺摺→換廠商袋子", "contact": "文歆\n慧庭", "status": "待觀察", "note": ""}, {"date": "2026/3/23", "loc": "處理室", "sku": "", "cat": "原料", "name": "生食紅雞", "desc": "切片機的擋板螺絲掉入肉料中", "handle": "照片看起來5顆螺絲少2個，但只找到一個，又是在假日發現的，肉桶中心可能開始滋生細菌，總量足夠，故報廢", "contact": "聖評\n小杜", "status": "已完成", "note": ""}, {"date": "2026/3/23", "loc": "處理室", "sku": "", "cat": "原料", "name": "貓雞糧", "desc": "絞肉孔盤破裂，生產完後洗機台發現", "handle": "1.處理室肉糧烤完掉下來會先經過強力磁鐵，撿到許多金屬碎片\n2.當日生產的隔離貼黃膠帶\n3.和奕廷討論，先過磁鐵再過金檢(金檢極限1.5mm，X光機極限3mm)\n4.和雅玲討論，這批藥包之前處理室要沒有生產肉糧，才能用磁鐵", "contact": "聖評\n奕廷\n雅玲", "status": "待處理", "note": ""}, {"date": "2026/3/23", "loc": "包裝室", "sku": "", "cat": "半成品", "name": "墨魚鮮肉酥", "desc": "鋁袋和內袋都被抓破，抓痕似貓爪", "handle": "1.設貓咪陷阱，已抓到當事貓貓\n2.把線編倉牆壁的小洞用包才和膠帶暫時堵起來", "contact": "怡文\nPENNY\n小滋", "status": "已完成", "note": ""}, {"date": "2026/3/24", "loc": "驗收", "sku": "", "cat": "成品", "name": "搖搖鮮肉酥", "desc": "驗收發現雞牛(3)混到墨魚，占比約1/3包。當時做好的成品有6箱，加抽第一次發現有2箱各有一顆錯包，那兩箱又在各加抽3包，結果有一香的一包整個口味直接錯包，", "handle": "錯的那箱重工，結果發現只有我加抽的的那條錯包，其他都正常", "contact": "奕廷\n阿澄\n戴戴", "status": "已完成", "note": ""}, {"date": "2026/3/26", "loc": "包裝室", "sku": "", "cat": "原料", "name": "烘乾蘋果丁", "desc": "結塊。小杜說是因為還沒退冰完全就拆袋，水氣跑進去，讓蘋果丁表面沾黏結塊", "handle": "包裝前撥碎。開異常單但可正常包裝(記錄用)", "contact": "小滋", "status": "已完成", "note": ""}, {"date": "2026/3/26", "loc": "驗收", "sku": "", "cat": "原料", "name": "客製豬肉鬆", "desc": "封口不良。驗收發現9/7大貨封口不良，加抽14包，9包不合格，不良率65%。包裝室同步發現另外兩個效期封口不良。", "handle": "1.跟雅玲說，詢問廠內庫存是否充足\n2.驗水分水活正常，然廠商過去也多次發生封口不良，所以不是我們自己封口，而是退回去給廠商\n3.請小金魚協助，請廠商派車來運回\n4.下次要跟詠庭說退回3個效期，不然回貨他只驗到1個", "contact": "詠庭\n小滋\n雅玲\n周明", "status": "已完成", "note": ""}, {"date": "2026/3/27", "loc": "包裝室", "sku": "", "cat": "原料", "name": "貓雞美", "desc": "破包", "handle": "1.報廢\n2.回報給詠萱，剛好他們在跟美國凍乾談賠償", "contact": "小滋\n詠萱", "status": "已完成", "note": ""}, {"date": "2026/3/30", "loc": "驗收", "sku": "", "cat": "成品", "name": "犬肉鬆魚中內料包", "desc": "不足重0.5g", "handle": "1.多開一包留樣，ok允收", "contact": "喬文", "status": "待觀察", "note": ""}, {"date": "2026/4/1", "loc": "驗收", "sku": "", "cat": "成品", "name": "全晶球雞大內料包", "desc": "成品驗收發現內料包不足重0.3g\n", "handle": "1.去包裝室看未包的內料包，回來秤重，有落差但可接受\n2.請怡文校正包裝室的秤", "contact": "小滋\n怡文", "status": "已完成", "note": ""}, {"date": "2026/4/8", "loc": "包裝室", "sku": "", "cat": "半成品", "name": "星狀貓魚糧", "desc": "半成品留樣外包標籤打錯；正確料號為H60000260（H60000140為舊貓魚）", "handle": "更正標籤", "contact": "", "status": "待處理", "note": ""}, {"date": "2026/4/8", "loc": "處理室", "sku": "", "cat": "設備", "name": "烤箱輸送帶", "desc": "肉糧輸送帶破洞，掉出的料有點潮濕，因不分趟數都會經過，不能回填，每日約90公斤", "handle": "1.掉出料直接報廢，范熊已購買更換器材，停機更換\n2.確認范熊時間後，下次應該要立即請生管盡速調整生產時程，停機修繕", "contact": "聖評\n范熊", "status": "已完成", "note": ""}, {"date": "2026/4/14", "loc": "包裝室", "sku": "H11000045", "cat": "半成品", "name": "幼貓晶球", "desc": "晶球有酸味", "handle": "1.原本包裝室通知有色差，去現場發現有酸味\n2.3包都有，馬上請媛媛詢問有沒有其他庫存\n3.取樣給小杜聞並轉交他處理", "contact": "小滋\n小杜\n媛媛", "status": "已完成", "note": ""}, {"date": "2026/4/20", "loc": "包裝室", "sku": "", "cat": "半成品", "name": "狗雞糧", "desc": "混到狗牛魚糧，比例>2%", "handle": "1.請包裝室人工挑揀\n2.跟生產討論", "contact": "椀均\n雅玲\n阿橙", "status": "已完成", "note": ""}, {"date": "2026/4/24", "loc": "驗收", "sku": "", "cat": "", "name": "小犬飼糧", "desc": "包裝櫃時破包，水分與其他包相差3%", "handle": "1.報廢\n2.但因為第4批小犬飼料在做加速測試不確定會不會大量報廢\n3.先文字通知麥麥，後續確認是否整板報廢", "contact": "麥麥", "status": "待觀察", "note": ""}, {"date": "2026/4/28", "loc": "包裝室", "sku": "", "cat": "", "name": "澤龜飼料", "desc": "效期打印字機模糊", "handle": "1.完整字樣的就可以\n2.糊在一起、缺角、不清晰的不行，挑出後重打", "contact": "奕廷\nWolf", "status": "已完成", "note": ""}, {"date": "2026/4/30", "loc": "包裝室", "sku": "", "cat": "", "name": "澤龜飼料", "desc": "袋口太小湯匙不易包裝；效期打印模糊；顆粒大小標示與實際不符（標示2.8x3.5mm；實際3.5x3.7mm）；效期打印歪斜且有銀邊", "handle": "1.記錄給Wolf放行", "contact": "Wolf", "status": "已完成", "note": ""}, {"date": "2026/5/5", "loc": "驗收", "sku": "", "cat": "", "name": "貓兔美", "desc": "發現異物+封口不良", "handle": "1.剛好是品保取樣的兩包\n2.原本判定混入異物(類似雞丁)可以使用，結果搬運時發現破包落地，報廢\n3.和詠庭確認取樣時封口正常\n4.封口異常那包水分合格可以使用\n5.之後請詠庭取樣多留意封口情況", "contact": "小滋\n詠庭", "status": "已完成", "note": ""}, {"date": "2026/5/7", "loc": "驗收", "sku": "", "cat": "成品", "name": "凍乾玉米小", "desc": "外觀醜", "handle": "1.貨已拉去對點，沒有留玉米粒角料，也沒有庫存可以重新包\n2.和慧庭討論，可以出貨\n3.之後和文歆重新定義標準", "contact": "奕廷\n慧庭", "status": "待觀察", "note": ""}, {"date": "2026/5/8", "loc": "處理室", "sku": "", "cat": "半成品", "name": "貓雞糧", "desc": "洗機發現3.0mm孔盤裂，7.8mm孔盤剝落", "handle": "1.請聖評幫麻秤重心孔盤跟破掉孔盤重量 \n2.結果發現新孔盤反而輕50g\n3.用ai計算表面積換算體積，約0.25~0.30g\n4.請聖評幫我用強力磁鐵收集，約0.65g\n5.開異常單纏黃膠帶，正常過金檢機放行", "contact": "聖評\n周明", "status": "已完成", "note": ""}, {"date": "2026/5/13", "loc": "包裝室", "sku": "R29000012", "cat": "原料", "name": "南極蝦", "desc": "發現發霉，且有明顯霉味臭味", "handle": "1.平常是冷凍儲存，塑膠袋外有鋁袋，但都沒有密封，隔了1年才使用。\n2.生管協助拿同效期的庫存給我，拿去常溫確認，水分水活正常但是發霉味嚴重，全數報廢。", "contact": "小滋\n智元", "status": "已完成", "note": ""}, {"date": "2026/5/13", "loc": "包裝室", "sku": "", "cat": "包材", "name": "犬雞魚2.7KG貼紙", "desc": "貼紙本身裁切不良、貼標的時候都會有斷邊和毛邊", "handle": "請包裝室協助撕掉多餘的邊邊。", "contact": "小滋", "status": "已完成", "note": ""}, {"date": "2026/5/13", "loc": "包裝室", "sku": "", "cat": "半成品", "name": "填心雞", "desc": "未填心數量約18/50g", "handle": "1.雞肉鬆和卵磷脂比例皆變成原來的1.4倍\n2.攪拌時間增加為4分鐘\n3.過震動篩測試，ok後放行\n4.比例仍維持，如果雞肉鬆填不進去才用此比例", "contact": "小滋\n雅玲\n裕文", "status": "已完成", "note": ""}, {"date": "2026/5/14", "loc": "倉庫", "sku": "", "cat": "原料", "name": "犬飼料", "desc": "拉下來時發現破包，上面有貓腳印和貓抓痕", "handle": "1.看平常除存放在最高層的貨價，無法設貓籠\n2.報廢處理", "contact": "麥麥\n小杜\n怡文", "status": "已完成", "note": ""}, {"date": "2026/5/19", "loc": "處理室", "sku": "", "cat": "原料", "name": "填心雞", "desc": "破包，應該是貓咬破，有齒痕+抓痕", "handle": "1.去現場看破袋情況\n2.報廢處理，開異常單", "contact": "", "status": "已完成", "note": ""}, {"date": "2026/5/20", "loc": "包裝室", "sku": "R90000093", "cat": "成品", "name": "全魚全貓心型甜圈糧CP42", "desc": "1.廠商於2026/1/19更換孔盤，導致後面的飼料中心孔洞都會變比較大\n2.前幾日討論改用心配方(雞鬆和卵磷脂都增加成1.4倍)，攪拌4分鐘\n3.結果今天來的效期是1/19前生產的，中途改回舊製成\n4.留樣和部分飼料會比較粉", "handle": "1.成品效期：2027/7/4 A21(1.5kg)\n", "contact": "小滋", "status": "已完成", "note": ""}, {"date": "2026/6/1", "loc": "包裝室", "sku": "", "cat": "成品", "name": "小犬雞中", "desc": "效期未打印到週數", "handle": "確認無其他同樣效期的同產品，放行", "contact": "小滋", "status": "已完成", "note": ""}, {"date": "2026/6/18", "loc": "驗收", "sku": "", "cat": "原料", "name": "南極蝦、蠟蟲、黑水虻、蟋蟀、麵包蟲", "desc": "1.驗收發驗未如驗收規範上面有脫氧劑\n2.PM和研發告知是廠商未放脫氧劑", "handle": "1.開異常單確認數量\n2.告知阿明請他幫我黏黃色膠帶，轉HR60(HR35是要報廢的)\n3.跟研發和PM確認在小鋁袋外包裝袋內多放一包脫氧劑OK\n4.請詠萱去和廠商討論折讓和異常改善\n5.和椀均討論(1)最快包裝時間(2)放脫氧劑可行嗎", "contact": "Wolf\n文歆\n詠萱\n椀鈞", "status": "已完成", "note": ""}];
+
+loadData();
+</script>
+</body>
+</html>
