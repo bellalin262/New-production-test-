@@ -388,9 +388,9 @@ function addIngredient(){
           <option>直接混合</option><option>內料包</option><option>獨立分裝</option><option>其他</option>
         </select>
       </div>
-      <div class="field"><label>製造日期</label><input type="date" id="i${n}-mfg"></div>
-      <div class="field"><label>有效日期</label><input type="date" id="i${n}-exp"></div>
-      <div class="field"><label>保存期限</label><input type="text" id="i${n}-shelf" placeholder="例如：18個月"></div>
+      <div class="field"><label>製造日期</label><input type="date" id="i${n}-mfg" oninput="onIngDateChange(${n})"></div>
+      <div class="field"><label>有效日期<span class=\"optional\">可自動計算</span></label><input type="date" id="i${n}-exp" oninput="onIngDateChange(${n})"><div class="calc-date" id="i${n}-calc"></div></div>
+      <div class="field"><label>保存期限（月）</label><input type="number" id="i${n}-shelf" placeholder="例如：18" min="1" max="120" oninput="onIngDateChange(${n})"></div>
     </div>`;
   document.getElementById('ingContainer').appendChild(div);
 }
@@ -492,16 +492,6 @@ function runExpCheck(){
       infos.push(`【${ing.item}】有效至 ${dateToStr(ing.finalExp)}`);
     }
   });
-
-  // 實際打印效期 vs 各內容物
-  if(actualExpStr && ings.length){
-    const actualExp = new Date(actualExpStr);
-    ings.forEach(ing=>{
-      if(ing.finalExp && actualExp > ing.finalExp){
-        errors.push(`外包裝打印效期 ${actualExpStr} 超過【${ing.item}】有效日期 ${dateToStr(ing.finalExp)}`);
-      }
-    });
-  }
 
   // 效期距試產日期不足12個月警示
   if(actualExpStr && trialDate){
