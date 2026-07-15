@@ -104,6 +104,54 @@ html,body{background:var(--paper);color:var(--ink);font-family:var(--sans);min-h
   padding:10px 20px;border-radius:4px;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;}
 .toast.show{opacity:1;}
 
+
+
+/* 編輯模式 */
+.rec-edit-btn{font-family:var(--mono);font-size:11px;color:var(--teal);background:none;
+  border:1px solid var(--teal-mid);border-radius:3px;padding:3px 10px;cursor:pointer;}
+.rec-edit-btn:hover{background:var(--teal-light);}
+.rec-edit-panel{padding:14px 18px 18px;border-top:1px solid var(--line);background:var(--paper);}
+.edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;margin-bottom:12px;}
+.edit-grid.triple{grid-template-columns:1fr 1fr 1fr;}
+.edit-grid.single{grid-template-columns:1fr;}
+.edit-field{display:flex;flex-direction:column;gap:4px;}
+.edit-field label{font-size:11px;font-family:var(--mono);color:var(--ink-dim);letter-spacing:.5px;}
+.edit-field input,.edit-field select,.edit-field textarea{
+  font-family:var(--sans);font-size:13.5px;padding:8px 10px;
+  border:1.5px solid var(--line);border-radius:3px;background:#fff;color:var(--ink);}
+.edit-field input:focus,.edit-field select:focus,.edit-field textarea:focus{
+  outline:none;border-color:var(--teal);box-shadow:0 0 0 2px rgba(46,125,107,.1);}
+.edit-field textarea{resize:vertical;min-height:60px;line-height:1.5;}
+.edit-btn-row{display:flex;gap:8px;margin-top:14px;}
+.edit-save-btn{font-family:var(--sans);font-weight:600;font-size:13px;padding:8px 20px;
+  background:var(--teal);color:#fff;border:none;border-radius:3px;cursor:pointer;}
+.edit-save-btn:hover{background:#236155;}
+.edit-cancel-btn{font-family:var(--sans);font-size:13px;padding:8px 16px;
+  background:none;color:var(--ink-dim);border:1.5px solid var(--line);border-radius:3px;cursor:pointer;}
+.edit-cancel-btn:hover{background:var(--paper-dim);}
+.edit-section-label{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--teal);border-bottom:1px solid var(--teal-mid);padding-bottom:4px;margin:14px 0 10px;grid-column:1/-1;}
+@media(max-width:600px){
+  .edit-grid,.edit-grid.triple{grid-template-columns:1fr;}
+}
+
+/* 效期警示 */
+.exp-panel{border-radius:4px;overflow:hidden;margin-top:20px;}
+.exp-panel-head{padding:10px 16px;font-family:var(--mono);font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;display:flex;align-items:center;gap:8px;}
+.exp-panel-head.ok{background:#e3ebe0;color:#4a7a5e;}
+.exp-panel-head.warn{background:#f5edda;color:var(--amber);}
+.exp-panel-head.err{background:#f5e8e4;color:var(--rust);}
+.exp-panel-body{padding:12px 16px;background:#fff;border:1.5px solid var(--line);border-top:none;border-radius:0 0 4px 4px;}
+.exp-row{display:flex;align-items:baseline;gap:8px;padding:5px 0;border-top:1px solid var(--paper-dim);font-size:13px;}
+.exp-row:first-child{border-top:none;}
+.exp-row .ek{font-family:var(--mono);font-size:10px;color:var(--ink-dim);min-width:100px;}
+.exp-row .ev{flex:1;}
+.exp-row .etag{font-family:var(--mono);font-size:10px;padding:2px 7px;border-radius:10px;}
+.etag.ok{background:#e3ebe0;color:#4a7a5e;}
+.etag.warn{background:#f5edda;color:var(--amber);}
+.etag.err{background:#f5e8e4;color:var(--rust);}
+.calc-date{font-family:var(--mono);font-size:11px;color:var(--ink-dim);margin-top:3px;}
+
 /* 包材驗收比對結果 */
 .pkg-result{margin-top:8px;}
 .pkg-hit{background:#e4f0ec;border:1.5px solid var(--teal-mid);border-radius:3px;padding:10px 14px;}
@@ -186,6 +234,23 @@ html,body{background:var(--paper);color:var(--ink);font-family:var(--sans);min-h
       </select>
     </div>
   </div>
+
+  <div class="stitle">新品效期</div>
+  <div class="form-grid triple">
+    <div class="field">
+      <label>建議效期（自動推算）</label>
+      <input type="text" id="f-suggested-exp" readonly placeholder="填入內容物資料後自動顯示" style="background:var(--paper-dim);color:var(--ink-dim);">
+    </div>
+    <div class="field">
+      <label>實際打印效期</label>
+      <input type="date" id="f-actual-exp" oninput="runExpCheck()">
+    </div>
+    <div class="field">
+      <label>新品保存期限（月）</label>
+      <input type="number" id="f-product-shelf" placeholder="例如：12" min="1" max="120" oninput="runExpCheck()">
+    </div>
+  </div>
+  <div id="exp-panel"></div>
 
   <div class="stitle">效期打印</div>
   <div class="form-grid quad">
@@ -333,7 +398,153 @@ function addIngredient(){
 function removeIng(n){
   const el=document.getElementById('ing-block-'+n);
   if(el) el.remove();
+  runExpCheck();
 }
+// ---- 效期計算 ----
+function calcExpDate(mfgStr, shelfMonths){
+  if(!mfgStr || !shelfMonths) return null;
+  const d = new Date(mfgStr);
+  if(isNaN(d)) return null;
+  d.setMonth(d.getMonth() + shelfMonths);
+  d.setDate(d.getDate() - 1); // 廠內習慣：少一天
+  return d;
+}
+
+function dateToStr(d){
+  if(!d) return '';
+  return d.toISOString().split('T')[0];
+}
+
+function onIngDateChange(n){
+  const mfg = document.getElementById('i'+n+'-mfg')?.value;
+  const shelf = parseInt(document.getElementById('i'+n+'-shelf')?.value)||0;
+  const expInput = document.getElementById('i'+n+'-exp');
+  const calcEl = document.getElementById('i'+n+'-calc');
+  if(mfg && shelf){
+    const calc = calcExpDate(mfg, shelf);
+    const calcStr = dateToStr(calc);
+    if(calcEl) calcEl.textContent = '自動計算：' + calcStr;
+    // 若使用者有填有效日期，驗證是否一致
+    if(expInput && expInput.value && expInput.value !== calcStr){
+      calcEl.style.color = 'var(--rust)';
+      calcEl.textContent = '⚠ 自動計算：' + calcStr + '　與填入日期不符';
+    } else if(calcEl){
+      calcEl.style.color = 'var(--ink-dim)';
+    }
+  } else {
+    if(calcEl) calcEl.textContent = '';
+  }
+  runExpCheck();
+}
+
+function getIngExpDates(){
+  const results = [];
+  document.querySelectorAll('[id^="ing-block-"]').forEach(block=>{
+    const n = block.id.replace('ing-block-','');
+    const item = document.getElementById('i'+n+'-item')?.value?.trim()||'';
+    if(!item) return;
+    const mfg = document.getElementById('i'+n+'-mfg')?.value;
+    const shelf = parseInt(document.getElementById('i'+n+'-shelf')?.value)||0;
+    const expInput = document.getElementById('i'+n+'-exp')?.value;
+    // 優先用 製造日期+保存期限 計算
+    const calcExp = calcExpDate(mfg, shelf);
+    const finalExp = calcExp || (expInput ? new Date(expInput) : null);
+    results.push({ item, mfg, shelf, calcExp, inputExp: expInput?new Date(expInput):null, finalExp });
+  });
+  return results;
+}
+
+function runExpCheck(){
+  const panel = document.getElementById('exp-panel');
+  const trialDate = document.getElementById('f-date')?.value;
+  const actualExpStr = document.getElementById('f-actual-exp')?.value;
+  const productShelf = parseInt(document.getElementById('f-product-shelf')?.value)||0;
+  const ings = getIngExpDates();
+
+  // 更新建議效期
+  const validExps = ings.map(i=>i.finalExp).filter(Boolean);
+  let suggestedExp = null;
+  if(validExps.length){
+    suggestedExp = new Date(Math.min(...validExps.map(d=>d.getTime())));
+    document.getElementById('f-suggested-exp').value = dateToStr(suggestedExp);
+  } else {
+    document.getElementById('f-suggested-exp').value = '';
+  }
+
+  if(!ings.length && !actualExpStr) { panel.innerHTML=''; return; }
+
+  const warnings = [];
+  const errors = [];
+  const infos = [];
+
+  // 各內容物效期驗證
+  ings.forEach(ing=>{
+    if(ing.mfg && ing.shelf && ing.inputExp){
+      const calcStr = dateToStr(ing.calcExp);
+      const inputStr = dateToStr(ing.inputExp);
+      if(calcStr !== inputStr){
+        errors.push(`【${ing.item}】填入有效日期 ${inputStr} 與計算結果 ${calcStr} 不符`);
+      } else {
+        infos.push(`【${ing.item}】有效日期 ${inputStr} 驗證正確`);
+      }
+    }
+    if(ing.finalExp){
+      infos.push(`【${ing.item}】有效至 ${dateToStr(ing.finalExp)}`);
+    }
+  });
+
+  // 實際打印效期 vs 各內容物
+  if(actualExpStr && ings.length){
+    const actualExp = new Date(actualExpStr);
+    ings.forEach(ing=>{
+      if(ing.finalExp && actualExp > ing.finalExp){
+        errors.push(`外包裝打印效期 ${actualExpStr} 超過【${ing.item}】有效日期 ${dateToStr(ing.finalExp)}`);
+      }
+    });
+  }
+
+  // 效期距試產日期不足12個月警示
+  if(actualExpStr && trialDate){
+    const actual = new Date(actualExpStr);
+    const trial = new Date(trialDate);
+    const diffMonths = (actual.getFullYear()-trial.getFullYear())*12 + (actual.getMonth()-trial.getMonth());
+    if(diffMonths < 12){
+      warnings.push(`外包裝打印效期距試產日期僅 ${diffMonths} 個月，未滿12個月`);
+    }
+  }
+
+  // 建議效期 vs 實際打印
+  if(actualExpStr && suggestedExp){
+    const actual = new Date(actualExpStr);
+    if(actual > suggestedExp){
+      errors.push(`實際打印效期 ${actualExpStr} 超過建議效期 ${dateToStr(suggestedExp)}`);
+    }
+  }
+
+  const hasErr = errors.length > 0;
+  const hasWarn = warnings.length > 0;
+  const headClass = hasErr ? 'err' : hasWarn ? 'warn' : 'ok';
+  const headIcon = hasErr ? '⚠ 效期異常' : hasWarn ? '⚡ 效期警示' : '✓ 效期正常';
+
+  let html = `<div class="exp-panel">
+    <div class="exp-panel-head ${headClass}">${headIcon}</div>
+    <div class="exp-panel-body">`;
+
+  errors.forEach(e=>{
+    html+=`<div class="exp-row"><span class="etag err">異常</span><span class="ev">${esc(e)}</span></div>`;
+  });
+  warnings.forEach(w=>{
+    html+=`<div class="exp-row"><span class="etag warn">警示</span><span class="ev">${esc(w)}</span></div>`;
+  });
+  infos.forEach(i=>{
+    html+=`<div class="exp-row"><span class="etag ok">正常</span><span class="ev">${esc(i)}</span></div>`;
+  });
+
+  html+='</div></div>';
+  panel.innerHTML = html;
+}
+
+
 
 // ---- Collect form ----
 function collectIngredients(){
@@ -350,7 +561,7 @@ function collectIngredients(){
       包裝形式:document.getElementById('i'+n+'-pack')?.value||'',
       製造日期:document.getElementById('i'+n+'-mfg')?.value||'',
       有效日期:document.getElementById('i'+n+'-exp')?.value||'',
-      保存期限:document.getElementById('i'+n+'-shelf')?.value||''
+      保存期限:parseInt(document.getElementById('i'+n+'-shelf')?.value)||0
     });
   });
   return result;
@@ -386,7 +597,10 @@ function collectForm(){
     '處理方式':document.getElementById('f-handling').value,
     '研發負責人':document.getElementById('f-rd').value,
     'PM':document.getElementById('f-pm').value,
-    '狀態':document.getElementById('f-status').value
+    '狀態':document.getElementById('f-status').value,
+    '建議效期':document.getElementById('f-suggested-exp').value,
+    '實際打印效期':document.getElementById('f-actual-exp').value,
+    '新品保存期限':document.getElementById('f-product-shelf').value
   };
 }
 
@@ -464,7 +678,7 @@ function statusBadge(s){
 }
 
 function renderRecords(){
-  const el=document.getElementById('recordsList');
+  const el = document.getElementById('recordsList');
   if(!RECORDS.length){
     el.innerHTML=`<div class="empty-state"><span class="glyph">📋</span><p>尚無試產紀錄</p></div>`;
     return;
@@ -476,16 +690,25 @@ function renderRecords(){
       if(item) ings.push([item, r[`內容物${i}_料號`]?`(${r[`內容物${i}_料號`]})`:'', r[`內容物${i}_型態`], r[`內容物${i}_占比`]].filter(Boolean).join(' '));
     }
     const people=[r['研發負責人']?'研發：'+r['研發負責人']:'', r['PM']?'PM：'+r['PM']:''].filter(Boolean).join('　');
-    return `<div class="rec-card">
+    const ridx = r._rowIndex;
+    const packOpts = ['單一袋裝','盒裝','袋裝+外盒','散裝','其他'].map(o=>`<option ${r['外包裝形式']===o?'selected':''}>${o}</option>`).join('');
+    const sideOpts = ['正面','背面','側面','底部'].map(o=>`<option ${r['效期_印刷位置']===o?'selected':''}>${o}</option>`).join('');
+    const methodOpts = ['碳帶','雷射','噴墨','熱燙','其他'].map(o=>`<option ${r['效期_印刷方式']===o?'selected':''}>${o}</option>`).join('');
+    const statusOpts = ['進行中','已完成','待覆盤'].map(o=>`<option ${r['狀態']===o?'selected':''}>${o}</option>`).join('');
+    return `<div class="rec-card" id="rec-card-${ridx}">
       <div class="rec-head">
         <div>
           <div class="rec-name">${esc(r['品名']||'未填品名')}</div>
           ${r['料號']?`<div class="rec-sku">${esc(r['料號'])}</div>`:''}
           ${ings.length?`<div style="font-size:12.5px;color:var(--ink-dim);margin-top:4px;">${ings.map(esc).join('<br>')}</div>`:''}
         </div>
-        <div class="rec-meta">${esc(r['試產日期']||'')}<br>${esc(r['生產機台']||'')}<br>${statusBadge(r['狀態'])}</div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+          <div class="rec-meta">${esc(r['試產日期']||'')}<br>${esc(r['生產機台']||'')}</div>
+          ${statusBadge(r['狀態'])}
+          <button class="rec-edit-btn" onclick="toggleEdit(${ridx})">✏ 編輯</button>
+        </div>
       </div>
-      <div class="rec-body">
+      <div class="rec-body" id="rec-view-${ridx}">
         ${r['外包裝形式']?`<div class="rec-row"><span class="k">外包裝</span><span class="v">${esc(r['外包裝形式'])}</span></div>`:''}
         ${(r['效期_印刷位置']||r['效期_印刷方式'])?`<div class="rec-row"><span class="k">效期打印</span><span class="v">${[r['效期_印刷位置'],r['效期_位置描述'],r['效期_印刷方式'],r['效期_印刷機台']].filter(Boolean).map(esc).join('・')}</span></div>`:''}
         ${r['調整內容']?`<div class="rec-row"><span class="k">調整內容</span><span class="v">${esc(r['調整內容'])}</span></div>`:''}
@@ -493,8 +716,80 @@ function renderRecords(){
         ${r['處理方式']?`<div class="rec-row"><span class="k">處理方式</span><span class="v">${esc(r['處理方式'])}</span></div>`:''}
         ${people?`<div class="rec-row"><span class="k">負責人</span><span class="v">${esc(people)}</span></div>`:''}
       </div>
+      <div class="rec-edit-panel" id="rec-edit-${ridx}" style="display:none;">
+        <div class="edit-grid triple">
+          <div class="edit-section-label">基本資訊</div>
+          <div class="edit-field"><label>試產日期</label><input type="date" id="e${ridx}-date" value="${esc(r['試產日期']||'')}"></div>
+          <div class="edit-field"><label>品名</label><input type="text" id="e${ridx}-name" value="${esc(r['品名']||'')}"></div>
+          <div class="edit-field"><label>料號</label><input type="text" id="e${ridx}-sku" value="${esc(r['料號']||'')}"></div>
+          <div class="edit-field"><label>生產機台</label><input type="text" id="e${ridx}-machine" value="${esc(r['生產機台']||'')}"></div>
+          <div class="edit-field"><label>外包裝形式</label><select id="e${ridx}-outpack"><option value=""></option>${packOpts}</select></div>
+          <div class="edit-field"><label>狀態</label><select id="e${ridx}-status"><option value=""></option>${statusOpts}</select></div>
+        </div>
+        <div class="edit-grid triple">
+          <div class="edit-section-label">效期打印</div>
+          <div class="edit-field"><label>印刷位置</label><select id="e${ridx}-printside"><option value=""></option>${sideOpts}</select></div>
+          <div class="edit-field"><label>位置描述</label><input type="text" id="e${ridx}-printdesc" value="${esc(r['效期_位置描述']||'')}"></div>
+          <div class="edit-field"><label>印刷方式</label><select id="e${ridx}-printmethod"><option value=""></option>${methodOpts}</select></div>
+          <div class="edit-field"><label>印刷機台</label><input type="text" id="e${ridx}-printmachine" value="${esc(r['效期_印刷機台']||'')}"></div>
+        </div>
+        <div class="edit-grid single">
+          <div class="edit-section-label">試產記錄</div>
+          <div class="edit-field"><label>調整內容</label><textarea id="e${ridx}-adjust">${esc(r['調整內容']||'')}</textarea></div>
+          <div class="edit-field"><label>遇到的問題／觀察</label><textarea id="e${ridx}-issues">${esc(r['遇到的問題']||'')}</textarea></div>
+          <div class="edit-field"><label>處理方式</label><textarea id="e${ridx}-handling">${esc(r['處理方式']||'')}</textarea></div>
+        </div>
+        <div class="edit-grid triple">
+          <div class="edit-field"><label>研發負責人</label><input type="text" id="e${ridx}-rd" value="${esc(r['研發負責人']||'')}"></div>
+          <div class="edit-field"><label>PM</label><input type="text" id="e${ridx}-pm" value="${esc(r['PM']||'')}"></div>
+        </div>
+        <div class="edit-btn-row">
+          <button class="edit-save-btn" onclick="saveEdit(${ridx})">儲存</button>
+          <button class="edit-cancel-btn" onclick="toggleEdit(${ridx})">取消</button>
+        </div>
+      </div>
     </div>`;
   }).join('');
+}
+
+function toggleEdit(ridx){
+  const view = document.getElementById('rec-view-'+ridx);
+  const edit = document.getElementById('rec-edit-'+ridx);
+  const isOpen = edit.style.display !== 'none';
+  edit.style.display = isOpen ? 'none' : 'block';
+  view.style.display = isOpen ? 'block' : 'none';
+}
+
+async function saveEdit(ridx){
+  const rec = RECORDS.find(r=>r._rowIndex===ridx);
+  if(!rec){ showToast('找不到紀錄'); return; }
+  const updated = { ...rec,
+    '試產日期': document.getElementById('e'+ridx+'-date')?.value||'',
+    '品名': document.getElementById('e'+ridx+'-name')?.value||'',
+    '料號': document.getElementById('e'+ridx+'-sku')?.value||'',
+    '生產機台': document.getElementById('e'+ridx+'-machine')?.value||'',
+    '外包裝形式': document.getElementById('e'+ridx+'-outpack')?.value||'',
+    '狀態': document.getElementById('e'+ridx+'-status')?.value||'',
+    '效期_印刷位置': document.getElementById('e'+ridx+'-printside')?.value||'',
+    '效期_位置描述': document.getElementById('e'+ridx+'-printdesc')?.value||'',
+    '效期_印刷方式': document.getElementById('e'+ridx+'-printmethod')?.value||'',
+    '效期_印刷機台': document.getElementById('e'+ridx+'-printmachine')?.value||'',
+    '調整內容': document.getElementById('e'+ridx+'-adjust')?.value||'',
+    '遇到的問題': document.getElementById('e'+ridx+'-issues')?.value||'',
+    '處理方式': document.getElementById('e'+ridx+'-handling')?.value||'',
+    '研發負責人': document.getElementById('e'+ridx+'-rd')?.value||'',
+    'PM': document.getElementById('e'+ridx+'-pm')?.value||''
+  };
+  delete updated._rowIndex;
+  try{
+    const res = await fetch(APPS_SCRIPT_URL, {method:'POST', body:JSON.stringify({action:'updateTrial', rowIndex:ridx, data:updated})});
+    const json = await res.json();
+    if(json.success){
+      showToast('✓ 已更新到 Google Sheet');
+      await loadRecords();
+      renderRecords();
+    } else { showToast('儲存失敗：'+(json.error||'未知錯誤')); }
+  }catch(e){ showToast('儲存失敗，請確認網路連線'); }
 }
 
 // ---- Save ----
@@ -519,7 +814,9 @@ async function saveRecord(){
 function clearForm(){
   ['f-date','f-name','f-sku','f-machine','f-outpack','f-printside','f-printdesc',
    'f-printmachine','f-printmethod','f-adjust','f-issues','f-handling','f-rd','f-pm','f-status']
+  .concat(['f-suggested-exp','f-actual-exp','f-product-shelf'])
   .forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('exp-panel').innerHTML='';
   document.getElementById('ingContainer').innerHTML='';
   ingCount=0;
   addIngredient();
