@@ -2,832 +2,1155 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>新品試產系統</title>
+<title>包材檢驗查詢系統</title>
 <style>
-:root{
-  --ink:#1a1814;--paper:#f6f3ed;--paper-dim:#ede8df;--paper-mid:#e4ddd0;
-  --line:#cfc8b8;--teal:#2e7d6b;--teal-light:#e4f0ec;--teal-mid:#c2ddd6;
-  --amber:#b07d2a;--amber-light:#f5edda;--rust:#a84030;--ink-dim:#6b6256;
-  --sans:'Noto Sans TC','PingFang TC','Microsoft JhengHei',sans-serif;
-  --serif:'Noto Serif TC','Songti TC',serif;
-  --mono:'JetBrains Mono','SF Mono',Consolas,monospace;
-}
-*{box-sizing:border-box;margin:0;padding:0;}
-html,body{background:var(--paper);color:var(--ink);font-family:var(--sans);min-height:100vh;}
+  @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
-.header{background:var(--teal);color:#fff;padding:24px 28px 20px;}
-.header-inner{max-width:880px;margin:0 auto;}
-.header h1{font-family:var(--serif);font-size:26px;font-weight:700;letter-spacing:.5px;margin-bottom:4px;}
-.header-sub{font-family:var(--mono);font-size:11px;letter-spacing:1.5px;opacity:.75;text-transform:uppercase;}
-.header-meta{margin-top:12px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;}
-.hbadge{font-family:var(--mono);font-size:11px;background:rgba(255,255,255,.15);padding:3px 10px;border-radius:12px;}
-.dot{width:6px;height:6px;border-radius:50%;background:#7dd4c0;display:inline-block;margin-right:5px;}
-.dot.busy{background:#f5c842;animation:pulse 1s infinite;}
-.dot.off{background:#e07060;}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+  :root{
+    --bg:#F7F1E6;
+    --panel:#FFFDF9;
+    --panel-alt:#F1E7D8;
+    --ink:#4A3B2E;
+    --ink-soft:#8E7B67;
+    --accent:#B98A5E;
+    --accent-deep:#8B5E3C;
+    --line:#E8DCC8;
+    --line-soft:#F0E7D9;
+    --contact:#C97A3E;
+    --contact-bg:#F8E9D6;
+    --warn:#B5573A;
+    --warn-bg:#F6E3DA;
+    --ok:#748A5B;
+    --ok-bg:#EBF0E3;
+    --radius:14px;
+    --radius-sm:9px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Noto Sans TC',sans-serif;
+    font-size:15px;
+    line-height:1.7;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:36px 22px 90px;}
 
-.tabs{background:#fff;border-bottom:2px solid var(--line);position:sticky;top:0;z-index:10;}
-.tabs-inner{max-width:880px;margin:0 auto;display:flex;}
-.tab{font-family:var(--sans);font-size:13.5px;font-weight:500;padding:14px 22px;cursor:pointer;
-  border-bottom:3px solid transparent;color:var(--ink-dim);background:none;
-  border-top:none;border-left:none;border-right:none;}
-.tab:hover{color:var(--teal);}
-.tab.active{color:var(--teal);border-bottom-color:var(--teal);font-weight:600;}
+  header.masthead{margin-bottom:22px;}
+  header.masthead h1{
+    font-family:'Quicksand',sans-serif;
+    font-weight:700;
+    font-size:26px;
+    color:var(--accent-deep);
+    margin:0 0 4px 0;
+    letter-spacing:.02em;
+  }
+  header.masthead p{margin:0;color:var(--ink-soft);font-size:13.5px;}
 
-.wrap{max-width:880px;margin:0 auto;padding:32px 24px 80px;}
+  details.info-toggle{
+    margin-bottom:22px;
+    background:var(--panel-alt);
+    border-radius:var(--radius-sm);
+    padding:2px 16px;
+  }
+  details.info-toggle summary{
+    cursor:pointer;
+    padding:10px 0;
+    font-size:13px;
+    color:var(--accent-deep);
+    font-weight:500;
+    list-style:none;
+  }
+  details.info-toggle summary::-webkit-details-marker{display:none;}
+  details.info-toggle summary::before{content:"◇ ";}
+  details.info-toggle p{font-size:13px;color:var(--ink-soft);padding-bottom:14px;margin:0;}
 
-.stitle{font-family:var(--mono);font-size:10.5px;letter-spacing:2px;text-transform:uppercase;
-  color:var(--teal);border-bottom:1px solid var(--teal-mid);padding-bottom:7px;margin:28px 0 16px;}
-.stitle:first-child{margin-top:0;}
+  .tabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+  .tab-btn{
+    font-family:'Quicksand',sans-serif;
+    font-weight:600;
+    font-size:14px;
+    padding:9px 20px;
+    background:var(--panel-alt);
+    border:none;
+    border-radius:999px;
+    cursor:pointer;
+    color:var(--ink-soft);
+    transition:.15s;
+  }
+  .tab-btn.active{background:var(--accent);color:#fff;}
+  .tab-btn:hover:not(.active){background:var(--line);}
 
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 20px;}
-.form-grid.triple{grid-template-columns:1fr 1fr 1fr;}
-.form-grid.quad{grid-template-columns:1fr 1fr 1fr 1fr;}
-.form-grid.single{grid-template-columns:1fr;}
+  .panel{
+    background:var(--panel);
+    border-radius:var(--radius);
+    padding:26px 28px;
+    box-shadow:0 2px 10px rgba(139,94,60,0.06);
+  }
+  .hidden{display:none;}
 
-.field{display:flex;flex-direction:column;gap:5px;}
-.field label{font-size:12px;font-family:var(--mono);color:var(--ink-dim);letter-spacing:.5px;}
-.field input,.field select,.field textarea{
-  font-family:var(--sans);font-size:14.5px;padding:10px 12px;
-  border:1.5px solid var(--line);border-radius:3px;background:#fff;color:var(--ink);}
-.field input:focus,.field select:focus,.field textarea:focus{
-  outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(46,125,107,.1);}
-.field textarea{resize:vertical;min-height:80px;line-height:1.6;}
-.optional{color:#aaa;font-size:10px;margin-left:4px;}
+  .field-label{
+    font-family:'Quicksand',sans-serif;
+    font-weight:600;
+    font-size:13.5px;
+    color:var(--accent-deep);
+    display:block;
+    margin-bottom:8px;
+  }
+  select, input[type="text"]{
+    width:100%;
+    font-family:'Noto Sans TC',sans-serif;
+    font-size:14px;
+    padding:10px 14px;
+    border:1px solid var(--line);
+    border-radius:var(--radius-sm);
+    background:var(--panel);
+    color:var(--ink);
+    margin-bottom:16px;
+  }
+  select:focus, input[type="text"]:focus{outline:2px solid var(--accent);outline-offset:1px;}
 
-.ing-block{border:1px solid var(--line);border-radius:4px;padding:18px 20px;background:#fff;margin-bottom:14px;}
-.ing-label{font-family:var(--serif);font-size:14px;font-weight:600;color:var(--teal);
-  margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;}
-.ing-label-left{display:flex;align-items:center;gap:8px;}
-.ing-num{width:22px;height:22px;border-radius:50%;background:var(--teal);color:#fff;
-  font-family:var(--mono);font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.remove-ing{font-family:var(--mono);font-size:11px;color:var(--rust);background:none;
-  border:1px solid var(--rust);border-radius:3px;padding:2px 8px;cursor:pointer;}
-.remove-ing:hover{background:var(--rust);color:#fff;}
-.add-ing-btn{font-family:var(--mono);font-size:12px;color:var(--teal);background:var(--teal-light);
-  border:1.5px dashed var(--teal-mid);border-radius:4px;padding:10px 16px;cursor:pointer;
-  width:100%;text-align:center;margin-bottom:14px;display:block;}
-.add-ing-btn:hover{background:var(--teal-mid);}
+  .scope-note{font-size:12.5px;color:var(--ink-soft);margin:-6px 0 16px 0;}
 
-.btn{font-family:var(--sans);font-weight:600;font-size:14px;padding:11px 26px;border-radius:3px;cursor:pointer;border:none;}
-.btn-primary{background:var(--teal);color:#fff;}
-.btn-primary:hover{background:#236155;}
-.btn-primary:disabled{background:#aaa;cursor:not-allowed;}
-.btn-secondary{background:var(--paper-dim);color:var(--ink);border:1.5px solid var(--line);}
-.btn-secondary:hover{background:var(--paper-mid);}
-.btn-row{display:flex;gap:10px;margin-top:24px;flex-wrap:wrap;}
+  .parsed-chips{display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 20px 0;min-height:18px;}
+  .chip{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    padding:6px 12px;
+    border-radius:999px;
+    background:var(--panel-alt);
+    color:var(--accent-deep);
+    border:1px solid var(--line);
+  }
+  .chip.contact{background:var(--contact-bg);color:var(--contact);border-color:var(--contact);font-weight:600;}
+  .chip.unknown{background:var(--warn-bg);color:var(--warn);border-color:var(--warn);}
+  .arrow{color:var(--ink-soft);margin:0 2px;}
 
-/* Records tab */
-.rec-card{background:#fff;border:1px solid var(--line);border-radius:4px;margin-bottom:14px;overflow:hidden;}
-.rec-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;
-  padding:14px 18px 10px;border-bottom:1px dashed var(--line);}
-.rec-name{font-family:var(--serif);font-size:17px;font-weight:600;}
-.rec-sku{font-family:var(--mono);font-size:11px;color:var(--ink-dim);margin-top:2px;}
-.rec-meta{font-family:var(--mono);font-size:11px;color:var(--ink-dim);text-align:right;white-space:nowrap;}
-.rec-body{padding:12px 18px 16px;}
-.rec-row{display:flex;gap:8px;margin-bottom:8px;font-size:13px;line-height:1.6;}
-.rec-row .k{font-family:var(--mono);font-size:10px;color:#9a9082;min-width:72px;padding-top:2px;text-transform:uppercase;letter-spacing:.5px;}
-.rec-row .v{flex:1;white-space:pre-line;}
-.status-badge{font-family:var(--mono);font-size:10px;padding:2px 8px;border-radius:10px;display:inline-block;}
-.status-badge.done{background:#e3ebe0;color:#4a7a5e;}
-.status-badge.wip{background:var(--amber-light);color:var(--amber);}
-.status-badge.review{background:#e8e0f0;color:#6b5a9b;}
-.status-badge.none{background:var(--paper-dim);color:#9a9082;}
+  .query-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px;}
+  @media (max-width:760px){.query-grid{grid-template-columns:1fr;}}
 
-.empty-state{text-align:center;padding:60px 20px;color:#a89f8f;}
-.empty-state .glyph{font-size:30px;margin-bottom:10px;display:block;}
-.empty-state p{font-family:var(--mono);font-size:12px;letter-spacing:.5px;}
+  .checklist{
+    border:1px solid var(--line-soft);
+    background:var(--panel-alt);
+    border-radius:var(--radius-sm);
+    padding:6px 14px;
+    margin-bottom:16px;
+  }
+  .checklist label{display:flex;align-items:flex-start;gap:9px;padding:8px 0;cursor:pointer;font-size:13.5px;}
+  .checklist label span.hint{color:var(--ink-soft);font-size:11.5px;display:block;}
+  .checklist input[type=checkbox]{margin-top:3px;accent-color:var(--accent);}
+  .toggle-row{display:flex;align-items:center;gap:10px;margin-bottom:18px;font-size:13.5px;color:var(--ink-soft);}
+  .toggle-row input{accent-color:var(--contact);}
 
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
-  background:var(--ink);color:#fff;font-family:var(--mono);font-size:12px;
-  padding:10px 20px;border-radius:4px;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;}
-.toast.show{opacity:1;}
+  .out-of-scope{
+    background:var(--warn-bg);
+    border-radius:var(--radius-sm);
+    padding:16px 18px;
+    color:var(--warn);
+    font-size:13.5px;
+  }
 
+  .result-head{display:flex;justify-content:space-between;align-items:baseline;margin:26px 0 12px 0;}
+  .result-head h2{font-family:'Quicksand',sans-serif;font-size:15.5px;margin:0;color:var(--accent-deep);font-weight:600;}
+  .result-head .count{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--ink-soft);}
 
+  .layer-card{
+    border:1px solid var(--line-soft);
+    border-radius:var(--radius-sm);
+    margin-bottom:12px;
+    overflow:hidden;
+    background:var(--panel);
+  }
+  .layer-card.contact{border-color:var(--contact);}
+  .layer-card summary{
+    cursor:pointer;
+    padding:13px 16px;
+    list-style:none;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    font-size:14px;
+    font-weight:500;
+    background:var(--panel-alt);
+  }
+  .layer-card summary::-webkit-details-marker{display:none;}
+  .layer-card summary::before{content:"▸ ";color:var(--ink-soft);}
+  .layer-card[open] summary::before{content:"▾ ";}
+  .layer-card.contact summary{background:var(--contact-bg);}
+  .layer-card .body{padding:14px 18px 6px;}
 
-/* 編輯模式 */
-.rec-edit-btn{font-family:var(--mono);font-size:11px;color:var(--teal);background:none;
-  border:1px solid var(--teal-mid);border-radius:3px;padding:3px 10px;cursor:pointer;}
-.rec-edit-btn:hover{background:var(--teal-light);}
-.rec-edit-panel{padding:14px 18px 18px;border-top:1px solid var(--line);background:var(--paper);}
-.edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;margin-bottom:12px;}
-.edit-grid.triple{grid-template-columns:1fr 1fr 1fr;}
-.edit-grid.single{grid-template-columns:1fr;}
-.edit-field{display:flex;flex-direction:column;gap:4px;}
-.edit-field label{font-size:11px;font-family:var(--mono);color:var(--ink-dim);letter-spacing:.5px;}
-.edit-field input,.edit-field select,.edit-field textarea{
-  font-family:var(--sans);font-size:13.5px;padding:8px 10px;
-  border:1.5px solid var(--line);border-radius:3px;background:#fff;color:var(--ink);}
-.edit-field input:focus,.edit-field select:focus,.edit-field textarea:focus{
-  outline:none;border-color:var(--teal);box-shadow:0 0 0 2px rgba(46,125,107,.1);}
-.edit-field textarea{resize:vertical;min-height:60px;line-height:1.5;}
-.edit-btn-row{display:flex;gap:8px;margin-top:14px;}
-.edit-save-btn{font-family:var(--sans);font-weight:600;font-size:13px;padding:8px 20px;
-  background:var(--teal);color:#fff;border:none;border-radius:3px;cursor:pointer;}
-.edit-save-btn:hover{background:#236155;}
-.edit-cancel-btn{font-family:var(--sans);font-size:13px;padding:8px 16px;
-  background:none;color:var(--ink-dim);border:1.5px solid var(--line);border-radius:3px;cursor:pointer;}
-.edit-cancel-btn:hover{background:var(--paper-dim);}
-.edit-section-label{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;
-  color:var(--teal);border-bottom:1px solid var(--teal-mid);padding-bottom:4px;margin:14px 0 10px;grid-column:1/-1;}
-@media(max-width:600px){
-  .edit-grid,.edit-grid.triple{grid-template-columns:1fr;}
-}
+  .role-badge{font-family:'JetBrains Mono',monospace;font-size:10.5px;padding:3px 9px;border-radius:999px;}
+  .role-badge.contact{background:var(--contact);color:#fff;}
+  .role-badge.structural{background:var(--line);color:var(--ink-soft);}
 
-/* 效期警示 */
-.exp-panel{border-radius:4px;overflow:hidden;margin-top:20px;}
-.exp-panel-head{padding:10px 16px;font-family:var(--mono);font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;display:flex;align-items:center;gap:8px;}
-.exp-panel-head.ok{background:#e3ebe0;color:#4a7a5e;}
-.exp-panel-head.warn{background:#f5edda;color:var(--amber);}
-.exp-panel-head.err{background:#f5e8e4;color:var(--rust);}
-.exp-panel-body{padding:12px 16px;background:#fff;border:1.5px solid var(--line);border-top:none;border-radius:0 0 4px 4px;}
-.exp-row{display:flex;align-items:baseline;gap:8px;padding:5px 0;border-top:1px solid var(--paper-dim);font-size:13px;}
-.exp-row:first-child{border-top:none;}
-.exp-row .ek{font-family:var(--mono);font-size:10px;color:var(--ink-dim);min-width:100px;}
-.exp-row .ev{flex:1;}
-.exp-row .etag{font-family:var(--mono);font-size:10px;padding:2px 7px;border-radius:10px;}
-.etag.ok{background:#e3ebe0;color:#4a7a5e;}
-.etag.warn{background:#f5edda;color:var(--amber);}
-.etag.err{background:#f5e8e4;color:var(--rust);}
-.calc-date{font-family:var(--mono);font-size:11px;color:var(--ink-dim);margin-top:3px;}
+  table.result{width:100%;border-collapse:collapse;margin-bottom:16px;font-size:13px;}
+  table.result th{
+    text-align:left;font-family:'Quicksand',sans-serif;font-weight:600;
+    font-size:11px;color:var(--ink-soft);
+    border-bottom:1px solid var(--line);padding:7px 8px;
+  }
+  table.result td{padding:8px 8px;border-bottom:1px solid var(--line-soft);vertical-align:top;}
+  .limit-val{font-family:'JetBrains Mono',monospace;font-weight:600;color:var(--accent-deep);}
+  .simulant-tag{
+    display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10.5px;
+    padding:3px 8px;border-radius:999px;background:var(--ok-bg);color:var(--ok);margin-right:4px;
+  }
+  .note-line{font-size:12.5px;color:var(--ink-soft);background:var(--panel-alt);border-radius:var(--radius-sm);padding:9px 12px;margin-bottom:10px;}
+  .warn-line{font-size:12.5px;color:var(--warn);background:var(--warn-bg);border-radius:var(--radius-sm);padding:9px 12px;margin-bottom:10px;}
 
-/* 包材驗收比對結果 */
-.pkg-result{margin-top:8px;}
-.pkg-hit{background:#e4f0ec;border:1.5px solid var(--teal-mid);border-radius:3px;padding:10px 14px;}
-.pkg-hit-head{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;}
-.pkg-hit-title{font-family:var(--mono);font-size:10.5px;color:var(--teal);letter-spacing:1px;text-transform:uppercase;font-weight:600;}
-.pkg-hit-count{font-family:var(--mono);font-size:10px;color:var(--ink-dim);}
-.pkg-item{padding:6px 0;border-top:1px solid var(--teal-mid);font-size:12.5px;display:flex;gap:8px;flex-wrap:wrap;}
-.pkg-item:first-of-type{border-top:none;}
-.pkg-item .pk{font-family:var(--mono);font-size:10px;color:var(--ink-dim);min-width:52px;padding-top:1px;}
-.pkg-item .pv{flex:1;}
-.pkg-pass{color:#4a7a5e;font-weight:600;}
-.pkg-fail{color:var(--rust);font-weight:600;}
-.pkg-none{background:var(--paper-dim);border:1.5px solid var(--line);border-radius:3px;padding:9px 14px;
-  font-family:var(--mono);font-size:11.5px;color:var(--ink-dim);display:flex;align-items:center;gap:8px;}
-.pkg-link{font-family:var(--mono);font-size:10.5px;color:var(--teal);text-decoration:none;border-bottom:1px solid var(--teal-mid);}
-.pkg-link:hover{border-bottom-color:var(--teal);}
+  .checklist-out{list-style:none;margin:0;padding:0;}
+  .checklist-out li{padding:9px 0 9px 22px;border-bottom:1px solid var(--line-soft);position:relative;font-size:13.5px;}
+  .checklist-out li::before{content:"○";position:absolute;left:0;top:9px;color:var(--accent);font-size:12px;}
+  .checklist-out li b{color:var(--accent-deep);}
 
-@media(max-width:600px){
-  .header{padding:18px 16px 16px;}
-  .header h1{font-size:21px;}
-  .wrap{padding:22px 16px 60px;}
-  .tab{padding:12px 14px;font-size:13px;}
-  .form-grid,.form-grid.triple,.form-grid.quad{grid-template-columns:1fr;}
-  .ing-block{padding:14px;}
-  .rec-head{flex-direction:column;gap:6px;}
-  .rec-meta{text-align:left;white-space:normal;}
-}
+  /* Packaging DB tab */
+  .pill-row{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+  .pill{
+    font-size:13px;padding:7px 16px;border-radius:999px;background:var(--panel-alt);
+    color:var(--ink-soft);cursor:pointer;border:1px solid transparent;
+  }
+  .pill.active{background:var(--accent);color:#fff;}
+
+  .db-group{border-bottom:1px solid var(--line-soft);}
+  .db-group summary{
+    cursor:pointer;list-style:none;padding:14px 4px;
+    display:flex;align-items:center;justify-content:space-between;
+    font-family:'Quicksand',sans-serif;font-weight:600;font-size:15px;color:var(--ink);
+  }
+  .db-group summary::-webkit-details-marker{display:none;}
+  .db-group summary .arrow-icon::before{content:"\203a";display:inline-block;margin-right:8px;color:var(--accent);transform:rotate(0deg);transition:.15s;}
+  .db-group[open] summary .arrow-icon::before{transform:rotate(90deg);}
+  .db-group summary .grp-count{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:400;color:var(--ink-soft);background:var(--panel-alt);padding:3px 10px;border-radius:999px;}
+  .db-group .grp-body{padding:0 4px 14px 26px;}
+
+  .db-row{
+    display:flex;align-items:center;justify-content:space-between;gap:14px;
+    padding:10px 12px;border-radius:var(--radius-sm);
+  }
+  .db-row:hover{background:var(--panel-alt);}
+  .db-row .db-main{min-width:0;}
+  .db-row .mat{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--ink);word-break:break-all;}
+  .db-row .meta{font-size:11.5px;color:var(--ink-soft);margin-top:2px;}
+  .db-row button{
+    flex-shrink:0;
+    font-family:'Quicksand',sans-serif;font-weight:600;font-size:12px;
+    padding:6px 13px;border-radius:999px;border:1px solid var(--accent);background:transparent;color:var(--accent-deep);cursor:pointer;
+  }
+  .db-row button:hover{background:var(--accent);color:#fff;}
+  .db-search{margin-bottom:18px;}
+
+  /* Reference tab */
+  .ref-group summary{
+    font-family:'Quicksand',sans-serif;font-weight:600;font-size:14.5px;color:var(--accent-deep);
+    cursor:pointer;padding:10px 0;list-style:none;
+  }
+  .ref-group summary::-webkit-details-marker{display:none;}
+  .ref-group summary::before{content:"▸ ";}
+  .ref-group[open] summary::before{content:"▾ ";}
+  .ref-card{border-top:1px solid var(--line-soft);padding:12px 4px;}
+  .ref-card h4{margin:0 0 8px 0;font-size:13.5px;font-weight:600;}
+  .ref-card table{width:100%;border-collapse:collapse;font-size:12.5px;}
+  .ref-card th{text-align:left;color:var(--ink-soft);font-weight:500;font-size:11px;padding:4px 8px;}
+  .ref-card td{padding:4px 8px;border-bottom:1px solid var(--line-soft);vertical-align:top;}
+  .ref-card .notes{font-size:12px;color:var(--ink-soft);margin-top:6px;}
+
+  footer.small-print{margin-top:36px;font-size:11px;color:var(--ink-soft);}
+
+  /* Running critters background decoration */
+  .critter-track{
+    position:fixed;
+    left:-60px;
+    z-index:-1;
+    pointer-events:none;
+    color:var(--accent-deep);
+    opacity:0.5;
+    animation-name:run-across;
+    animation-timing-function:linear;
+    animation-iteration-count:infinite;
+  }
+  @keyframes run-across{
+    from{ transform:translateX(0); }
+    to{ transform:translateX(calc(100vw + 120px)); }
+  }
+  .critter-bob{ animation-name:critter-bob; animation-timing-function:ease-in-out; animation-iteration-count:infinite; animation-direction:alternate; }
+  @keyframes critter-bob{ from{transform:translateY(0);} to{transform:translateY(-4px);} }
+  @media (prefers-reduced-motion: reduce){
+    .critter-track, .critter-bob{ animation:none; display:none; }
+  }
+
+  #gapStatus{font-size:13px;color:var(--ink-soft);}
+  #analyzeBtn{
+    font-family:'Quicksand',sans-serif;font-weight:600;font-size:13.5px;padding:10px 22px;
+    background:var(--accent);color:#fff;border:none;border-radius:999px;cursor:pointer;
+  }
+  #analyzeBtn:hover{background:var(--accent-deep);}
+  #analyzeBtn:disabled{opacity:.5;cursor:default;}
+  pre.raw-debug{white-space:pre-wrap;background:var(--panel-alt);padding:12px;border-radius:var(--radius-sm);font-size:11.5px;}
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="header-inner">
-    <h1>新品試產系統</h1>
-    <div class="header-sub">New Product Trial · 品管現場紀錄</div>
-    <div class="header-meta">
-      <span class="hbadge"><span class="dot" id="statusDot"></span><span id="statusText">連線中…</span></span>
-      <span class="hbadge" id="recCount">—</span>
-    </div>
+<div class="critter-track" style="bottom:14px; animation-duration:24s; animation-delay:0s;">
+  <div class="critter-bob" style="animation-duration:0.34s;">
+    <svg width="34" height="26" viewBox="0 0 34 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="16" cy="16" rx="10" ry="6" fill="currentColor"/>
+      <circle cx="27" cy="10" r="5" fill="currentColor"/>
+      <path d="M24 6 L25 2 L27 6 Z" fill="currentColor"/>
+      <path d="M28 6 L30 2 L31 6 Z" fill="currentColor"/>
+      <path d="M7 14 Q1 8 5 3" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      <path d="M11 21 L9 25 M20 21 L22 25 M14 22 L13 26 M23 21 L25 25" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </svg>
   </div>
 </div>
 
-<div class="tabs">
-  <div class="tabs-inner">
-    <button class="tab active" onclick="switchTab('form')">＋ 新增試產</button>
-    <button class="tab" onclick="switchTab('records')">過去紀錄</button>
+<div class="critter-track" style="bottom:5px; animation-duration:31s; animation-delay:9s;">
+  <div class="critter-bob" style="animation-duration:0.3s;">
+    <svg width="36" height="26" viewBox="0 0 36 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="17" cy="16" rx="11" ry="6" fill="currentColor"/>
+      <circle cx="29" cy="9" r="5.5" fill="currentColor"/>
+      <path d="M27 6 Q22 6 23 12 Q26 11 27 8 Z" fill="currentColor"/>
+      <ellipse cx="34" cy="10" rx="2.4" ry="2" fill="currentColor"/>
+      <path d="M6 13 Q1 6 6 3" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      <path d="M11 21 L9 25 M21 21 L23 25 M15 22 L14 26 M25 21 L27 25" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </svg>
   </div>
 </div>
 
-<!-- ===== FORM TAB ===== -->
-<div class="wrap" id="tab-form">
-
-  <div class="stitle">基本資訊</div>
-  <div class="form-grid triple">
-    <div class="field">
-      <label>試產日期</label>
-      <input type="date" id="f-date">
-    </div>
-    <div class="field">
-      <label>品名</label>
-      <input type="text" id="f-name" placeholder="例如：鮭魚凍乾零食 30g" oninput="searchPackaging()">
-      <div id="pkg-result" class="pkg-result"></div>
-    </div>
-    <div class="field">
-      <label>料號<span class="optional">選填</span></label>
-      <input type="text" id="f-sku" placeholder="例如：FP-20001">
-    </div>
-  </div>
-  <div class="form-grid" style="margin-top:14px;">
-    <div class="field">
-      <label>生產機台</label>
-      <input type="text" id="f-machine" placeholder="例如：包裝機A、充填機2號">
-    </div>
-    <div class="field">
-      <label>外包裝形式</label>
-      <select id="f-outpack">
-        <option value="">請選擇</option>
-        <option>單一袋裝</option><option>盒裝</option><option>袋裝+外盒</option>
-        <option>散裝</option><option>其他</option>
-      </select>
-    </div>
-  </div>
-
-  <div class="stitle">新品效期</div>
-  <div class="form-grid triple">
-    <div class="field">
-      <label>建議效期（自動推算）</label>
-      <input type="text" id="f-suggested-exp" readonly placeholder="填入內容物資料後自動顯示" style="background:var(--paper-dim);color:var(--ink-dim);">
-    </div>
-    <div class="field">
-      <label>實際打印效期</label>
-      <input type="date" id="f-actual-exp" oninput="runExpCheck()">
-    </div>
-    <div class="field">
-      <label>新品保存期限（月）</label>
-      <input type="number" id="f-product-shelf" placeholder="例如：12" min="1" max="120" oninput="runExpCheck()">
-    </div>
-  </div>
-  <div id="exp-panel"></div>
-
-  <div class="stitle">效期打印</div>
-  <div class="form-grid quad">
-    <div class="field">
-      <label>印刷位置</label>
-      <select id="f-printside">
-        <option value="">請選擇</option>
-        <option>正面</option><option>背面</option><option>側面</option><option>底部</option>
-      </select>
-    </div>
-    <div class="field">
-      <label>位置描述</label>
-      <input type="text" id="f-printdesc" placeholder="例如：右下角封口上方">
-    </div>
-    <div class="field">
-      <label>印刷方式</label>
-      <select id="f-printmethod">
-        <option value="">請選擇</option>
-        <option>碳帶</option><option>雷射</option><option>噴墨</option><option>熱燙</option><option>其他</option>
-      </select>
-    </div>
-    <div class="field">
-      <label>印刷機台</label>
-      <input type="text" id="f-printmachine" placeholder="例如：碳帶機A">
-    </div>
-  </div>
-
-  <div class="stitle">內容物資訊</div>
-  <div id="ingContainer"></div>
-  <button class="add-ing-btn" onclick="addIngredient()">＋ 新增內容物</button>
-
-  <div class="stitle">試產記錄</div>
-  <div class="form-grid single">
-    <div class="field">
-      <label>調整內容</label>
-      <textarea id="f-adjust" placeholder="試產中做了哪些調整（機台參數、配方調整等）"></textarea>
-    </div>
-    <div class="field">
-      <label>遇到的問題／觀察</label>
-      <textarea id="f-issues" placeholder="試產過程中發現的問題或需要注意的觀察"></textarea>
-    </div>
-    <div class="field">
-      <label>處理方式</label>
-      <textarea id="f-handling" placeholder="針對上述問題的處理方式"></textarea>
-    </div>
-  </div>
-  <div class="form-grid triple" style="margin-top:14px;">
-    <div class="field">
-      <label>研發負責人</label>
-      <input type="text" id="f-rd" placeholder="研發姓名或簡稱">
-    </div>
-    <div class="field">
-      <label>PM</label>
-      <input type="text" id="f-pm" placeholder="PM姓名或簡稱">
-    </div>
-    <div class="field">
-      <label>狀態</label>
-      <select id="f-status">
-        <option value="">請選擇</option>
-        <option>進行中</option><option>已完成</option><option>待覆盤</option>
-      </select>
-    </div>
-  </div>
-
-  <div class="btn-row">
-    <button class="btn btn-primary" onclick="saveRecord()">儲存紀錄到 Google Sheet</button>
-    <button class="btn btn-secondary" onclick="clearForm()">清除表單</button>
-  </div>
-
-</div>
-
-<!-- ===== RECORDS TAB ===== -->
-<div class="wrap" id="tab-records" style="display:none;">
-  <div class="stitle">過去試產紀錄</div>
-  <div id="recordsList">
-    <div class="empty-state"><span class="glyph">📋</span><p>載入中…</p></div>
+<div class="critter-track" style="bottom:20px; animation-duration:27s; animation-delay:17s;">
+  <div class="critter-bob" style="animation-duration:0.26s;">
+    <svg width="26" height="20" viewBox="0 0 26 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="13" cy="12" rx="10" ry="7" fill="currentColor"/>
+      <circle cx="21" cy="8" r="3.6" fill="currentColor"/>
+      <circle cx="19" cy="4" r="1.6" fill="currentColor"/>
+      <circle cx="23" cy="5" r="1.6" fill="currentColor"/>
+      <path d="M6 17 L5 19 M11 18 L11 20 M17 18 L18 20 M21 16 L22 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="wrap">
+
+  <header class="masthead">
+    <h1>包材檢驗查詢系統</h1>
+    <p>依食品器具容器包裝衛生標準整理，結合牧羊人集團實際使用中的包材資料</p>
+  </header>
+
+  <details class="info-toggle">
+    <summary>關於適用範圍(點看說明)</summary>
+    <p>本標準法律上規範對象為「食品」的器具、容器及包裝。寵物食品並非食品安全衛生管理法定義的「食品」，本標準對寵物食品包材並非強制要求，此處作為內部品質參考基準使用；人食產品線（如酸菜粉、泡麵）則直接受本標準規範。正式合規定位建議與法務窗口確認。</p>
+  </details>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="query">查詢工具</button>
+    <button class="tab-btn" data-tab="db">包材庫</button>
+    <button class="tab-btn" data-tab="gap">報告比對</button>
+    <button class="tab-btn" data-tab="reference">對照表</button>
+  </div>
+
+  <!-- ============ QUERY TOOL ============ -->
+  <div class="panel" id="tab-query">
+    <div class="query-grid">
+      <div>
+        <label class="field-label">包材結構</label>
+        <input type="text" id="materialInput" autocomplete="off" name="material-structure-input" placeholder="例如：PET/AL/PA/PE">
+        <p class="scope-note" id="materialScopeNote">依供應商標示順序輸入（外層在前、內層／封口層在後）。也可以到左側選單或「包材庫」分頁挑選現有材質直接帶入。</p>
+        <div id="parsedChips" class="parsed-chips"></div>
+
+        <label class="field-label">產品類別</label>
+        <select id="productSelect">
+          <option value="肉糧">肉糧（乾糧/肉乾）— 寵物食品</option>
+          <option value="罐頭">罐頭 — 寵物食品</option>
+          <option value="餐包">餐包（軟包）— 寵物食品</option>
+          <option value="凍乾">凍乾 — 寵物食品</option>
+          <option value="清潔用品">清潔用品 — 非食品</option>
+          <option value="人食乾粉">人食：乾粉/調味類</option>
+          <option value="人食油炸">人食：含油/沖泡類</option>
+          <option value="其他">其他（自行勾選）</option>
+        </select>
+        <p class="scope-note" id="productScopeNote"></p>
+      </div>
+
+      <div>
+        <label class="field-label">食品模擬溶劑（依產品類別自動預選）</label>
+        <div class="checklist" id="simulantChecklist"></div>
+        <div class="toggle-row">
+          <input type="checkbox" id="highTempToggle">
+          <label for="highTempToggle">會經歷100℃以上殺菌／調理（採95℃,30分鐘條件）</label>
+        </div>
+      </div>
+    </div>
+
+    <div id="resultArea"></div>
+  </div>
+
+  <!-- ============ PACKAGING DATABASE ============ -->
+  <div class="panel hidden" id="tab-db">
+    <p class="scope-note" style="margin-top:0;">依「接觸層材質」分組——這才是實際影響檢驗項目的關鍵。點分類展開，找到你要的規格。</p>
+    <div class="pill-row" id="dbPills"></div>
+    <input type="text" id="dbSearch" class="db-search" placeholder="搜尋料號、品名或材質關鍵字...">
+    <div id="dbGroups"></div>
+  </div>
+
+  <!-- ============ REPORT GAP ANALYSIS ============ -->
+  <div class="panel hidden" id="tab-gap">
+    <p class="note-line" style="margin-top:0;">會依「查詢工具」分頁目前設定的包材結構與產品類別，作為應檢驗項目清單的比對基準，請先確認後再上傳報告。</p>
+
+    <label class="field-label">上傳檢驗報告（PDF／圖片／文字檔，可多選）</label>
+    <input type="file" id="reportFileInput" accept=".pdf,.txt,image/*" multiple style="margin-bottom:14px;">
+    <div><button id="analyzeBtn">開始比對</button></div>
+
+    <div id="gapStatus" style="margin-top:14px;"></div>
+    <div id="gapResultArea" style="margin-top:18px;"></div>
+
+    <details class="info-toggle" style="margin-top:24px;">
+      <summary>重要提醒</summary>
+      <p>這是 AI 輔助的初步比對，用來快速抓出報告可能缺少的項目，不能取代品管人員實際審閱原始報告。掃描品質不佳、報告格式特殊、或數值單位不一致時，AI 判讀可能有誤，請務必核對原始報告後再對外用於決策或回覆客訴。</p>
+    </details>
+  </div>
+
+  <!-- ============ REFERENCE TABLE ============ -->
+  <div class="panel hidden" id="tab-reference">
+    <p class="scope-note" style="margin-top:0;">點選各分類展開詳細檢驗項目與限量標準。</p>
+    <div id="referenceArea"></div>
+  </div>
+
+  <footer class="small-print">
+    資料來源：食品器具容器包裝衛生標準 附表一、附表二；包材庫資料整理自牧羊人集團產品包材資訊平台（膜袋類/瓶器/其他，僅列使用中項目）。正式檢驗判定仍應以送驗實驗室出具之報告為準。
+  </footer>
+</div>
 
 <script>
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx-aCi7zbWdeoSx8JGPY61ndoMJrKns2OQE98W8ifMbX45GkkCXjx6V-cHdIzfqCCBV/exec";
-let RECORDS = [];
-let PKG_DATA = [];
-let ingCount = 0;
-let pkgTimer = null;
+/* ================= DATA MODEL ================= */
 
-// ---- Tab ----
-function switchTab(tab){
-  document.querySelectorAll('.tab').forEach((t,i)=>{
-    t.classList.toggle('active',(i===0&&tab==='form')||(i===1&&tab==='records'));
-  });
-  document.getElementById('tab-form').style.display = tab==='form'?'block':'none';
-  document.getElementById('tab-records').style.display = tab==='records'?'block':'none';
-  if(tab==='records') renderRecords();
-}
+const SIMULANTS = {
+  water:   { label:"水", sub:"模擬 pH ≥ 5 食品", baseCond:"60℃，30分鐘", hiCond:"95℃，30分鐘" },
+  acetic:  { label:"4%醋酸", sub:"模擬 pH ≤ 5 酸性食品", baseCond:"60℃，30分鐘", hiCond:"95℃，30分鐘" },
+  heptane: { label:"正庚烷", sub:"模擬含表面油脂/脂肪食品", baseCond:"25℃，1小時", hiCond:"25℃，1小時" },
+  ethanol: { label:"20%乙醇", sub:"模擬含酒精成分食品", baseCond:"60℃，30分鐘", hiCond:"95℃，30分鐘" },
+};
 
-// ---- Status ----
-function setStatus(kind,text){
-  document.getElementById('statusDot').className='dot'+(kind==='busy'?' busy':kind==='off'?' off':'');
-  document.getElementById('statusText').textContent=text;
-}
+const MATERIALS = [
+  { id:"tin", group:"金屬類", name:"鍍錫用錫（馬口鐵鍍層）",
+    materialLimits:[{item:"鉛", limit:"5% 以下"}],
+    extraction:[], notes:["適用於罐頭內壁鍍錫層。"] },
 
-// ---- Dynamic ingredients ----
-function addIngredient(){
-  ingCount++;
-  const n = ingCount;
-  const div = document.createElement('div');
-  div.className='ing-block';
-  div.id='ing-block-'+n;
-  div.innerHTML=`
-    <div class="ing-label">
-      <div class="ing-label-left">
-        <span class="ing-num">${n}</span>內容物 ${n}
-      </div>
-      ${n>1?`<button class="remove-ing" onclick="removeIng(${n})">移除</button>`:''}
-    </div>
-    <div class="form-grid triple">
-      <div class="field"><label>品項名稱</label><input type="text" id="i${n}-item" placeholder="例如：鮭魚凍乾"></div>
-      <div class="field"><label>料號<span class="optional">選填</span></label><input type="text" id="i${n}-sku" placeholder="例如：RM-0012"></div>
-      <div class="field"><label>占比<span class="optional">選填</span></label><input type="text" id="i${n}-ratio" placeholder="例如：60%"></div>
-    </div>
-    <div class="form-grid" style="margin-top:12px;">
-      <div class="field"><label>內容物型態</label>
-        <select id="i${n}-form">
-          <option value="">請選擇</option>
-          <option>顆粒</option><option>塊狀</option><option>片狀</option>
-          <option>粉狀</option><option>液態</option><option>凍乾</option><option>其他</option>
-        </select>
-      </div>
-      <div class="field"><label>包裝形式</label>
-        <select id="i${n}-pack">
-          <option value="">請選擇</option>
-          <option>直接混合</option><option>內料包</option><option>獨立分裝</option><option>其他</option>
-        </select>
-      </div>
-      <div class="field"><label>製造日期</label><input type="date" id="i${n}-mfg" oninput="onIngDateChange(${n})"></div>
-      <div class="field"><label>有效日期<span class=\"optional\">可自動計算</span></label><input type="date" id="i${n}-exp" oninput="onIngDateChange(${n})"><div class="calc-date" id="i${n}-calc"></div></div>
-      <div class="field"><label>保存期限（月）</label><input type="number" id="i${n}-shelf" placeholder="例如：18" min="1" max="120" oninput="onIngDateChange(${n})"></div>
-    </div>`;
-  document.getElementById('ingContainer').appendChild(div);
-}
+  { id:"solder", group:"金屬類", name:"焊料（罐體製造／修補用）",
+    materialLimits:[
+      {item:"鉛（一般焊料）", limit:"20% 以下"},
+      {item:"鉛（罐頭外部焊料・雙重捲封罐）", limit:"98% 以下"},
+      {item:"鉛（罐頭外部焊料・非雙重捲封罐）", limit:"60% 以下"},
+    ],
+    extraction:[], notes:["罐頭封口焊接處常見檢驗項目。"] },
 
-function removeIng(n){
-  const el=document.getElementById('ing-block-'+n);
-  if(el) el.remove();
-  runExpCheck();
-}
-// ---- 效期計算 ----
-function calcExpDate(mfgStr, shelfMonths){
-  if(!mfgStr || !shelfMonths) return null;
-  const d = new Date(mfgStr);
-  if(isNaN(d)) return null;
-  d.setMonth(d.getMonth() + shelfMonths);
-  d.setDate(d.getDate() - 1); // 廠內習慣：少一天
-  return d;
-}
+  { id:"alloy-contact", group:"金屬類", name:"金屬合金類（直接接觸食品的金屬面，如不銹鋼/鋁罐內壁未塗漆處）",
+    materialLimits:[
+      {item:"鉛（材質）", limit:"0.1% 以下"},
+      {item:"銻（材質）", limit:"5% 以下"},
+    ],
+    extraction:[
+      { simKey:"water", items:[{item:"砷", limit:"0.2ppm 以下"},{item:"鉛", limit:"0.4ppm 以下"},{item:"鎘", limit:"0.1ppm 以下"}]},
+      { simKey:"acetic", cond:"60℃，30分鐘（採0.5%檸檬酸溶液）", items:[{item:"砷", limit:"0.2ppm 以下"},{item:"鉛", limit:"0.4ppm 以下"},{item:"鎘", limit:"0.1ppm 以下"}]},
+      { simKey:"heptane", cond:"25℃，1小時", items:[{item:"蒸發殘渣", limit:"90ppm 以下"}]},
+    ],
+    notes:["正庚烷項目僅適用於特定塗層之金屬罐（含氧化鋅3%以上），一般罐頭可視情況省略。"] },
 
-function dateToStr(d){
-  if(!d) return '';
-  return d.toISOString().split('T')[0];
-}
+  { id:"alloy-coated", group:"金屬類", name:"金屬合金類（罐內壁合成樹脂塗漆）",
+    materialLimits:[],
+    extraction:[
+      { simKey:"water", items:[{item:"酚", limit:"5ppm 以下"},{item:"甲醛", limit:"陰性"},{item:"蒸發殘渣", limit:"30ppm 以下"}]},
+      { simKey:"acetic", items:[{item:"蒸發殘渣", limit:"30ppm 以下"}]},
+      { simKey:"ethanol", items:[{item:"蒸發殘渣", limit:"30ppm 以下"}]},
+      { simKey:"heptane", cond:"（正戊烷）25℃，1小時", items:[{item:"環氧氯丙烷單體", limit:"0.5ppm 以下"}]},
+    ],
+    notes:["罐頭最常見的內壁塗層檢驗類別。另有氯乙烯單體項目（乙醇≥99.5%，5℃以下24小時，限量0.05ppm以下），限塗層含PVC成分時適用。"] },
 
-function onIngDateChange(n){
-  const mfg = document.getElementById('i'+n+'-mfg')?.value;
-  const shelf = parseInt(document.getElementById('i'+n+'-shelf')?.value)||0;
-  const expInput = document.getElementById('i'+n+'-exp');
-  const calcEl = document.getElementById('i'+n+'-calc');
-  if(mfg && shelf){
-    const calc = calcExpDate(mfg, shelf);
-    const calcStr = dateToStr(calc);
-    if(calcEl) calcEl.textContent = '自動計算：' + calcStr;
-    // 若使用者有填有效日期，驗證是否一致
-    if(expInput && expInput.value && expInput.value !== calcStr){
-      calcEl.style.color = 'var(--rust)';
-      calcEl.textContent = '⚠ 自動計算：' + calcStr + '　與填入日期不符';
-    } else if(calcEl){
-      calcEl.style.color = 'var(--ink-dim)';
+  { id:"colorant", group:"其他", name:"著色劑",
+    materialLimits:[{item:"著色劑種類與用量", limit:"應符合食品添加物使用範圍及用量標準之規定"}],
+    extraction:[], notes:["屬定性合規要求，非溶出試驗項目。"] },
+
+  { id:"glass", group:"其他", name:"玻璃／陶瓷／施琺瑯容器",
+    materialLimits:[],
+    extraction:[
+      { simKey:"acetic", cond:"常溫暗處，24小時", items:[
+        {item:"（a）深2.5cm以上，容量1.1L以下：鉛", limit:"5ppm 以下"},{item:"（a）鎘", limit:"0.5ppm 以下"},
+        {item:"（b）深2.5cm以上，容量1.1L以上：鉛", limit:"2.5ppm 以下"},{item:"（b）鎘", limit:"0.25ppm 以下"},
+        {item:"（c）深2.5cm以下或液體無法充滿者：鉛", limit:"17μg/cm² 以下"},{item:"（c）鎘", limit:"1.7μg/cm² 以下"},
+      ]},
+    ], notes:["適用於玻璃罐裝產品。"] },
+
+  { id:"metalized", group:"其他", name:"鍍鋁／氧化鋁蒸鍍層（如VMPET、EPET、3APET、半鍍鋁）",
+    materialLimits:[], extraction:[],
+    notes:[
+      "此類為PET基材表面蒸鍍極薄鋁層或氧化鋁(AL2O3)以提升阻隔性，常見商品名包括VMPET、EPET、3APET、半鍍鋁等。",
+      "塗層厚度極薄（奈米級），業界慣例仍以PET基材的檢驗規定為主，塗層本身通常不需另外進行重金屬遷移測試；如有疑慮可請供應商提供材質安全聲明佐證。",
+    ] },
+
+  { id:"aluminum", group:"金屬類", name:"鋁箔（AL）— 多層複合袋常見中間阻隔層",
+    materialLimits:[], extraction:[], notes:[
+      "鋁箔在多層結構中通常作為阻隔層，不直接接觸食品（接觸面多為最內層之PE/PP/PA等塑膠層），本標準無專屬檢驗項目。",
+      "若鋁箔為直接接觸食品面（如未覆膜鋁箔餐盒），應改比對「金屬合金類」規定，並額外要求供應商提供重金屬分析報告。",
+    ] },
+
+  { id:"plastic-general", group:"塑膠通用基準", name:"塑膠類・一般規定（所有塑膠材質皆需另外符合）",
+    materialLimits:[{item:"鉛", limit:"100ppm 以下"},{item:"鎘", limit:"100ppm 以下"}],
+    extraction:[
+      { simKey:"water", items:[{item:"高錳酸鉀消耗量", limit:"10ppm 以下"}]},
+      { simKey:"acetic", items:[
+        {item:"重金屬（Pb計）", limit:"1ppm 以下"},
+        {item:"塑化劑（DEHP/DBP/BBP/DIDP/DINP/DMP/DNOP/DEP，各項）", limit:"0.1%（重量比）以下"},
+      ]},
+      { simKey:"heptane", items:[
+        {item:"塑化劑 DEHP", limit:"1.5ppm 以下"},{item:"塑化劑 DBP", limit:"0.3ppm 以下"},
+        {item:"塑化劑 BBP", limit:"30ppm 以下"},{item:"塑化劑 DIDP", limit:"9ppm 以下"},
+        {item:"塑化劑 DINP", limit:"9ppm 以下"},{item:"塑化劑 DEHA", limit:"18ppm 以下"},
+      ]},
+    ], notes:["所有塑膠材質的共同基準，塑化劑規定不適用PVC（PVC另有專屬規定）。"] },
+
+  { id:"pe-pp", group:"個別塑膠材質", name:"聚乙烯／聚丙烯（PE／PP，含LLDPE/CPP/OPP/RCPP等變體）",
+    materialLimits:[],
+    extraction:[
+      { simKey:"water", items:[{item:"高錳酸鉀消耗量", limit:"10ppm 以下"},{item:"蒸發殘渣", limit:"30ppm 以下"}]},
+      { simKey:"acetic", items:[{item:"重金屬（Pb計）", limit:"1ppm 以下"},{item:"蒸發殘渣", limit:"30ppm 以下"}]},
+      { simKey:"heptane", items:[{item:"蒸發殘渣", limit:"30ppm 以下（製程使用溫度100℃以下者：150ppm以下）"}]},
+      { simKey:"ethanol", items:[{item:"蒸發殘渣", limit:"30ppm 以下"}]},
+    ], notes:[] },
+
+  { id:"pvc", group:"個別塑膠材質", name:"聚氯乙烯（PVC）",
+    materialLimits:[
+      {item:"鉛", limit:"100ppm 以下"},{item:"鎘", limit:"100ppm 以下"},
+      {item:"二丁錫化物", limit:"50ppm 以下"},{item:"甲酚磷酸酯", limit:"1000ppm 以下"},
+      {item:"氯乙烯單體", limit:"1ppm 以下"},{item:"塑化劑8項總和", limit:"0.1%（重量比）以下"},
+    ],
+    extraction:[
+      { simKey:"water", items:[{item:"高錳酸鉀消耗量", limit:"10ppm 以下"},{item:"蒸發殘渣", limit:"30ppm 以下"}]},
+      { simKey:"acetic", items:[{item:"重金屬（Pb計）", limit:"1ppm 以下"},{item:"蒸發殘渣", limit:"30ppm 以下"}]},
+      { simKey:"heptane", items:[{item:"蒸發殘渣", limit:"150ppm 以下"}]},
+      { simKey:"ethanol", items:[{item:"蒸發殘渣", limit:"30ppm 以下"}]},
+    ], notes:["不適用塑膠一般規定的塑化劑計算方式，改採本表專屬限量。"] },
+
+  { id:"pvdc", group:"個別塑膠材質", name:"聚偏二氯乙烯（PVDC）",
+    materialLimits:[{item:"鉛", limit:"100ppm 以下"},{item:"鎘", limit:"100ppm 以下"},{item:"鋇", limit:"100ppm 以下"},{item:"偏二氯乙烯單體", limit:"6ppm 以下"}],
+    extraction:[
+      { simKey:"water", items:[{item:"高錳酸鉀消耗量", limit:"10ppm 以下"},{item:"蒸發殘渣", limit:"30ppm 以下"}]},
+      { simKey:"acetic", items:[{item:"重金屬（Pb計）", limit:"1ppm 以下"},{item:"蒸發殘渣", limit:"30ppm 以下"}]},
+      { simKey:"heptane", items:[{item:"蒸發殘渣", limit:"30ppm 以下"}]},
+      { simKey:"ethanol", items:[{item:"蒸發殘渣", limit:"30ppm 以下"}]},
+    ], notes:[] },
+
+  { id:"ps", group:"個別塑膠材質", name:"聚苯乙烯（PS）",
+    materialLimits:[{item:"鉛", limit:"100ppm 以下"},{item:"鎘", limit:"100ppm 以下"},{item:"揮發性物質總和", limit:"5000ppm 以下（發泡PS：2000ppm以下）"}],
+    extraction:[
+      { simKey:"water", items:[{item:"高錳酸鉀消耗量", limit:"10ppm 以下"},{item:"蒸發殘渣", limit:"30ppm 以下"}]},
+      { simKey:"acetic", items:[{item:"重金屬（Pb計）", limit:"1ppm 以下"},{item:"蒸發殘渣", limit:"30ppm 以下"}]},
+      { simKey:"heptane", items:[{item:"蒸發殘渣", limit:"240ppm 以下"}]},
+      { simKey:"ethanol", items:[{item:"蒸發殘渣", limit:"30ppm 以下"}]},
+    ], notes:["⚠ 不適合盛裝100℃以上食品。"] },
+
+  { id:"pet", group:"個別塑膠材質", name:"聚對苯二甲酸乙二酯（PET）",
+    materialLimits:[{item:"鉛", limit:"100ppm 以下"},{item:"鎘", limit:"100ppm 以下"}],
+    extraction:[
+      { simKey:"water", items:[{item:"高錳酸鉀消耗量", limit:"10ppm 以下"},{item:"蒸發殘渣", limit:"30ppm 以下"}]},
+      { simKey:"acetic", items:[{item:"重金屬（Pb計）", limit:"1ppm 以下"},{item:"銻", limit:"0.05ppm 以下"},{item:"鍺", limit:"0.1ppm 以下"},{item:"蒸發殘渣", limit:"30ppm 以下"}]},
+      { simKey:"heptane", items:[{item:"蒸發殘渣", limit:"30ppm 以下"}]},
+      { simKey:"ethanol", items:[{item:"蒸發殘渣", limit:"30ppm 以下"}]},
+    ], notes:[] },
+
+  { id:"pc", group:"個別塑膠材質", name:"聚碳酸酯（PC）",
+    materialLimits:[{item:"鉛", limit:"100ppm 以下"},{item:"鎘", limit:"100ppm 以下"}],
+    extraction:[
+      { simKey:"water", cond:"95℃，30分鐘（固定採95℃）", items:[{item:"高錳酸鉀消耗量", limit:"10ppm 以下"},{item:"蒸發殘渣", limit:"30ppm 以下"},{item:"雙酚A（嬰幼兒奶瓶除外）", limit:"0.6ppm 以下"}]},
+      { simKey:"acetic", items:[{item:"重金屬（Pb計）", limit:"1ppm 以下"},{item:"蒸發殘渣", limit:"30ppm 以下"},{item:"雙酚A", limit:"0.6ppm 以下"}]},
+    ], notes:[] },
+
+  { id:"pmma", group:"個別塑膠材質", name:"聚甲基丙烯酸甲酯（PMMA）",
+    materialLimits:[{item:"鉛", limit:"100ppm 以下"},{item:"鎘", limit:"100ppm 以下"}],
+    extraction:[
+      { simKey:"water", items:[{item:"高錳酸鉀消耗量", limit:"10ppm 以下"},{item:"蒸發殘渣", limit:"30ppm 以下"}]},
+      { simKey:"acetic", items:[{item:"重金屬（Pb計）", limit:"1ppm 以下"},{item:"蒸發殘渣", limit:"30ppm 以下"}]},
+      { simKey:"heptane", items:[{item:"蒸發殘渣", limit:"30ppm 以下"}]},
+      { simKey:"ethanol", items:[{item:"蒸發殘渣", limit:"30ppm 以下"},{item:"甲基丙烯酸甲酯單體", limit:"15ppm 以下"}]},
+    ], notes:[] },
+
+  { id:"pa-nylon", group:"個別塑膠材質", name:"聚醯胺／尼龍（PA，含NY/ONY/KNY/BOPA等變體）",
+    materialLimits:[{item:"鉛", limit:"100ppm 以下"},{item:"鎘", limit:"100ppm 以下"}],
+    extraction:[
+      { simKey:"water", items:[{item:"高錳酸鉀消耗量", limit:"10ppm 以下"},{item:"蒸發殘渣", limit:"30ppm 以下"}]},
+      { simKey:"acetic", items:[{item:"重金屬（Pb計）", limit:"1ppm 以下"},{item:"蒸發殘渣", limit:"30ppm 以下"}]},
+      { simKey:"heptane", items:[{item:"蒸發殘渣", limit:"30ppm 以下"}]},
+      { simKey:"ethanol", items:[{item:"蒸發殘渣", limit:"30ppm 以下"},{item:"己內醯胺單體", limit:"15ppm 以下"}]},
+    ], notes:["餐包、真空調理袋常見的內層/外層複合材質之一，尤其耐蒸煮包裝建議留意。"] },
+
+  { id:"pmp", group:"個別塑膠材質", name:"聚甲基戊烯（PMP）",
+    materialLimits:[{item:"鉛", limit:"100ppm 以下"},{item:"鎘", limit:"100ppm 以下"}],
+    extraction:[
+      { simKey:"water", items:[{item:"高錳酸鉀消耗量", limit:"10ppm 以下"},{item:"蒸發殘渣", limit:"30ppm 以下"}]},
+      { simKey:"acetic", items:[{item:"重金屬（Pb計）", limit:"1ppm 以下"},{item:"蒸發殘渣", limit:"30ppm 以下"}]},
+      { simKey:"heptane", items:[{item:"蒸發殘渣", limit:"120ppm 以下"}]},
+      { simKey:"ethanol", items:[{item:"蒸發殘渣", limit:"30ppm 以下"}]},
+    ], notes:[] },
+
+  { id:"formaldehyde", group:"個別塑膠材質", name:"以甲醛為合成原料之塑膠",
+    materialLimits:[{item:"鉛", limit:"100ppm 以下"},{item:"鎘", limit:"100ppm 以下"}],
+    extraction:[
+      { simKey:"water", items:[{item:"酚", limit:"陰性"},{item:"甲醛", limit:"陰性"}]},
+      { simKey:"acetic", items:[{item:"蒸發殘渣", limit:"30ppm 以下"}]},
+    ], notes:[] },
+
+  { id:"melamine", group:"個別塑膠材質", name:"以甲醛－三聚氰胺為合成原料之塑膠（美耐皿）",
+    materialLimits:[{item:"鉛", limit:"100ppm 以下"},{item:"鎘", limit:"100ppm 以下"}],
+    extraction:[
+      { simKey:"water", items:[{item:"酚", limit:"陰性"},{item:"甲醛", limit:"陰性"}]},
+      { simKey:"acetic", items:[{item:"蒸發殘渣", limit:"30ppm 以下"}]},
+      { simKey:"acetic", cond:"95℃，30分鐘（三聚氰胺專項，固定條件）", items:[{item:"三聚氰胺", limit:"2.5ppm 以下"}]},
+    ], notes:["常見於美耐皿餐碗。三聚氰胺項目固定採95℃條件。"] },
+
+  { id:"pla", group:"個別塑膠材質", name:"聚乳酸（PLA）",
+    materialLimits:[{item:"鉛", limit:"100ppm 以下"},{item:"鎘", limit:"100ppm 以下"}],
+    extraction:[
+      { simKey:"water", cond:"50℃，4小時（使用溫度達50℃以上或複合材料：60℃，30分鐘）", items:[{item:"高錳酸鉀消耗量", limit:"10ppm 以下"},{item:"蒸發殘渣", limit:"30ppm 以下"},{item:"總乳酸", limit:"30ppm 以下"}]},
+      { simKey:"acetic", items:[{item:"重金屬（Pb計）", limit:"1ppm 以下"},{item:"蒸發殘渣", limit:"30ppm 以下"}]},
+      { simKey:"ethanol", items:[{item:"蒸發殘渣", limit:"30ppm 以下"}]},
+      { simKey:"heptane", items:[{item:"蒸發殘渣", limit:"30ppm 以下"}]},
+    ], notes:["⚠ 不得應用於高溫滅菌之加工或調理過程，不適合盛裝100℃以上食品。"] },
+
+  { id:"paper-wax", group:"紙類", name:"紙類（蠟或紙漿製品）",
+    materialLimits:[{item:"螢光增白劑", limit:"不得檢出"}],
+    extraction:[
+      { simKey:"water", items:[{item:"砷（As2O3計）", limit:"0.1ppm 以下"},{item:"甲醛", limit:"陰性"},{item:"蒸發殘渣", limit:"30ppm 以下"}]},
+      { simKey:"acetic", items:[{item:"砷（As2O3計）", limit:"0.1ppm 以下"},{item:"重金屬（Pb計）", limit:"1ppm 以下"},{item:"蒸發殘渣", limit:"30ppm 以下"}]},
+      { simKey:"heptane", items:[{item:"蒸發殘渣", limit:"30ppm 以下"}]},
+      { simKey:"ethanol", items:[{item:"蒸發殘渣", limit:"30ppm 以下"}]},
+    ], notes:["不得使用回收材料製作。"] },
+
+  { id:"paper-fiber", group:"紙類", name:"紙類（植物纖維，如稻殼/蔬果纖維餐盒）",
+    materialLimits:[{item:"螢光增白劑", limit:"不得檢出"}],
+    extraction:[
+      { simKey:"water", items:[{item:"砷（As2O3計）", limit:"0.1ppm 以下"},{item:"甲醛", limit:"陰性"},{item:"蒸發殘渣", limit:"30ppm 以下"}]},
+      { simKey:"acetic", items:[{item:"砷（As2O3計）", limit:"0.1ppm 以下"},{item:"重金屬（Pb計）", limit:"1ppm 以下"},{item:"蒸發殘渣", limit:"30ppm 以下"}]},
+      { simKey:"heptane", items:[{item:"蒸發殘渣", limit:"30ppm 以下"}]},
+      { simKey:"ethanol", items:[{item:"蒸發殘渣", limit:"30ppm 以下"}]},
+    ], notes:["若接觸面覆有塑膠塗層，應改依對應塑膠材質規定檢驗。"] },
+
+  { id:"rubber", group:"橡膠", name:"橡膠（非哺乳器具用，如密封墊圈）",
+    materialLimits:[{item:"鉛", limit:"100ppm 以下"},{item:"鎘", limit:"100ppm 以下"},{item:"2-巰基咪唑啉", limit:"陰性"}],
+    extraction:[
+      { simKey:"water", items:[{item:"酚", limit:"5ppm 以下"},{item:"甲醛", limit:"陰性"},{item:"蒸發殘渣", limit:"60ppm 以下"}]},
+      { simKey:"acetic", items:[{item:"鋅", limit:"15ppm 以下"},{item:"重金屬（Pb計）", limit:"1ppm 以下"}]},
+      { simKey:"ethanol", items:[{item:"蒸發殘渣", limit:"60ppm 以下"}]},
+    ], notes:["常見於罐頭/玻璃罐蓋內密封墊、擠壓瓶噴頭墊圈。"] },
+];
+
+const PRODUCT_PRESETS = {
+  "肉糧":     { sims:["heptane","water"], note:"乾糧/肉乾多屬中性偏乾燥，但表面常噴塗油脂，預設「水」＋「正庚烷」。配方偏酸可另加勾選4%醋酸。" },
+  "罐頭":     { sims:["water","heptane"], note:"肉類為主之罐頭多屬中性、含油脂，預設「水」＋「正庚烷」。配方含番茄/蔬果偏酸請額外勾選4%醋酸。" },
+  "餐包":     { sims:["water","heptane"], note:"軟包裝濕食性質與罐頭類似，預設「水」＋「正庚烷」；配方偏酸請額外勾選4%醋酸。" },
+  "凍乾":     { sims:["water","heptane"], note:"復水後多屬中性水溶，且常含油脂，預設「水」＋「正庚烷」。" },
+  "清潔用品": { sims:[], outOfScope:true, note:"清潔用品非「食品」，其包材原則上不受本標準規範。" },
+  "人食乾粉": { sims:["water","acetic"], note:"酸性乾粉調味類，預設「水」＋「4%醋酸」。此類產品屬食品，直接受本標準規範。" },
+  "人食油炸": { sims:["water","heptane"], note:"油炸類含油脂，預設「水」＋「正庚烷」；醬料偏酸可另加勾選4%醋酸。" },
+  "其他":     { sims:["water"], note:"請依實際酸鹼度、油脂含量、是否含酒精自行勾選。" },
+};
+
+const PKG_FILM = [{"material": "PET12/AL7/BOPA15/PE120", "vendors": ["科盛"], "names": ["AC彩印袋-澤龜糧中", "AC彩印袋-澤龜糧小", "AC彩印袋-鼠主食小", "DC彩印袋-貓肉糧中英", "DC彩印袋-貓肉糧小英", "HM彩印袋-全晶球雞中新"], "nameCount": 20, "approval": ["已承認"], "migrationReport": []}, {"material": "PET12/AL06/CPP60", "vendors": ["益森"], "names": ["DC鋁捲-慢烘鮮食蔬肉糧試 (犬用)", "DC鋁捲-特規試", "HM鋁捲-全晶球雞試新", "HM鋁捲-全貓晶球雞試", "HM鋁捲-小犬肉鬆雞試", "HM鋁捲-犬晶球雞試"], "nameCount": 14, "approval": ["已承認"], "migrationReport": []}, {"material": "PET12/半鍍鋁/LLDPE80", "vendors": [], "names": ["DC彩印袋-貓鮮泥G"], "nameCount": 1, "approval": ["已承認"], "migrationReport": []}, {"material": "PET12u/AL6u/PET12u/RCPP50u", "vendors": ["喜美"], "names": ["DC鋁捲-貓鮮泥G", "DC鋁捲-貓鮮泥鰹", "DC鋁捲-貓鮮泥鱸", "DC鋁捲-貓鮮泥鴨"], "nameCount": 4, "approval": ["已承認"], "migrationReport": []}, {"material": "PET12/AL7/PE20/LLDPE80", "vendors": [], "names": ["DCS彩印袋-口腔丁", "DCS彩印袋-排毛丁", "DCS彩印袋-泌尿丁", "DCS彩印袋-關節丁", "HM彩印袋-口腔晶球", "HM彩印袋-口腔蔬果丁"], "nameCount": 9, "approval": [], "migrationReport": []}, {"material": "3APET/LLDPE80", "vendors": ["喜美"], "names": ["DC彩印袋-原肉零食711凍乾特丁魚", "DC彩印袋-原肉零食711凍乾特干雞丁", "DC彩印袋-原肉零食711凍乾特柳葉魚", "DC彩印袋-原肉零食711凍乾特牛心", "DC彩印袋-原肉零食711凍乾特雞丁", "DC彩印袋-原肉零食711凍乾特骰牛"], "nameCount": 14, "approval": [], "migrationReport": []}, {"material": "PET12/CPP60", "vendors": ["喜美"], "names": ["HM彩印袋-每日免疫", "HM彩印袋-每日口腔", "HM彩印袋-每日泌尿", "HM彩印袋-每日紓壓", "HM彩印袋-每日護膚", "HM彩印袋-每日關節"], "nameCount": 6, "approval": [], "migrationReport": []}, {"material": "3APET12/LLDPE80", "vendors": ["喜美"], "names": ["DC彩印袋-711原肉凍乾(貓福珊迪聯名款)-特干雞丁", "DC彩印袋-711原肉凍乾(貓福珊迪聯名款)-特爆毛肉餅", "DC彩印袋-711原肉凍乾(貓福珊迪聯名款)-特牛心", "DC彩印袋-711原肉凍乾(貓福珊迪聯名款)-特骰牛", "DC彩印袋-咬咬原肉小", "DC彩印袋-咬咬原肉小港"], "nameCount": 9, "approval": [], "migrationReport": []}, {"material": "PET15/VMPET12/PE80 亮膜", "vendors": [], "names": ["AC彩印袋-鼠機能腸道小", "AC彩印袋-鼠蔬果玉米小", "AC彩印袋-鼠蔬果芭樂小", "AC彩印袋-鼠蔬果莓果小"], "nameCount": 4, "approval": ["已承認"], "migrationReport": []}, {"material": "PET12/AL6/PET12/RCPP50", "vendors": ["喜美"], "names": ["AC鋁捲-鼠蔬果條系列", "HM鋁捲-每日免疫", "HM鋁捲-每日口腔", "HM鋁捲-每日泌尿", "HM鋁捲-每日紓壓", "HM鋁捲-每日護膚"], "nameCount": 7, "approval": ["已承認"], "migrationReport": []}, {"material": "PE12/CPP60", "vendors": ["科盛"], "names": ["HM鋁捲-犬肉鬆內料包"], "nameCount": 1, "approval": ["已承認"], "migrationReport": []}, {"material": "PET12/AL06/LLDPE120", "vendors": ["益森"], "names": ["DC彩印袋-慢烘鮮食蔬肉糧中 (犬用)", "DC彩印袋-慢烘鮮食蔬肉糧小 (犬用)", "DC袋子－特紐骰牛大", "HM 彩印袋-犬肉鬆糧(中)", "HM 彩印袋-犬肉鬆糧(小)", "HM彩印袋-犬晶球大"], "nameCount": 13, "approval": ["已承認"], "migrationReport": []}, {"material": "PET12/EPET二元蒸鍍12/LLPE70", "vendors": ["益森"], "names": ["LM彩印袋-咔滋特規"], "nameCount": 1, "approval": ["已承認"], "migrationReport": []}, {"material": "PET12/AL7/BOPA15/PE130", "vendors": ["科盛"], "names": ["LM彩印袋-貓牛餅中", "LM彩印袋-貓雞餅中", "LM彩印袋-貓鱈餅小"], "nameCount": 3, "approval": ["已承認"], "migrationReport": []}, {"material": "PET12/AL7/BOPA15/PE110", "vendors": ["科盛"], "names": ["LM彩印袋-貓牛餅小", "LM彩印袋-貓雞餅小", "LM彩印袋-貓鱈餅小"], "nameCount": 3, "approval": ["已承認"], "migrationReport": []}, {"material": "PET12/AL7/BOPA15/PE120，單面15.5絲", "vendors": ["科盛"], "names": ["DC彩印袋-貓肉糧中英", "DC彩印袋-貓肉糧小英", "HM彩印袋-小犬肉鬆糧中", "HM彩印袋-小犬肉鬆糧小", "LM彩印袋-貓鮭糧", "LM彩印袋-貓鮭糧大"], "nameCount": 7, "approval": ["已承認"], "migrationReport": []}, {"material": "3APET(厚度12)/LLDPE80\nVA12(厚度12)/LLDPE80\n(三氧化二鋁AL2O3)(厚度12)/LLDPE80", "vendors": ["台灣薄膜", "喜美"], "names": ["DC彩印袋-原肉零食711", "DC彩印袋-原肉零食小", "DC彩印袋-原肉零食小雞胸", "DC彩印袋-熱烘零食", "DC彩印袋-迪原肉零食三眼怪小卷", "DC彩印袋-迪原肉零食唐老鴨"], "nameCount": 18, "approval": ["已承認"], "migrationReport": []}, {"material": "PET/三氧化二鋁/LLDPE", "vendors": ["台灣積層"], "names": [], "nameCount": 0, "approval": ["已承認"], "migrationReport": []}, {"material": "PET12/AL6/LLDPE60", "vendors": ["喜美"], "names": ["DC彩印袋-純泥G蝦", "DC彩印袋-純泥G鰹蝦", "DC彩印袋-純泥沙貝", "DC彩印袋-純泥鮪蟹", "DC彩印袋-迪貓草球", "DC鋁捲-純泥G蝦"], "nameCount": 9, "approval": ["已承認"], "migrationReport": []}, {"material": "PET12/AL06/ONY12/LLDPE100", "vendors": ["喜美"], "names": ["HM彩印袋-犬晶球特大"], "nameCount": 1, "approval": ["已承認"], "migrationReport": []}, {"material": "PET12/AL06/PET12/LLDPE100", "vendors": ["喜美"], "names": ["HM彩印袋-貓晶球特大"], "nameCount": 1, "approval": ["已承認"], "migrationReport": []}, {"material": "PET12/LLDPE100", "vendors": ["喜美"], "names": ["倆"], "nameCount": 1, "approval": ["已承認"], "migrationReport": []}, {"material": "PET12/VMPET12/LLDPE40", "vendors": ["喜美"], "names": ["DC彩印袋-天然起司球40g－起司球"], "nameCount": 1, "approval": ["已承認"], "migrationReport": []}, {"material": "PET12/PE20/AL6/CPP40", "vendors": ["台灣積層", "喜美"], "names": ["DC三封鋁-雞紓壓(4700PC/ROL)", "DC鋁卷-體益", "DC鋁封袋-原益綠", "DC鋁封袋-敏益粉", "DC鋁封袋-軟便", "DC鋁封袋-雞益橘"], "nameCount": 14, "approval": ["已承認"], "migrationReport": []}, {"material": "PET12/AL9/易 NY15/RCPP70", "vendors": ["森美"], "names": ["DC彩印袋-狗餐包橘", "DC彩印袋-狗餐包紫", "DC彩印袋-狗餐包綠", "DC彩印袋-狗餐包藍", "DC彩印袋-貓餐包粉", "DC彩印袋-貓餐包綠"], "nameCount": 8, "approval": ["已承認"], "migrationReport": []}, {"material": "PET12/NY15/RCPP70", "vendors": ["森美"], "names": ["HM彩印袋-雞腿筍", "HM彩印袋-雞腿蜂", "HM彩印袋-雞腿鵪"], "nameCount": 3, "approval": ["已承認"], "migrationReport": []}, {"material": "NY15/LLDPE70(高耐衝擊)(NY為日本進口複材)", "vendors": ["華博"], "names": ["DC彩印袋-狗生食大", "DC彩印袋-貓生食大", "DC彩印袋-貓生食小"], "nameCount": 3, "approval": ["已承認"], "migrationReport": []}, {"material": "ONY15u/AL6u/LLDPE100u", "vendors": ["喜美"], "names": ["DC彩印袋-零食大"], "nameCount": 1, "approval": ["已承認"], "migrationReport": []}, {"material": "KNY16.5/LLDPE80", "vendors": ["喜美"], "names": ["HM彩印袋-肉乾"], "nameCount": 1, "approval": ["已承認"], "migrationReport": []}, {"material": "OPP20/CPP30", "vendors": ["華博"], "names": ["DC彩印袋-凍乾零食試吃包", "LM彩印袋-凍乾零食試吃包"], "nameCount": 2, "approval": ["已承認"], "migrationReport": []}, {"material": "OPP20/CPP20", "vendors": ["益森"], "names": ["DC包裝袋-口腔噴頭包裝袋"], "nameCount": 1, "approval": ["已承認"], "migrationReport": []}, {"material": "PET12/AL06/PE20/LLDPE80", "vendors": ["益森"], "names": ["DC彩印袋-低敏凍乾主食大(小方粒貓用)", "DC彩印袋-低敏凍乾主食大(犬用)", "DC彩印袋-低敏凍乾主食大(貓用)", "DC彩印袋-低敏凍乾主食大(貓用)-乾貓G大新", "DC彩印袋-低敏凍乾主食小(小方粒貓用)", "DC彩印袋-低敏凍乾主食小(犬用)"], "nameCount": 10, "approval": ["已承認"], "migrationReport": []}];
+const PKG_BOTTLE = [{"category": "湯匙", "name": "湯匙-XY11016", "spec": "5000支/箱", "vendor": "1688 平阳县鑫越电子商务商行", "approval": "已承認"}, {"category": "瓶器", "name": "瓶子-BOK250II", "spec": "BOK250II 瓶身 象牙色W2\n 432支/箱\n HDPE瓶pp蓋 250cc \n 瓶身：30g\n 蓋:9.87g\n 材質細碼：C541", "vendor": "M0033近代", "approval": "已承認"}, {"category": "蓋子", "name": "蓋子-BOK53M4", "spec": "BOK53M4 象牙蓋 入墊入鋁-3耳\n 432支/箱", "vendor": "M0033近代", "approval": "已承認"}, {"category": "瓶器", "name": "DC試管-細管", "spec": "蓋子要噴印汪喵星球\n 40ml\n 舊材質:PS\n 新材質:PET", "vendor": "M0252 1688試管_河山偉業X自力耕生", "approval": "已承認"}, {"category": "瓶器", "name": "DC試管-粗管", "spec": "蓋子要噴印汪喵星球\n 材質:PET", "vendor": "M0252 1688試管_河山偉業X自力耕生", "approval": "已承認"}, {"category": "瓶器", "name": "DC噴瓶-除臭SL-300(2-89)-透明", "spec": "2-89/SL300 PET 300ml 大平肩瓶(透明)\n 180 只/箱\n 重量33.5g\n 細碼C307", "vendor": "M0056有美", "approval": "已承認"}, {"category": "噴頭", "name": "DC噴頭-除臭ZJ3051(24-410)-透明", "spec": "日本Mitani 進口噴槍/ZJ3051(24-410)/出量:0.3ml\n 重量 2.9\n 細碼C541", "vendor": "M0056有美", "approval": "已承認"}, {"category": "瓶器", "name": "DC噴瓶-口腔-BS30PET-白", "spec": "使用誠安和購買\n 5-9/BS30 PET 30ml 厚底平肩瓶 (白色)\n 528只/箱", "vendor": "M0056有美", "approval": "已承認"}, {"category": "噴頭", "name": "DC噴頭-口腔白-TM(20-410)-白", "spec": "有美\n 進口噴頭 TM(20-410)/條紋/白色/黑眼\n 通永和\n PP全白髮妝噴頭+PP透明防塵套\n \n 通永和為替代廠商,因適合度有美較適合,故當有美缺貨時才會訂購通永和", "vendor": "M0272通永和", "approval": "已承認"}, {"category": "蓋子", "name": "DC瓶蓋-口腔平蓋-N130-白", "spec": "使用誠安和購買\n N130(20-410)白色/含1.5mm墊片", "vendor": "M0056有美", "approval": "已承認"}, {"category": "瓶器", "name": "DC噴瓶-洗碗-PET5-14\\500ml-透明", "spec": "5-14  PET/28-410/ 500ml 透明\n 106只/箱", "vendor": "M0056有美", "approval": "已承認"}, {"category": "噴頭", "name": "DC噴頭-洗碗-泡沫OPUS(28-410)-白", "spec": "泡沫三指噴槍 OPUS FOVI(28-410)/出量1.35cc (白色)\n 墊量 172mm\n 290只/箱", "vendor": "M0056有美", "approval": "已承認"}, {"category": "蓋子", "name": "DC瓶蓋-洗碗-C285含墊片-白", "spec": "C285(白) PP蓋. 28-410/含墊片", "vendor": "M0056有美", "approval": "已承認"}, {"category": "噴頭", "name": "MN泡沫噴槍-貓廁慕斯", "spec": "泡沫噴槍 FOVI 28/410", "vendor": "L0335勝至有限公司", "approval": "已承認"}, {"category": "湯匙", "name": "湯匙-CT515", "spec": "CT-515(II)1g短匙輕白色\n PS料\n 訂購數量給總數，無固定數量一箱", "vendor": "M0033近代", "approval": ""}, {"category": "瓶器", "name": "瓶子-JR125", "spec": "瓶身(象牙白 W2 PP料)\n 630個/箱\n pp瓶pp蓋 125cc\n 瓶身：19g  \n 蓋:11.49g\n 材質細碼：C541", "vendor": "M0033近代", "approval": "已承認"}, {"category": "瓶器", "name": "瓶子-JR200", "spec": "瓶身(象牙白 W2 PP料)\n 462個/箱\n pp瓶pp蓋 200cc\n 瓶身：25g  \n 蓋:15.37g\n 材質細碼：C541", "vendor": "M0033近代", "approval": "已承認"}, {"category": "瓶器", "name": "瓶子-JR250", "spec": "瓶身(象牙白 W2 PP料)\n 432個/箱\n pp瓶pp蓋 250cc\n 瓶身：28g\n 蓋:15.37g\n 材質細碼：C541", "vendor": "M0033近代", "approval": "已承認"}, {"category": "蓋子", "name": "蓋子-HC45", "spec": "HC-45凸字象牙安全蓋入墊入三拉耳鋁箔I-7600無印42mm 8*2入淋膜墊片\n 630個/箱", "vendor": "M0033近代", "approval": "已承認"}, {"category": "蓋子", "name": "蓋子-HC53", "spec": "HC-53凸字象牙安全蓋入墊入三拉耳鋁箔I-7600無印50.3mm 10*2入淋膜墊片\n 462個/箱 或924個/箱", "vendor": "M0033近代", "approval": "已承認"}, {"category": "瓶器", "name": "DC瓶器-洗衣-PE 1009 2L白", "spec": "1009/HDPE/2L桶/含C166內塞(白色)\n 42只/箱", "vendor": "M0056有美", "approval": "已承認"}, {"category": "瓶器", "name": "MN器瓶-貓廁慕斯", "spec": "PE瓶-300ml,白", "vendor": "L0335勝至有限公司", "approval": "已承認"}, {"category": "蓋子", "name": "DC瓶蓋-除臭 33410傳統蓋 (低-C模) +1.5mm墊片", "spec": "33410傳統蓋(低-C模)+1.5MM墊片\n 白", "vendor": "M0249集泉", "approval": "已承認"}, {"category": "蓋子", "name": "DC瓶蓋-C314白-洗衣", "spec": "C314/PP蓋/止漏圈(白色)", "vendor": "M0056有美", "approval": "已承認"}, {"category": "瓶器", "name": "DC瓶器-除臭補充-LV338/1000ml", "spec": "LV338圓瓶-1000ML-Φ33/56G\n 透明", "vendor": "M0249集泉", "approval": "已承認"}, {"category": "蓋子", "name": "DC試管-小蓋", "spec": "蓋子要噴印汪喵星球\n 配合 R43000020   DC試管-細管", "vendor": "M0252 1688試管_河山偉業X自力耕生", "approval": "已承認"}, {"category": "蓋子", "name": "DC試管-大蓋", "spec": "蓋子要噴印汪喵星球\n 配合 R43000021   DC試管-粗管", "vendor": "M0252 1688試管_河山偉業X自力耕生", "approval": "已承認"}, {"category": "瓶器", "name": "DC瓶器-狗沐浴", "spec": "BTQP PET 大容量泡沫瓶\n 大容量泡沫瓶(瓶身透明+霧UV).PET.500ml", "vendor": "G0198橋登國際企業有限公司", "approval": "已承認"}, {"category": "瓶器", "name": "DC瓶器-貓沐浴", "spec": "WB PETG泡沫瓶\n 泡沫瓶(瓶身透明+霧UV).PETG.180ml.43牙", "vendor": "G0198橋登國際企業有限公司", "approval": "已承認"}, {"category": "壓頭", "name": "DC壓頭-狗沐浴", "spec": "BTQP 泡沫頭\n 泡沫頭(白色).60牙.附夾具", "vendor": "G0198橋登國際企業有限公司", "approval": "已承認"}, {"category": "壓頭", "name": "DC壓頭-貓沐浴", "spec": "BTQP-43D泡沫頭\n 43D.防水淋泡沫頭PP(白色).附小夾子PP.吸管", "vendor": "G0198橋登國際企業有限公司", "approval": "已承認"}, {"category": "其他", "name": "DC夾具-狗沐浴", "spec": "壓頭附贈", "vendor": "G0198橋登國際企業有限公司", "approval": "已承認"}, {"category": "其他", "name": "DC夾具-貓沐浴", "spec": "壓頭附贈", "vendor": "G0198橋登國際企業有限公司", "approval": "已承認"}, {"category": "噴頭", "name": "DC噴頭─口腔小新", "spec": "P185-DP04/W(內置彈簧/出水量:0.2cc)18/415 PP白色平面壓頭/PP白色長嘴噴頭", "vendor": "L0004上溢精密股份有限公司", "approval": "已承認"}, {"category": "瓶器", "name": "DC瓶子─口腔小新", "spec": "TCS 30ml PET瓶射出白色(不含印刷)", "vendor": "L0004上溢精密股份有限公司", "approval": "已承認"}, {"category": "蓋子", "name": "DC瓶蓋─口腔小新", "spec": "φ18止漏圈瓶蓋\n 白", "vendor": "集泉塑膠工業股份有限公司", "approval": "已承認"}, {"category": "瓶器", "name": "DC瓶子-洗碗大", "spec": "696桶(白)\\2L(@60*17件)", "vendor": "M0056有美", "approval": "已承認"}, {"category": "瓶器", "name": "DC瓶蓋-洗碗大", "spec": "C249(白)38牙 PP安全蓋,含墊片", "vendor": "M0056有美", "approval": "已承認"}, {"category": "噴頭", "name": "DC長嘴旋轉噴頭-口腔小", "spec": "YG-M360L 360度長嘴噴頭 白色 18牙 PP 出水量0.2ml 管長4.2±0.1cm", "vendor": "", "approval": ""}, {"category": "瓶器", "name": "MN噴瓶-居家清潔-PE211白", "spec": "PE瓶-425ml-白", "vendor": "M0056有美", "approval": "已承認"}, {"category": "壓頭", "name": "MN壓頭-居家清潔", "spec": "", "vendor": "M0056有美", "approval": "已承認"}, {"category": "蓋子", "name": "MN瓶蓋-居家清潔C321白蓋", "spec": "", "vendor": "M0056有美", "approval": "已承認"}, {"category": "湯匙", "name": "CT-540大湯匙", "spec": "1300支/箱", "vendor": "M0033近代", "approval": "已承認"}];
+const PKG_OTHER = [{"name": "DC收縮膜-PVC細試管", "spec": "PVCP細管收縮膜\n0.04*51*30mm", "vendor": "正群南(享榮)", "approval": "已承認"}, {"name": "DC收縮膜-PVC粗試管", "spec": "PVCP粗管收縮膜\n0.04*65*50mm", "vendor": "正群南(享榮)", "approval": "已承認"}, {"name": "收縮膜-瓶裝小", "spec": "瓶裝收縮膜(小)\n0.03*90*140mm", "vendor": "正群南(享榮)", "approval": "已承認"}, {"name": "收縮膜-瓶裝大", "spec": "瓶裝收縮膜(大) \n0.03*110*145mm", "vendor": "正群南(享榮)", "approval": "已承認"}, {"name": "收縮膜-POF小", "spec": "0.025*60*229mm", "vendor": "正群南(享榮)", "approval": "已承認"}, {"name": "收縮膜-POF大", "spec": "0.025*80*290mm", "vendor": "正群南(享榮)", "approval": "已承認"}, {"name": "DC收縮膜-除臭", "spec": "噴霧用PVC收縮膜 \n 90*22.5*0.03", "vendor": "正群南(享榮)", "approval": "已承認"}, {"name": "DC包裝袋-洗碗噴頭", "spec": "OPP自粘袋 13.5 x 24 CM\nOPP包裝自粘袋", "vendor": "PChome 連結", "approval": "已承認"}, {"name": "軟型塑膠紙", "spec": "20.5*20.5cm*0.02mm\n霧白", "vendor": "新洲", "approval": "已承認"}, {"name": "空白袋-OPP自黏吊袋6.5*22", "spec": "OPP吊袋6.5*22(100入/包)\nOPP透明自黏吊袋6.5*22\n為有自黏膠袋型,非平口袋型\n為有吊孔款式,吊孔處為白色", "vendor": "政榮貿易", "approval": "已承認"}, {"name": "LM收縮膜-POF起酥棒", "spec": "0.025*110*280mm", "vendor": "正群南(享榮)", "approval": "已承認"}, {"name": "空白袋-OPP自黏8*12cm", "spec": "OPP自黏袋8*12(100入/包)", "vendor": "政榮貿易", "approval": "已承認"}, {"name": "DC空白袋-落砂墊杏/落砂墊灰", "spec": "PE塑膠袋 \n 45cm*60cm*0.05mm\n 每磅約15個", "vendor": "保隆包裝", "approval": "已承認"}, {"name": "DC包裝袋-口腔噴頭包裝袋", "spec": "160mm*1500m\n2版", "vendor": "華力", "approval": "已承認"}, {"name": "DC空白袋-底盤", "spec": "磨砂包裝袋\n40*45CM\n半透明袋子\nEVA服裝袋\n雙層16絲", "vendor": "1688\n自力耕生x齊力包裝", "approval": "已承認"}, {"name": "收縮膜-0.03*202*207mm(廠做魷益)", "spec": "PVC 0.03*202*207mm", "vendor": "正群南(享榮)", "approval": "已承認"}, {"name": "LM空白袋-OPP自黏袋-防塵碗米", "spec": "吊卡OPP自黏袋16*26 100入\n雙面厚度5絲", "vendor": "創藝貿易有限公司", "approval": "已承認"}, {"name": "HM內襯-燒肉", "spec": "PET內襯", "vendor": "瑞興", "approval": "已承認"}, {"name": "LM收縮膜-閃亮魚油", "spec": "PVC收縮膜\n0.04*64*120mm\n7版", "vendor": "M0292\n嘉祥發企業有限公司", "approval": "已承認"}, {"name": "DC 收縮膜-全魚油", "spec": "PVC收縮膜\n0.04*64*120mm\n7版", "vendor": "M0292\n嘉祥發企業有限公司", "approval": "已承認"}, {"name": "MN收縮膜-不沾黏", "spec": "PVC收縮膜\n0.04*72*150mm\n8版", "vendor": "M0292\n嘉祥發企業有限公司", "approval": "已承認"}, {"name": "LM空白袋-零食內袋", "spec": "NY/RCPP70\n高溫真空袋 130*190mm", "vendor": "禾源包裝", "approval": "已承認"}, {"name": "DC空白袋-全聯肉泥袋23*29cm打洞", "spec": "OPP自黏袋23*29（右下打洞）", "vendor": "政榮貿易", "approval": "已承認"}, {"name": "DC舒美布-全聯肉泥舒美布(30*45cm)", "spec": "舒美布(30*45cm)", "vendor": "米綠小舖", "approval": ""}];
+
+/* ================= ALIAS DICTIONARY ================= */
+const ALIASES = [
+  ["3APET","metalized"],["VMPET","metalized"],["EPET","metalized"],
+  ["半鍍鋁","metalized"],["三氧化二鋁","metalized"],["AL2O3","metalized"],["VA","metalized"],
+  ["BOPET","pet"],["PETP","pet"],["PET","pet"],
+  ["LLDPE","pe-pp"],["LDPE","pe-pp"],["HDPE","pe-pp"],["BOPP","pe-pp"],["OPP","pe-pp"],["CPP","pe-pp"],["PP","pe-pp"],["PE","pe-pp"],
+  ["PVDC","pvdc"],
+  ["PVC","pvc"],
+  ["EPS","ps"],["PS","ps"],
+  ["PC","pc"],
+  ["PMMA","pmma"],
+  ["PMP","pmp"],
+  ["PLA","pla"],
+  ["BOPA","pa-nylon"],["尼龍","pa-nylon"],["耐隆","pa-nylon"],["NYLON","pa-nylon"],["KNY","pa-nylon"],["ONY","pa-nylon"],["PA6","pa-nylon"],["NY","pa-nylon"],["PA","pa-nylon"],
+  ["鋁箔","aluminum"],["鋁","aluminum"],["ALUMINIUM","aluminum"],["ALUMINUM","aluminum"],["ALU","aluminum"],["AL","aluminum"],
+  ["牛皮紙","paper-wax"],["蠟紙","paper-wax"],["紙漿","paper-wax"],["KRAFT","paper-wax"],
+  ["植物纖維","paper-fiber"],["紙","paper-fiber"],["PAPER","paper-fiber"],
+  ["美耐皿","melamine"],["MELAMINE","melamine"],
+  ["橡膠","rubber"],["矽膠","rubber"],["RUBBER","rubber"],["SILICONE","rubber"],
+  ["陶瓷","glass"],["玻璃","glass"],["GLASS","glass"],["CERAMIC","glass"],
+  ["馬口鐵","tin"],["鍍錫","tin"],["TINPLATE","tin"],
+  ["焊料","solder"],["SOLDER","solder"],
+  ["不銹鋼","alloy-contact"],["STAINLESS","alloy-contact"],
+  ["內塗","alloy-coated"],["內裡塗層","alloy-coated"],["塗層","alloy-coated"],
+];
+ALIASES.sort((a,b)=>b[0].length-a[0].length);
+
+function stripThickness(token){
+  return token.replace(/^[0-9.]+ *(um|\u03bcm|mic|g|gsm|u)?/i,"").replace(/[0-9.]+ *(um|\u03bcm|mic|g|gsm|u)?$/i,"").trim();
+}
+function matchToken(raw){
+  const cleaned = stripThickness(raw).trim();
+  if(!cleaned) return null;
+  const upper = cleaned.toUpperCase();
+  for(const [key,id] of ALIASES){
+    const keyUpper = key.toUpperCase();
+    if(/^[A-Z0-9]+$/.test(keyUpper)){
+      if(upper===keyUpper || upper.includes(keyUpper)) return id;
+    } else {
+      if(cleaned.includes(key)) return id;
     }
-  } else {
-    if(calcEl) calcEl.textContent = '';
   }
-  runExpCheck();
+  return null;
+}
+function parseComposite(text){
+  if(!text.trim()) return [];
+  const firstLine = text.split(/\r?\n/)[0];
+  const rawTokens = firstLine.split(/[\/\\\uff0f\u3001,\uff0c\+\-\s]+/).filter(t=>t.trim().length>0);
+  return rawTokens.map(t=>({ raw:t, materialId: matchToken(t) }));
 }
 
-function getIngExpDates(){
-  const results = [];
-  document.querySelectorAll('[id^="ing-block-"]').forEach(block=>{
-    const n = block.id.replace('ing-block-','');
-    const item = document.getElementById('i'+n+'-item')?.value?.trim()||'';
-    if(!item) return;
-    const mfg = document.getElementById('i'+n+'-mfg')?.value;
-    const shelf = parseInt(document.getElementById('i'+n+'-shelf')?.value)||0;
-    const expInput = document.getElementById('i'+n+'-exp')?.value;
-    // 優先用 製造日期+保存期限 計算
-    const calcExp = calcExpDate(mfg, shelf);
-    const finalExp = calcExp || (expInput ? new Date(expInput) : null);
-    results.push({ item, mfg, shelf, calcExp, inputExp: expInput?new Date(expInput):null, finalExp });
+/* ================= UI: CHIPS ================= */
+const materialInput = document.getElementById("materialInput");
+const parsedChips = document.getElementById("parsedChips");
+
+let currentMode = "layered"; // "layered" | "components"
+
+function renderChips(parsed){
+  if(parsed.length===0){ parsedChips.innerHTML=""; return; }
+  let html="";
+  parsed.forEach((p,idx)=>{
+    const isLast = idx===parsed.length-1;
+    const mat = p.materialId ? MATERIALS.find(m=>m.id===p.materialId) : null;
+    const highlightAsContact = currentMode==="layered" ? isLast : true;
+    const cls = !mat ? "unknown" : (highlightAsContact ? "contact" : "");
+    const label = mat ? mat.name.split("（")[0].split("(")[0] : (p.raw + "（未辨識）");
+    const tagText = currentMode==="layered" ? (isLast && mat ? " ★接觸層" : "") : (mat ? " ・組成材質" : "");
+    html += '<span class="chip '+cls+'">'+label+tagText+'</span>';
+    if(idx<parsed.length-1) html += '<span class="arrow">\u2192</span>';
   });
-  return results;
+  parsedChips.innerHTML = html;
 }
 
-function runExpCheck(){
-  const panel = document.getElementById('exp-panel');
-  const trialDate = document.getElementById('f-date')?.value;
-  const actualExpStr = document.getElementById('f-actual-exp')?.value;
-  const productShelf = parseInt(document.getElementById('f-product-shelf')?.value)||0;
-  const ings = getIngExpDates();
+const simulantChecklist = document.getElementById("simulantChecklist");
+Object.entries(SIMULANTS).forEach(([key,s])=>{
+  const label=document.createElement("label");
+  label.innerHTML = '<input type="checkbox" data-sim="'+key+'"> <span><b>'+s.label+'</b><span class="hint">'+s.sub+'</span></span>';
+  simulantChecklist.appendChild(label);
+});
 
-  // 更新建議效期
-  const validExps = ings.map(i=>i.finalExp).filter(Boolean);
-  let suggestedExp = null;
-  if(validExps.length){
-    suggestedExp = new Date(Math.min(...validExps.map(d=>d.getTime())));
-    document.getElementById('f-suggested-exp').value = dateToStr(suggestedExp);
-  } else {
-    document.getElementById('f-suggested-exp').value = '';
-  }
+const productSelect=document.getElementById("productSelect");
+const productScopeNote=document.getElementById("productScopeNote");
+const highTempToggle=document.getElementById("highTempToggle");
 
-  if(!ings.length && !actualExpStr) { panel.innerHTML=''; return; }
-
-  const warnings = [];
-  const errors = [];
-  const infos = [];
-
-  // 各內容物效期驗證
-  ings.forEach(ing=>{
-    if(ing.mfg && ing.shelf && ing.inputExp){
-      const calcStr = dateToStr(ing.calcExp);
-      const inputStr = dateToStr(ing.inputExp);
-      if(calcStr !== inputStr){
-        errors.push(`【${ing.item}】填入有效日期 ${inputStr} 與計算結果 ${calcStr} 不符`);
-      } else {
-        infos.push(`【${ing.item}】有效日期 ${inputStr} 驗證正確`);
-      }
-    }
-    if(ing.finalExp){
-      infos.push(`【${ing.item}】有效至 ${dateToStr(ing.finalExp)}`);
-    }
-  });
-
-  // 效期距試產日期不足12個月警示
-  if(actualExpStr && trialDate){
-    const actual = new Date(actualExpStr);
-    const trial = new Date(trialDate);
-    const diffMonths = (actual.getFullYear()-trial.getFullYear())*12 + (actual.getMonth()-trial.getMonth());
-    if(diffMonths < 12){
-      warnings.push(`外包裝打印效期距試產日期僅 ${diffMonths} 個月，未滿12個月`);
-    }
-  }
-
-  // 建議效期 vs 實際打印
-  if(actualExpStr && suggestedExp){
-    const actual = new Date(actualExpStr);
-    if(actual > suggestedExp){
-      errors.push(`實際打印效期 ${actualExpStr} 超過建議效期 ${dateToStr(suggestedExp)}`);
-    }
-  }
-
-  const hasErr = errors.length > 0;
-  const hasWarn = warnings.length > 0;
-  const headClass = hasErr ? 'err' : hasWarn ? 'warn' : 'ok';
-  const headIcon = hasErr ? '⚠ 效期異常' : hasWarn ? '⚡ 效期警示' : '✓ 效期正常';
-
-  let html = `<div class="exp-panel">
-    <div class="exp-panel-head ${headClass}">${headIcon}</div>
-    <div class="exp-panel-body">`;
-
-  errors.forEach(e=>{
-    html+=`<div class="exp-row"><span class="etag err">異常</span><span class="ev">${esc(e)}</span></div>`;
-  });
-  warnings.forEach(w=>{
-    html+=`<div class="exp-row"><span class="etag warn">警示</span><span class="ev">${esc(w)}</span></div>`;
-  });
-  infos.forEach(i=>{
-    html+=`<div class="exp-row"><span class="etag ok">正常</span><span class="ev">${esc(i)}</span></div>`;
-  });
-
-  html+='</div></div>';
-  panel.innerHTML = html;
+function applyPreset(){
+  const preset=PRODUCT_PRESETS[productSelect.value];
+  document.querySelectorAll('[data-sim]').forEach(cb=>{ cb.checked = preset.sims.includes(cb.dataset.sim); });
+  productScopeNote.textContent = preset.note;
+  render();
 }
+productSelect.addEventListener("change", applyPreset);
+materialInput.addEventListener("input", ()=>{ currentMode="layered"; render(); });
+highTempToggle.addEventListener("change", render);
+simulantChecklist.addEventListener("change", render);
 
+/* ================= RESULTS RENDER ================= */
+const resultArea=document.getElementById("resultArea");
 
+function renderMaterialBlock(material, selectedSims, hiTemp, isContact, mode){
+  const badgeText = mode==="components" ? "組成材質" : (isContact ? "\u2605 \u63a5\u89e6\u5c64" : "\u7d50\u69cb\u5c64");
+  const badgeClass = mode==="components" ? "contact" : (isContact?'contact':'structural');
+  let html = '<details class="layer-card '+((isContact||mode==="components")?'contact':'')+'" '+((isContact||mode==="components")?'open':'')+'>';
+  html += '<summary><span>'+material.name.split("（")[0].split("(")[0]+'</span><span class="role-badge '+badgeClass+'">'+badgeText+'</span></summary>';
+  html += '<div class="body">';
 
-// ---- Collect form ----
-function collectIngredients(){
-  const result=[];
-  document.querySelectorAll('[id^="ing-block-"]').forEach(block=>{
-    const n=block.id.replace('ing-block-','');
-    const item=document.getElementById('i'+n+'-item')?.value?.trim()||'';
-    if(!item) return;
-    result.push({
-      品項:item,
-      料號:document.getElementById('i'+n+'-sku')?.value||'',
-      占比:document.getElementById('i'+n+'-ratio')?.value||'',
-      型態:document.getElementById('i'+n+'-form')?.value||'',
-      包裝形式:document.getElementById('i'+n+'-pack')?.value||'',
-      製造日期:document.getElementById('i'+n+'-mfg')?.value||'',
-      有效日期:document.getElementById('i'+n+'-exp')?.value||'',
-      保存期限:parseInt(document.getElementById('i'+n+'-shelf')?.value)||0
+  if(material.notes && material.notes.length){
+    material.notes.forEach(n=>{
+      const isWarn = n.indexOf("\u26a0")!==-1;
+      html += '<div class="'+(isWarn?'warn-line':'note-line')+'">'+n+'</div>';
     });
-  });
-  return result;
-}
-
-function collectForm(){
-  const ings=collectIngredients();
-  const flat={};
-  ings.forEach((ing,i)=>{
-    const k=`內容物${i+1}`;
-    flat[k+'_品項']=ing.品項;
-    flat[k+'_料號']=ing.料號;
-    flat[k+'_占比']=ing.占比;
-    flat[k+'_型態']=ing.型態;
-    flat[k+'_包裝形式']=ing.包裝形式;
-    flat[k+'_製造日期']=ing.製造日期;
-    flat[k+'_有效日期']=ing.有效日期;
-    flat[k+'_保存期限']=ing.保存期限;
-  });
-  return {
-    '試產日期':document.getElementById('f-date').value,
-    '品名':document.getElementById('f-name').value,
-    '料號':document.getElementById('f-sku').value,
-    '生產機台':document.getElementById('f-machine').value,
-    '外包裝形式':document.getElementById('f-outpack').value,
-    '效期_印刷位置':document.getElementById('f-printside').value,
-    '效期_位置描述':document.getElementById('f-printdesc').value,
-    '效期_印刷機台':document.getElementById('f-printmachine').value,
-    '效期_印刷方式':document.getElementById('f-printmethod').value,
-    ...flat,
-    '調整內容':document.getElementById('f-adjust').value,
-    '遇到的問題':document.getElementById('f-issues').value,
-    '處理方式':document.getElementById('f-handling').value,
-    '研發負責人':document.getElementById('f-rd').value,
-    'PM':document.getElementById('f-pm').value,
-    '狀態':document.getElementById('f-status').value,
-    '建議效期':document.getElementById('f-suggested-exp').value,
-    '實際打印效期':document.getElementById('f-actual-exp').value,
-    '新品保存期限':document.getElementById('f-product-shelf').value
-  };
-}
-
-// ---- Load packaging data ----
-async function loadPackaging(){
-  try{
-    const res=await fetch(APPS_SCRIPT_URL+'?action=getPackaging',{cache:'no-store'});
-    if(!res.ok) throw new Error('HTTP '+res.status);
-    PKG_DATA=await res.json();
-    console.log('包材驗收資料載入完成，共 '+PKG_DATA.length+' 筆');
-  }catch(e){
-    console.warn('包材驗收資料載入失敗：',e);
   }
-}
-
-// ---- Fuzzy search packaging ----
-function searchPackaging(){
-  clearTimeout(pkgTimer);
-  pkgTimer = setTimeout(()=>{
-    const q=(document.getElementById('f-name').value||'').trim();
-    const el=document.getElementById('pkg-result');
-    if(!q || q.length<2){ el.innerHTML=''; return; }
-    const qn=q.replace(/\s+/g,'').toLowerCase();
-    const hits=PKG_DATA.filter(r=>{
-      const item=(r['品項']||'').replace(/\s+/g,'').toLowerCase();
-      return item.includes(qn) || qn.split('').every(c=>item.includes(c));
-    }).slice(0,3);
-    if(!hits.length){
-      el.innerHTML=`<div class="pkg-none">⚠ 包材驗收總表中查無「${esc(q)}」相關紀錄　<a class="pkg-link" href="https://docs.google.com/spreadsheets/d/1hpOmEJnz9vRSqfz7nsgctlu2B61eFlcJ7ag-M-F7cZ8/edit?gid=1167582221#gid=1167582221" target="_blank">前往驗收總表</a></div>`;
-      return;
-    }
-    let html='<div class="pkg-hit"><div class="pkg-hit-head"><span class="pkg-hit-title">✓ 找到包材驗收紀錄</span><span class="pkg-hit-count">'+hits.length+' 筆相符</span><a class="pkg-link" href="https://docs.google.com/spreadsheets/d/1hpOmEJnz9vRSqfz7nsgctlu2B61eFlcJ7ag-M-F7cZ8/edit?gid=1167582221#gid=1167582221" target="_blank">查看完整驗收表</a></div>';
-    hits.forEach(r=>{
-      const result=r['驗收結果']||'';
-      const resultClass=result.includes('通過')||result.includes('合格')?'pkg-pass':result?'pkg-fail':'';
-      html+=`<div class="pkg-item">
-        <span class="pk">品項</span><span class="pv">${esc(r['品項']||'')}${r['料號']?' · '+esc(r['料號']):''}${r['版次']?' 版次：'+esc(r['版次']):''}</span>
-      </div>
-      <div class="pkg-item">
-        <span class="pk">驗收</span><span class="pv ${resultClass}">${esc(result||'未填')}</span>
-        <span class="pk">日期</span><span class="pv">${esc(r['驗收日期']||r['進/回貨日期']||'—')}</span>
-        ${r['驗收人員']?`<span class="pk">人員</span><span class="pv">${esc(r['驗收人員'])}</span>`:''}
-      </div>`;
+  if(material.materialLimits.length){
+    html += '<table class="result"><thead><tr><th style="width:38%">材質本身限量</th><th>限量標準</th></tr></thead><tbody>';
+    material.materialLimits.forEach(r=>{ html += '<tr><td>'+r.item+'</td><td class="limit-val">'+r.limit+'</td></tr>'; });
+    html += '</tbody></table>';
+  }
+  const relevantBlocks = material.extraction.filter(b=>selectedSims.includes(b.simKey));
+  if(relevantBlocks.length===0 && material.extraction.length>0){
+    html += '<div class="note-line">目前勾選的模擬溶劑與此材質無對應項目（適用溶劑：'+material.extraction.map(b=>SIMULANTS[b.simKey].label).join("、")+'）。</div>';
+  }
+  relevantBlocks.forEach(block=>{
+    const s = SIMULANTS[block.simKey];
+    let cond = block.cond || (hiTemp ? s.hiCond : s.baseCond);
+    if(block.cond && block.cond.indexOf("95")!==-1){ cond = block.cond; }
+    html += '<table class="result"><thead><tr><th style="width:20%">溶劑</th><th style="width:22%">條件</th><th style="width:30%">項目</th><th>限量</th></tr></thead><tbody>';
+    block.items.forEach((it,idx)=>{
+      html += '<tr>'+(idx===0?('<td><span class="simulant-tag">'+s.label+'</span></td><td>'+cond+'</td>'):'<td></td><td></td>')+'<td>'+it.item+'</td><td class="limit-val">'+it.limit+'</td></tr>';
     });
-    html+='</div>';
-    el.innerHTML=html;
-  }, 350);
-}
-
-// ---- Load records ----
-async function loadRecords(){
-  setStatus('busy','連線中…');
-  try{
-    const res=await fetch(APPS_SCRIPT_URL+'?action=getTrials',{cache:'no-store'});
-    if(!res.ok) throw new Error('HTTP '+res.status);
-    RECORDS=await res.json();
-    setStatus('ok','已連接 Google Sheet');
-    document.getElementById('recCount').textContent=RECORDS.length+' 筆試產紀錄';
-  }catch(e){
-    setStatus('off','無法連線');
-    document.getElementById('recCount').textContent='—';
-    console.warn(e);
+    html += '</tbody></table>';
+  });
+  if(material.extraction.length===0 && material.materialLimits.length===0){
+    html += '<div class="note-line">此材質為定性合規要求或無專屬檢驗項目。</div>';
   }
+  html += '</div></details>';
+  return html;
 }
 
-// ---- Render records ----
-function esc(s){return (s||'').toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-
-function statusBadge(s){
-  if(!s) return '<span class="status-badge none">未標記</span>';
-  if(s.includes('已完成')) return '<span class="status-badge done">已完成</span>';
-  if(s.includes('進行中')) return '<span class="status-badge wip">進行中</span>';
-  if(s.includes('待覆盤')) return '<span class="status-badge review">待覆盤</span>';
-  return `<span class="status-badge none">${esc(s)}</span>`;
+function buildSupplierChecklist(parsed, selectedSims, hiTemp){
+  const items=[];
+  const matched = parsed.map(p=>p.materialId?MATERIALS.find(m=>m.id===p.materialId):null);
+  const contactIdx = parsed.length-1;
+  items.push('各層材質證明文件（Material Declaration / SDS），確認結構為 <b>'+parsed.map(p=>p.materialId?MATERIALS.find(m=>m.id===p.materialId).name.split("（")[0].split("(")[0]:p.raw).join(" / ")+'</b>');
+  matched.forEach((m,idx)=>{
+    if(!m) return;
+    const isContact = idx===contactIdx;
+    if(m.materialLimits.length){
+      items.push('\u3010'+m.name.split("（")[0].split("(")[0]+'\u3011材質重金屬／限量項目檢測報告（'+m.materialLimits.map(x=>x.item).join("、")+'）');
+    }
+    const relBlocks = m.extraction.filter(b=>selectedSims.includes(b.simKey));
+    if(relBlocks.length){
+      const simNames = [...new Set(relBlocks.map(b=>SIMULANTS[b.simKey].label))].join("、");
+      items.push((isContact?'<b>\u3010\u5fc5\u8981\uff0c\u98df\u54c1\u63a5\u89e6\u5c64\u3011</b>':'\u3010\u5efa\u8b70\uff0c\u7d50\u69cb\u5c64\u3011')+'「'+m.name.split("（")[0].split("(")[0]+'」溶出試驗報告，模擬溶劑：'+simNames+(hiTemp?'（採95℃,30分鐘條件）':''));
+    }
+  });
+  const unknowns = parsed.filter(p=>!p.materialId);
+  if(unknowns.length){
+    items.push('\u26a0 無法辨識的材質層：<b>'+unknowns.map(u=>u.raw).join("、")+'</b> — 請直接向供應商索取該層材質安全聲明或SDS。');
+  }
+  items.push('第三方檢驗單位（如SGS等）之正式檢驗報告，需明確標示為依「食品器具容器包裝衛生標準」進行測試');
+  return items;
 }
 
-function renderRecords(){
-  const el = document.getElementById('recordsList');
-  if(!RECORDS.length){
-    el.innerHTML=`<div class="empty-state"><span class="glyph">📋</span><p>尚無試產紀錄</p></div>`;
+function render(){
+  const preset=PRODUCT_PRESETS[productSelect.value];
+  const selectedSims=[...document.querySelectorAll('[data-sim]:checked')].map(cb=>cb.dataset.sim);
+  const hiTemp=highTempToggle.checked;
+  let parsed = parseComposite(materialInput.value);
+
+  if(currentMode === "components"){
+    const seen = new Set();
+    parsed = parsed.filter(p=>p.materialId).filter(p=>{
+      if(seen.has(p.materialId)) return false;
+      seen.add(p.materialId);
+      return true;
+    });
+  }
+
+  renderChips(parsed);
+
+  const scopeNoteEl = document.getElementById("materialScopeNote");
+  if(scopeNoteEl){
+    scopeNoteEl.textContent = currentMode==="components"
+      ? "此品項為單一容器的多個組成部件（如瓶身/瓶蓋），非疊層膜結構，下方列出各部件材質對應的檢驗項目。"
+      : "依供應商標示順序輸入（外層在前、內層／封口層在後）。也可以到左側選單或「包材庫」分頁挑選現有材質直接帶入。";
+  }
+
+  let html="";
+  if(preset.outOfScope){
+    html += '<div class="out-of-scope"><b>本產品類別不適用本標準</b><br>清潔用品非「食品」，其包材不受食品器具容器包裝衛生標準規範。若仍想參考本標準做內部風險評估，可切換其他產品類別。</div>';
+    resultArea.innerHTML = html; return;
+  }
+  if(parsed.length===0){
+    resultArea.innerHTML = currentMode==="components"
+      ? '<div class="note-line">在這段規格文字中找不到已知材質關鍵字，請直接洽供應商或研發確認實際材質。</div>'
+      : '<div class="note-line">請輸入包材結構，例如：PET/AL/PA/PE，或到左側選單／「包材庫」分頁挑選。</div>';
     return;
   }
-  el.innerHTML=[...RECORDS].reverse().map(r=>{
-    const ings=[];
-    for(let i=1;i<=8;i++){
-      const item=r[`內容物${i}_品項`];
-      if(item) ings.push([item, r[`內容物${i}_料號`]?`(${r[`內容物${i}_料號`]})`:'', r[`內容物${i}_型態`], r[`內容物${i}_占比`]].filter(Boolean).join(' '));
-    }
-    const people=[r['研發負責人']?'研發：'+r['研發負責人']:'', r['PM']?'PM：'+r['PM']:''].filter(Boolean).join('　');
-    const ridx = r._rowIndex;
-    const packOpts = ['單一袋裝','盒裝','袋裝+外盒','散裝','其他'].map(o=>`<option ${r['外包裝形式']===o?'selected':''}>${o}</option>`).join('');
-    const sideOpts = ['正面','背面','側面','底部'].map(o=>`<option ${r['效期_印刷位置']===o?'selected':''}>${o}</option>`).join('');
-    const methodOpts = ['碳帶','雷射','噴墨','熱燙','其他'].map(o=>`<option ${r['效期_印刷方式']===o?'selected':''}>${o}</option>`).join('');
-    const statusOpts = ['進行中','已完成','待覆盤'].map(o=>`<option ${r['狀態']===o?'selected':''}>${o}</option>`).join('');
-    return `<div class="rec-card" id="rec-card-${ridx}">
-      <div class="rec-head">
-        <div>
-          <div class="rec-name">${esc(r['品名']||'未填品名')}</div>
-          ${r['料號']?`<div class="rec-sku">${esc(r['料號'])}</div>`:''}
-          ${ings.length?`<div style="font-size:12.5px;color:var(--ink-dim);margin-top:4px;">${ings.map(esc).join('<br>')}</div>`:''}
-        </div>
-        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
-          <div class="rec-meta">${esc(r['試產日期']||'')}<br>${esc(r['生產機台']||'')}</div>
-          ${statusBadge(r['狀態'])}
-          <button class="rec-edit-btn" onclick="toggleEdit(${ridx})">✏ 編輯</button>
-        </div>
-      </div>
-      <div class="rec-body" id="rec-view-${ridx}">
-        ${r['外包裝形式']?`<div class="rec-row"><span class="k">外包裝</span><span class="v">${esc(r['外包裝形式'])}</span></div>`:''}
-        ${(r['效期_印刷位置']||r['效期_印刷方式'])?`<div class="rec-row"><span class="k">效期打印</span><span class="v">${[r['效期_印刷位置'],r['效期_位置描述'],r['效期_印刷方式'],r['效期_印刷機台']].filter(Boolean).map(esc).join('・')}</span></div>`:''}
-        ${r['調整內容']?`<div class="rec-row"><span class="k">調整內容</span><span class="v">${esc(r['調整內容'])}</span></div>`:''}
-        ${r['遇到的問題']?`<div class="rec-row"><span class="k">問題觀察</span><span class="v">${esc(r['遇到的問題'])}</span></div>`:''}
-        ${r['處理方式']?`<div class="rec-row"><span class="k">處理方式</span><span class="v">${esc(r['處理方式'])}</span></div>`:''}
-        ${people?`<div class="rec-row"><span class="k">負責人</span><span class="v">${esc(people)}</span></div>`:''}
-      </div>
-      <div class="rec-edit-panel" id="rec-edit-${ridx}" style="display:none;">
-        <div class="edit-grid triple">
-          <div class="edit-section-label">基本資訊</div>
-          <div class="edit-field"><label>試產日期</label><input type="date" id="e${ridx}-date" value="${esc(r['試產日期']||'')}"></div>
-          <div class="edit-field"><label>品名</label><input type="text" id="e${ridx}-name" value="${esc(r['品名']||'')}"></div>
-          <div class="edit-field"><label>料號</label><input type="text" id="e${ridx}-sku" value="${esc(r['料號']||'')}"></div>
-          <div class="edit-field"><label>生產機台</label><input type="text" id="e${ridx}-machine" value="${esc(r['生產機台']||'')}"></div>
-          <div class="edit-field"><label>外包裝形式</label><select id="e${ridx}-outpack"><option value=""></option>${packOpts}</select></div>
-          <div class="edit-field"><label>狀態</label><select id="e${ridx}-status"><option value=""></option>${statusOpts}</select></div>
-        </div>
-        <div class="edit-grid triple">
-          <div class="edit-section-label">效期打印</div>
-          <div class="edit-field"><label>印刷位置</label><select id="e${ridx}-printside"><option value=""></option>${sideOpts}</select></div>
-          <div class="edit-field"><label>位置描述</label><input type="text" id="e${ridx}-printdesc" value="${esc(r['效期_位置描述']||'')}"></div>
-          <div class="edit-field"><label>印刷方式</label><select id="e${ridx}-printmethod"><option value=""></option>${methodOpts}</select></div>
-          <div class="edit-field"><label>印刷機台</label><input type="text" id="e${ridx}-printmachine" value="${esc(r['效期_印刷機台']||'')}"></div>
-        </div>
-        <div class="edit-grid single">
-          <div class="edit-section-label">試產記錄</div>
-          <div class="edit-field"><label>調整內容</label><textarea id="e${ridx}-adjust">${esc(r['調整內容']||'')}</textarea></div>
-          <div class="edit-field"><label>遇到的問題／觀察</label><textarea id="e${ridx}-issues">${esc(r['遇到的問題']||'')}</textarea></div>
-          <div class="edit-field"><label>處理方式</label><textarea id="e${ridx}-handling">${esc(r['處理方式']||'')}</textarea></div>
-        </div>
-        <div class="edit-grid triple">
-          <div class="edit-field"><label>研發負責人</label><input type="text" id="e${ridx}-rd" value="${esc(r['研發負責人']||'')}"></div>
-          <div class="edit-field"><label>PM</label><input type="text" id="e${ridx}-pm" value="${esc(r['PM']||'')}"></div>
-        </div>
-        <div class="edit-btn-row">
-          <button class="edit-save-btn" onclick="saveEdit(${ridx})">儲存</button>
-          <button class="edit-cancel-btn" onclick="toggleEdit(${ridx})">取消</button>
-        </div>
-      </div>
-    </div>`;
-  }).join('');
-}
 
-function toggleEdit(ridx){
-  const view = document.getElementById('rec-view-'+ridx);
-  const edit = document.getElementById('rec-edit-'+ridx);
-  const isOpen = edit.style.display !== 'none';
-  edit.style.display = isOpen ? 'none' : 'block';
-  view.style.display = isOpen ? 'block' : 'none';
-}
+  html += '<div class="result-head"><h2>各層檢驗項目</h2><span class="count">'+selectedSims.map(k=>'<span class="simulant-tag">'+SIMULANTS[k].label+'</span>').join(" ")+'</span></div>';
 
-async function saveEdit(ridx){
-  const rec = RECORDS.find(r=>r._rowIndex===ridx);
-  if(!rec){ showToast('找不到紀錄'); return; }
-  const updated = { ...rec,
-    '試產日期': document.getElementById('e'+ridx+'-date')?.value||'',
-    '品名': document.getElementById('e'+ridx+'-name')?.value||'',
-    '料號': document.getElementById('e'+ridx+'-sku')?.value||'',
-    '生產機台': document.getElementById('e'+ridx+'-machine')?.value||'',
-    '外包裝形式': document.getElementById('e'+ridx+'-outpack')?.value||'',
-    '狀態': document.getElementById('e'+ridx+'-status')?.value||'',
-    '效期_印刷位置': document.getElementById('e'+ridx+'-printside')?.value||'',
-    '效期_位置描述': document.getElementById('e'+ridx+'-printdesc')?.value||'',
-    '效期_印刷方式': document.getElementById('e'+ridx+'-printmethod')?.value||'',
-    '效期_印刷機台': document.getElementById('e'+ridx+'-printmachine')?.value||'',
-    '調整內容': document.getElementById('e'+ridx+'-adjust')?.value||'',
-    '遇到的問題': document.getElementById('e'+ridx+'-issues')?.value||'',
-    '處理方式': document.getElementById('e'+ridx+'-handling')?.value||'',
-    '研發負責人': document.getElementById('e'+ridx+'-rd')?.value||'',
-    'PM': document.getElementById('e'+ridx+'-pm')?.value||''
-  };
-  delete updated._rowIndex;
-  try{
-    const res = await fetch(APPS_SCRIPT_URL, {method:'POST', body:JSON.stringify({action:'updateTrial', rowIndex:ridx, data:updated})});
-    const json = await res.json();
-    if(json.success){
-      showToast('✓ 已更新到 Google Sheet');
-      await loadRecords();
-      renderRecords();
-    } else { showToast('儲存失敗：'+(json.error||'未知錯誤')); }
-  }catch(e){ showToast('儲存失敗，請確認網路連線'); }
-}
-
-// ---- Save ----
-async function saveRecord(){
-  const data=collectForm();
-  if(!data['品名']){showToast('請填入品名再儲存');return;}
-  try{
-    const res=await fetch(APPS_SCRIPT_URL,{method:'POST',body:JSON.stringify(data)});
-    const json=await res.json();
-    if(json.success){
-      showToast('✓ 已儲存到 Google Sheet');
-      await loadRecords();
+  parsed.forEach((p,idx)=>{
+    const isContact = idx===parsed.length-1;
+    if(p.materialId){
+      const material = MATERIALS.find(m=>m.id===p.materialId);
+      html += renderMaterialBlock(material, selectedSims, hiTemp, isContact, currentMode);
     } else {
-      showToast('儲存失敗：'+(json.error||'未知錯誤'));
+      html += '<details class="layer-card"><summary><span>「'+p.raw+'」</span><span class="role-badge structural">未辨識</span></summary><div class="body"><div class="warn-line">系統資料庫中找不到對應材質，可能為EVOH、特殊阻隔塗層或縮寫差異，建議直接向供應商確認。</div></div></details>';
     }
-  }catch(e){
-    showToast('儲存失敗，請確認網路連線');
+  });
+
+  const checklist = buildSupplierChecklist(parsed, selectedSims, hiTemp);
+  html += '<div class="result-head"><h2>建議要求供應商提供的文件清單</h2></div><ul class="checklist-out">'+checklist.map(i=>'<li>'+i+'</li>').join("")+'</ul>';
+  resultArea.innerHTML = html;
+}
+
+/* ================= PACKAGING DATABASE TAB ================= */
+const dbPills = document.getElementById("dbPills");
+const dbGroups = document.getElementById("dbGroups");
+const dbSearchInput = document.getElementById("dbSearch");
+let dbFilter = "film";
+let dbSearchTerm = "";
+
+function renderDbPills(){
+  const cats = [["film","膜袋類（"+PKG_FILM.length+"）"],["bottle","瓶器類（"+PKG_BOTTLE.length+"）"],["other","其他（"+PKG_OTHER.length+"）"]];
+  dbPills.innerHTML = cats.map(([key,label])=>'<span class="pill '+(dbFilter===key?'active':'')+'" data-cat="'+key+'">'+label+'</span>').join("");
+  dbPills.querySelectorAll(".pill").forEach(p=>{
+    p.addEventListener("click",()=>{ dbFilter=p.dataset.cat; renderDbGroups(); renderDbPills(); });
+  });
+}
+
+function groupByKey(arr, fn){
+  const map = new Map();
+  arr.forEach(item=>{
+    const key = fn(item) || "未分類";
+    if(!map.has(key)) map.set(key, []);
+    map.get(key).push(item);
+  });
+  return map;
+}
+function matchesSearch(text, term){ return (text||"").toLowerCase().includes(term.toLowerCase()); }
+
+function filmFamily(materialStr){
+  const line = materialStr.split(/\r?\n/)[0];
+  const tokens = line.split(/[\/\\\uff0f\u3001,\uff0c\+\-\s]+/).filter(Boolean);
+  const ids = tokens.map(t=>matchToken(t)).filter(Boolean);
+  if(ids.includes("aluminum")) return "含鋁箔阻隔層";
+  if(ids.includes("metalized")) return "鍍鋁／高阻隔鍍層";
+  if(ids.includes("pa-nylon")) return "含尼龍阻隔層（無鋁箔）";
+  return "一般 PE／PP／PET 膜";
+}
+
+function renderGroupAccordion(grouped, rowRenderer){
+  const sortedKeys = [...grouped.keys()].sort((a,b)=>grouped.get(b).length - grouped.get(a).length);
+  if(sortedKeys.length===0) return '<p class="scope-note">沒有符合的結果。</p>';
+  let html = "";
+  sortedKeys.forEach((key,i)=>{
+    const list = grouped.get(key);
+    html += '<details class="db-group" '+(i===0?'open':'')+'><summary><span><span class="arrow-icon"></span>'+key+'</span><span class="grp-count">'+list.length+'</span></summary><div class="grp-body">';
+    list.forEach(item=>{ html += rowRenderer(item); });
+    html += '</div></details>';
+  });
+  return html;
+}
+
+function renderDbGroups(){
+  const term = dbSearchTerm.trim();
+  let html = "";
+
+  if(dbFilter === "film"){
+    let items = PKG_FILM;
+    if(term) items = items.filter(f => matchesSearch(f.material,term) || f.names.some(n=>matchesSearch(n,term)) || f.vendors.some(v=>matchesSearch(v,term)));
+    const grouped = groupByKey(items, f=>filmFamily(f.material));
+    html = renderGroupAccordion(grouped, f=>{
+      const multi = f.material.indexOf("\n")!==-1;
+      const shortMat = f.material.split("\n")[0];
+      return '<div class="db-row"><div class="db-main"><div class="mat">'+shortMat+(multi?' 等':'')+'</div><div class="meta">'+(f.vendors.join("、")||"未標示廠商")+' ・ '+f.nameCount+' 款產品在用</div></div><button data-mode="layered" data-mat="'+encodeURIComponent(shortMat)+'">帶入查詢</button></div>';
+    });
+  } else if(dbFilter === "bottle"){
+    let items = PKG_BOTTLE;
+    if(term) items = items.filter(b => matchesSearch(b.name,term) || matchesSearch(b.spec,term) || matchesSearch(b.vendor,term));
+    const grouped = groupByKey(items, b=>b.category);
+    html = renderGroupAccordion(grouped, b=>{
+      const val = ((b.spec||"")+" "+(b.name||"")).trim();
+      return '<div class="db-row"><div class="db-main"><div class="mat">'+b.name+'</div><div class="meta">'+(b.vendor||"未標示廠商")+(b.spec?(' ・ '+b.spec):'')+'</div></div><button data-mode="components" data-mat="'+encodeURIComponent(val)+'">帶入查詢</button></div>';
+    });
+  } else {
+    let items = PKG_OTHER;
+    if(term) items = items.filter(o => matchesSearch(o.name,term) || matchesSearch(o.spec,term) || matchesSearch(o.vendor,term));
+    const grouped = groupByKey(items, o=>(o.name||"").split("-")[0]);
+    html = renderGroupAccordion(grouped, o=>{
+      const val = ((o.spec||"")+" "+(o.name||"")).trim();
+      return '<div class="db-row"><div class="db-main"><div class="mat">'+o.name+'</div><div class="meta">'+(o.vendor||"未標示廠商")+(o.spec?(' ・ '+o.spec):'')+'</div></div><button data-mode="components" data-mat="'+encodeURIComponent(val)+'">帶入查詢</button></div>';
+    });
   }
+
+  dbGroups.innerHTML = html;
+  dbGroups.querySelectorAll("button[data-mat]").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      currentMode = btn.dataset.mode || "layered";
+      materialInput.value = decodeURIComponent(btn.dataset.mat);
+      document.querySelectorAll('[data-sim]').forEach(cb=>{ cb.checked = true; });
+      document.querySelector('.tab-btn[data-tab="query"]').click();
+      render();
+    });
+  });
+}
+dbSearchInput.addEventListener("input", (e)=>{ dbSearchTerm = e.target.value; renderDbGroups(); });
+
+/* ================= REPORT GAP ANALYSIS ================= */
+function buildRequiredItemsFlat(parsed, selectedSims, hiTemp){
+  const list=[];
+  parsed.forEach((p,idx)=>{
+    if(!p.materialId) return;
+    const m = MATERIALS.find(x=>x.id===p.materialId);
+    const isContact = idx===parsed.length-1;
+    m.materialLimits.forEach(r=>{ list.push({layer:m.name.split("（")[0].split("(")[0], role:isContact?"食品接觸層":"結構層", item:r.item, limit:r.limit}); });
+    m.extraction.filter(b=>selectedSims.includes(b.simKey)).forEach(block=>{
+      const s=SIMULANTS[block.simKey];
+      let cond = block.cond || (hiTemp ? s.hiCond : s.baseCond);
+      block.items.forEach(it=>{ list.push({layer:m.name.split("（")[0].split("(")[0], role:isContact?"食品接觸層":"結構層", item:it.item+'（溶劑：'+s.label+'，'+cond+'）', limit:it.limit}); });
+    });
+  });
+  return list;
+}
+function fileToBase64(file){
+  return new Promise((resolve,reject)=>{
+    const reader = new FileReader();
+    reader.onload = ()=> resolve(reader.result.split(",")[1]);
+    reader.onerror = ()=> reject(new Error("讀取檔案失敗："+file.name));
+    reader.readAsDataURL(file);
+  });
+}
+function fileToText(file){
+  return new Promise((resolve,reject)=>{
+    const reader = new FileReader();
+    reader.onload = ()=> resolve(reader.result);
+    reader.onerror = ()=> reject(new Error("讀取檔案失敗："+file.name));
+    reader.readAsText(file);
+  });
 }
 
-// ---- Clear form ----
-function clearForm(){
-  ['f-date','f-name','f-sku','f-machine','f-outpack','f-printside','f-printdesc',
-   'f-printmachine','f-printmethod','f-adjust','f-issues','f-handling','f-rd','f-pm','f-status']
-  .concat(['f-suggested-exp','f-actual-exp','f-product-shelf'])
-  .forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
-  document.getElementById('exp-panel').innerHTML='';
-  document.getElementById('ingContainer').innerHTML='';
-  ingCount=0;
-  addIngredient();
-  addIngredient();
-  document.getElementById('f-date').value=new Date().toISOString().split('T')[0];
-  showToast('表單已清除');
+const reportFileInput = document.getElementById("reportFileInput");
+const analyzeBtn = document.getElementById("analyzeBtn");
+const gapStatus = document.getElementById("gapStatus");
+const gapResultArea = document.getElementById("gapResultArea");
+
+analyzeBtn.addEventListener("click", async ()=>{
+  const files = [...reportFileInput.files];
+  if(files.length===0){ gapStatus.textContent = "請先選擇至少一份報告檔案。"; return; }
+
+  const selectedSims=[...document.querySelectorAll('[data-sim]:checked')].map(cb=>cb.dataset.sim);
+  const hiTemp=highTempToggle.checked;
+  const parsed = parseComposite(materialInput.value);
+  const required = buildRequiredItemsFlat(parsed, selectedSims, hiTemp);
+
+  if(required.length===0){
+    gapStatus.textContent = "目前「查詢工具」分頁沒有可辨識的材質，請先完成包材結構輸入。";
+    return;
+  }
+
+  analyzeBtn.disabled = true;
+  gapStatus.textContent = "正在讀取檔案並比對，請稍候...";
+  gapResultArea.innerHTML = "";
+
+  try{
+    const contentBlocks = [];
+    for(const file of files.slice(0,5)){
+      if(file.type === "application/pdf"){
+        const base64 = await fileToBase64(file);
+        contentBlocks.push({ type:"document", source:{ type:"base64", media_type:"application/pdf", data:base64 } });
+      } else if(file.type.startsWith("image/")){
+        const base64 = await fileToBase64(file);
+        contentBlocks.push({ type:"image", source:{ type:"base64", media_type:file.type, data:base64 } });
+      } else {
+        const text = await fileToText(file);
+        contentBlocks.push({ type:"text", text:'\u3010\u6a94\u6848\uff1a'+file.name+'\u3011\n'+text.slice(0,6000) });
+      }
+    }
+    const requiredJson = JSON.stringify(required.map(r=>({layer:r.layer, role:r.role, item:r.item})));
+    const promptText = "你是食品包材檢驗品管專家。以下是我方要求供應商檢驗的項目清單（JSON陣列，每筆包含 layer/role/item）：\n"+requiredJson+"\n\n請閱讀附件的檢驗報告內容，判斷報告中實際包含哪些對應的檢驗項目及其數值/結果，並找出清單中哪些項目在報告裡完全找不到對應資料。\n只需回覆以下格式的純JSON，不要有任何前言、說明文字或markdown符號：\n{\n  \"covered\": [{\"item\":\"清單中的原始item文字\",\"reportValue\":\"報告中對應的數值或結果簡述\",\"pass\":true 或 false 或 null}],\n  \"missing\": [\"清單中的原始item文字，如果報告完全沒有涵蓋\"],\n  \"summary\": \"一到兩句話的整體結論\"\n}";
+    contentBlocks.push({type:"text", text:promptText});
+
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method:"POST", headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({ model:"claude-sonnet-4-6", max_tokens:1000, messages:[{ role:"user", content:contentBlocks }] })
+    });
+
+    if(!response.ok){
+      let bodyText = "";
+      try{ bodyText = JSON.stringify(await response.json()); }catch(e){ bodyText = await response.text().catch(()=>""); }
+      throw new Error("API 回應失敗（狀態碼 "+response.status+"）："+bodyText.slice(0,400));
+    }
+    const data = await response.json();
+    if(data.type === "error"){ throw new Error("API 錯誤："+(data.error && data.error.message ? data.error.message : JSON.stringify(data))); }
+    if(data.stop_reason === "max_tokens"){
+      gapStatus.textContent = "提醒：AI 回應被截斷，結果可能不完整，建議分批上傳或減少同時勾選的模擬溶劑數量。";
+    }
+    const textOut = (data.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("\n");
+    if(!textOut.trim()){ throw new Error("API 沒有回傳文字內容，原始回應："+JSON.stringify(data).slice(0,400)); }
+
+    const firstBrace = textOut.indexOf("{");
+    const lastBrace = textOut.lastIndexOf("}");
+    let result;
+    if(firstBrace === -1 || lastBrace === -1 || lastBrace < firstBrace){
+      throw new Error("AI 回應中找不到 JSON 結構，原始回應：\n"+textOut.slice(0,600));
+    }
+    const jsonSlice = textOut.slice(firstBrace, lastBrace+1);
+    try{ result = JSON.parse(jsonSlice); }
+    catch(e){
+      gapResultArea.innerHTML = '<div class="warn-line">AI 回應無法解析為 JSON，以下是原始回應內容供除錯：</div><pre class="raw-debug">'+textOut.replace(/</g,"&lt;")+'</pre>';
+      throw new Error("JSON 解析失敗："+e.message);
+    }
+    renderGapResult(result);
+    gapStatus.textContent = "比對完成。";
+  } catch(err){
+    gapStatus.innerHTML = '<span style="color:var(--warn);">比對過程發生錯誤：'+err.message+'</span>';
+  } finally {
+    analyzeBtn.disabled = false;
+  }
+});
+
+function renderGapResult(result){
+  let html = "";
+  if(result.summary){ html += '<div class="note-line"><b>AI 初步結論：</b>'+result.summary+'</div>'; }
+  html += '<div class="result-head"><h2>已找到對應數據的項目</h2><span class="count">'+(result.covered||[]).length+' 項</span></div>';
+  if((result.covered||[]).length){
+    html += '<table class="result"><thead><tr><th style="width:45%">檢驗項目</th><th style="width:30%">報告中的數值/結果</th><th>初步判定</th></tr></thead><tbody>';
+    result.covered.forEach(c=>{
+      const passLabel = c.pass===true ? '<span style="color:var(--ok);">\u2713 \u7b26\u5408</span>' : c.pass===false ? '<span style="color:var(--warn);">\u2715 \u53ef\u80fd\u4e0d\u7b26\uff0c\u8acb\u78ba\u8a8d</span>' : '<span style="color:var(--ink-soft);">\uff0d \u672a\u6a19\u660e</span>';
+      html += '<tr><td>'+c.item+'</td><td class="limit-val">'+(c.reportValue||"（未標明）")+'</td><td>'+passLabel+'</td></tr>';
+    });
+    html += '</tbody></table>';
+  } else {
+    html += '<div class="note-line">報告中沒有找到任何對應清單項目的數據，請確認上傳的檔案是否正確。</div>';
+  }
+  html += '<div class="result-head"><h2>清單中缺少 / 報告未涵蓋的項目</h2><span class="count">'+(result.missing||[]).length+' 項</span></div>';
+  if((result.missing||[]).length){
+    html += '<ul class="checklist-out">'+result.missing.map(m=>'<li><b>'+m+'</b> — 建議請供應商補充此項目的檢驗數據。</li>').join("")+'</ul>';
+  } else {
+    html += '<div class="note-line">清單中的項目在報告中皆已找到對應資料（仍請人工核對數值是否符合限量標準）。</div>';
+  }
+  gapResultArea.innerHTML = html;
 }
 
-// ---- Toast ----
-function showToast(msg){
-  const t=document.getElementById('toast');
-  t.textContent=msg;t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),2800);
+/* ================= TABS ================= */
+document.querySelectorAll(".tab-btn").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById("tab-query").classList.toggle("hidden", btn.dataset.tab!=="query");
+    document.getElementById("tab-db").classList.toggle("hidden", btn.dataset.tab!=="db");
+    document.getElementById("tab-gap").classList.toggle("hidden", btn.dataset.tab!=="gap");
+    document.getElementById("tab-reference").classList.toggle("hidden", btn.dataset.tab!=="reference");
+  });
+});
+
+/* ================= REFERENCE TABLE ================= */
+const referenceArea=document.getElementById("referenceArea");
+function renderReference(){
+  const groups={};
+  MATERIALS.forEach(m=>{ (groups[m.group]=groups[m.group]||[]).push(m); });
+  let html = "";
+  Object.entries(groups).forEach(([groupName, mats])=>{
+    html += '<details class="ref-group"><summary>'+groupName+'（'+mats.length+'）</summary>';
+    mats.forEach(m=>{
+      html += '<div class="ref-card"><h4>'+m.name+'</h4>';
+      if(m.materialLimits.length){
+        html += '<table><thead><tr><th>材質本身限量</th><th>標準</th></tr></thead><tbody>';
+        m.materialLimits.forEach(r=>html+='<tr><td>'+r.item+'</td><td>'+r.limit+'</td></tr>');
+        html += '</tbody></table>';
+      }
+      if(m.extraction.length){
+        html += '<table style="margin-top:6px;"><thead><tr><th>溶劑</th><th>條件</th><th>項目</th><th>標準</th></tr></thead><tbody>';
+        m.extraction.forEach(block=>{
+          const s=SIMULANTS[block.simKey]; const cond = block.cond || s.baseCond;
+          block.items.forEach((it,idx)=>{ html += '<tr><td>'+(idx===0?s.label:"")+'</td><td>'+(idx===0?cond:"")+'</td><td>'+it.item+'</td><td>'+it.limit+'</td></tr>'; });
+        });
+        html += '</tbody></table>';
+      }
+      if(m.notes.length){ html += '<div class="notes">'+m.notes.join("<br>")+'</div>'; }
+      html += '</div>';
+    });
+    html += '</details>';
+  });
+  referenceArea.innerHTML = html;
 }
 
-// ---- Init ----
-document.getElementById('f-date').value=new Date().toISOString().split('T')[0];
-addIngredient();
-addIngredient();
-loadRecords();
-loadPackaging();
+/* ================= INIT ================= */
+productSelect.value = "餐包";
+materialInput.value = "PET/AL/PA/PE";
+highTempToggle.checked = true;
+applyPreset();
+renderDbPills();
+renderDbGroups();
+renderReference();
+
 </script>
 </body>
 </html>
