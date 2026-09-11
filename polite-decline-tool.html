@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>婉拒小幫手</title>
+<style>
+  :root{
+    --bg: #F2F4F1;
+    --panel: #FFFFFF;
+    --ink: #24322E;
+    --ink-soft: #5B6862;
+    --teal: #2F5D50;
+    --teal-dark: #21443A;
+    --clay: #B5652E;
+    --border: #D7DED8;
+    --border-soft: #E6EAE5;
+  }
+  *{ box-sizing: border-box; }
+  html, body{
+    margin:0; padding:0; height:100%;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", -apple-system, "Segoe UI", sans-serif;
+  }
+  body{
+    display:flex;
+    justify-content:center;
+    padding: 32px 20px;
+  }
+  .wrap{
+    width:100%;
+    max-width: 920px;
+  }
+  header{
+    margin-bottom: 22px;
+  }
+  header .eyebrow{
+    font-size: 13px;
+    color: var(--ink-soft);
+    letter-spacing: 0.02em;
+    margin-bottom: 4px;
+  }
+  header h1{
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+  .board{
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .section{
+    padding: 20px 22px;
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .section-label{
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin-bottom: 10px;
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+  }
+  .section-label .hint{
+    font-size: 12px;
+    color: #9AA5A0;
+    font-weight: 400;
+  }
+  textarea{
+    width:100%;
+    min-height: 90px;
+    resize: vertical;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 14px;
+    font-size: 15px;
+    line-height: 1.6;
+    font-family: inherit;
+    color: var(--ink);
+    background: #FBFCFB;
+  }
+  textarea:focus{
+    outline: none;
+    border-color: var(--teal);
+  }
+  #mainInput{ min-height: 140px; }
+  .two-col{
+    display:grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  @media (min-width: 640px){
+    .two-col{ grid-template-columns: 1fr 1fr; }
+  }
+  .two-col-item textarea{ min-height: 80px; }
+  .mini-label{
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-bottom: 6px;
+  }
+  .note-row{
+    margin-top: 10px;
+  }
+  .note-row input{
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 9px 12px;
+    font-size: 13px;
+    font-family: inherit;
+    color: var(--ink);
+    background: #FBFCFB;
+  }
+  .note-row input:focus{
+    outline: none;
+    border-color: var(--teal);
+  }
+
+  .dropzone{
+    border: 1px dashed var(--border);
+    border-radius: 6px;
+    background: #FBFCFB;
+    padding: 16px;
+    text-align: center;
+    color: var(--ink-soft);
+    font-size: 13px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+    outline: none;
+  }
+  .dropzone:hover, .dropzone:focus{
+    border-color: var(--teal);
+    background: #F5F9F7;
+  }
+  .dropzone.has-image{
+    padding: 10px;
+    cursor: default;
+  }
+  .thumb-wrap{
+    position: relative;
+    display: inline-block;
+    max-width: 100%;
+  }
+  .thumb-wrap img{
+    max-height: 160px;
+    max-width: 100%;
+    border-radius: 4px;
+    display: block;
+    border: 1px solid var(--border-soft);
+  }
+  .remove-x{
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: #fff;
+    border: 2px solid #fff;
+    font-size: 13px;
+    line-height: 1;
+    cursor: pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .row{
+    display:grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  @media (min-width: 720px){
+    .row{ grid-template-columns: 1fr 1fr; }
+    .row .col:first-child{ border-right: 1px solid var(--border-soft); }
+  }
+  .col{
+    padding: 20px 22px;
+    display:flex;
+    flex-direction:column;
+  }
+  .col-label{
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin-bottom: 10px;
+  }
+  .output{
+    min-height: 140px;
+    border: 1px solid var(--border-soft);
+    border-radius: 6px;
+    padding: 12px 14px;
+    font-size: 15px;
+    line-height: 1.7;
+    background: #FAFBFA;
+    white-space: pre-wrap;
+    color: var(--ink);
+  }
+  .output.placeholder{
+    color: #9AA5A0;
+  }
+  .controls{
+    padding: 16px 22px;
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .tones{
+    display:flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .tone-btn{
+    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--ink-soft);
+    font-size: 13px;
+    padding: 7px 13px;
+    border-radius: 999px;
+    cursor:pointer;
+    transition: all 0.15s ease;
+  }
+  .tone-btn.active{
+    border-color: var(--teal);
+    color: var(--teal-dark);
+    background: #EAF1EE;
+    font-weight: 600;
+  }
+  .actions{
+    display:flex;
+    align-items:center;
+    gap: 10px;
+  }
+  button.primary{
+    background: var(--teal);
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  button.primary:hover{ background: var(--teal-dark); }
+  button.primary:disabled{
+    background: #A9B6B0;
+    cursor: not-allowed;
+  }
+  button.copy{
+    background: transparent;
+    color: var(--clay);
+    border: 1px solid var(--clay);
+    padding: 9px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  button.copy:hover{ background: #FBF1E9; }
+  .foot-note{
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-top: 14px;
+    line-height: 1.6;
+  }
+  header{
+    display:flex;
+    align-items:flex-end;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  button.clear-all{
+    background: transparent;
+    border: none;
+    color: var(--ink-soft);
+    font-size: 13px;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    cursor: pointer;
+    padding: 4px 2px;
+  }
+  button.clear-all:hover{ color: var(--ink); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <div class="eyebrow">工作訊息 · 語氣轉換</div>
+      <h1>婉拒小幫手</h1>
+    </div>
+    <button class="clear-all" id="clearAllBtn">清除全部內容</button>
+  </header>
+
+  <div class="board">
+    <div class="section">
+      <div class="section-label">
+        <span>先前的對話（選填）</span>
+        <span class="hint">文字請分開填，比較容易分清楚是誰說的</span>
+      </div>
+      <div class="two-col">
+        <div class="two-col-item">
+          <div class="mini-label">對方說的內容</div>
+          <textarea id="theirText" placeholder="貼上對方傳的訊息內容"></textarea>
+        </div>
+        <div class="two-col-item">
+          <div class="mini-label">我方已經回覆的內容（如果有）</div>
+          <textarea id="myText" placeholder="如果你之前已經回過什麼，可以貼在這裡"></textarea>
+        </div>
+      </div>
+      <div class="dropzone" id="dropzone" tabindex="0">
+        點這裡後直接貼上截圖（Ctrl+V / Cmd+V），或點擊上傳圖片
+      </div>
+      <input type="file" id="fileInput" accept="image/*" style="display:none;">
+      <div class="note-row" id="noteRow" style="display:none;">
+        <input type="text" id="imgNote" placeholder="小提示：例如「我的訊息在右邊／藍色」，幫助辨識誰是誰">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <div class="col-label">你想表達的意思</div>
+        <textarea id="mainInput" placeholder="例如：這個交期我做不到，你們排太趕了，之前也講過原料常常延誤"></textarea>
+      </div>
+      <div class="col">
+        <div class="col-label">轉換後的版本</div>
+        <div id="output" class="output placeholder">按下「轉換」，這裡會出現婉拒版本的訊息。</div>
+      </div>
+    </div>
+    <div class="controls">
+      <div class="tones" id="tones">
+        <button class="tone-btn active" data-tone="balanced">委婉婉拒</button>
+        <button class="tone-btn" data-tone="formal">正式婉拒</button>
+        <button class="tone-btn" data-tone="alternative">婉拒＋提替代方案</button>
+      </div>
+      <div class="actions">
+        <button class="copy" id="copyBtn" style="display:none;">複製</button>
+        <button class="primary" id="convertBtn">轉換</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot-note">內容經由 AI 轉換生成，送出前請自行確認語氣與用詞是否符合情境。貼上的截圖與文字只用於這次轉換。</div>
+</div>
+
+<script>
+let currentTone = 'balanced';
+let pendingImage = null; // { mediaType, base64 }
+
+const toneLabels = {
+  balanced: '語氣委婉、留有餘地，但立場清楚',
+  formal: '語氣正式、精簡，用詞偏公事公辦',
+  alternative: '語氣委婉，並在婉拒之餘主動提出一個替代方案或折衷做法'
+};
+
+document.getElementById('tones').addEventListener('click', (e) => {
+  const btn = e.target.closest('.tone-btn');
+  if (!btn) return;
+  document.querySelectorAll('.tone-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentTone = btn.dataset.tone;
+});
+
+const dropzone = document.getElementById('dropzone');
+const fileInput = document.getElementById('fileInput');
+
+function fileToBase64(file){
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = () => reject(new Error('read failed'));
+    reader.readAsDataURL(file);
+  });
+}
+
+async function setImage(file){
+  if (!file || !file.type.startsWith('image/')) return;
+  const base64 = await fileToBase64(file);
+  pendingImage = { mediaType: file.type, base64: base64 };
+  const url = URL.createObjectURL(file);
+  dropzone.classList.add('has-image');
+  dropzone.innerHTML = `
+    <div class="thumb-wrap">
+      <img src="${url}" alt="貼上的截圖">
+      <div class="remove-x" id="removeImgBtn">×</div>
+    </div>
+  `;
+  document.getElementById('removeImgBtn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    clearImage();
+  });
+  document.getElementById('noteRow').style.display = 'block';
+}
+
+function clearImage(){
+  pendingImage = null;
+  dropzone.classList.remove('has-image');
+  dropzone.innerHTML = '點這裡後直接貼上截圖（Ctrl+V / Cmd+V），或點擊上傳圖片';
+  document.getElementById('noteRow').style.display = 'none';
+  document.getElementById('imgNote').value = '';
+}
+
+dropzone.addEventListener('click', () => {
+  if (!pendingImage) fileInput.click();
+});
+
+dropzone.addEventListener('paste', (e) => {
+  const items = e.clipboardData ? e.clipboardData.items : [];
+  for (const item of items){
+    if (item.type.startsWith('image/')){
+      const file = item.getAsFile();
+      setImage(file);
+      e.preventDefault();
+      break;
+    }
+  }
+});
+
+// Allow paste even without explicit focus click, if user pastes anywhere on page
+document.addEventListener('paste', (e) => {
+  if (document.activeElement === dropzone) return; // already handled above
+  const items = e.clipboardData ? e.clipboardData.items : [];
+  for (const item of items){
+    if (item.type.startsWith('image/')){
+      const file = item.getAsFile();
+      setImage(file);
+      break;
+    }
+  }
+});
+
+fileInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (file) setImage(file);
+});
+
+const convertBtn = document.getElementById('convertBtn');
+const mainInputEl = document.getElementById('mainInput');
+const theirTextEl = document.getElementById('theirText');
+const myTextEl = document.getElementById('myText');
+const imgNoteEl = document.getElementById('imgNote');
+const outputEl = document.getElementById('output');
+const copyBtn = document.getElementById('copyBtn');
+
+convertBtn.addEventListener('click', async () => {
+  const raw = mainInputEl.value.trim();
+  const theirText = theirTextEl.value.trim();
+  const myText = myTextEl.value.trim();
+  const imgNote = imgNoteEl.value.trim();
+
+  if (!raw){
+    outputEl.textContent = '先輸入你想表達的內容。';
+    outputEl.classList.add('placeholder');
+    return;
+  }
+
+  convertBtn.disabled = true;
+  convertBtn.textContent = '轉換中…';
+  outputEl.classList.remove('placeholder');
+  outputEl.textContent = '正在轉換…';
+  copyBtn.style.display = 'none';
+
+  const systemPrompt = `你是職場溝通助手，專門把使用者想表達的意思，改寫成適合傳給公司同事、主管或廠商的婉拒訊息（繁體中文，台灣職場用語）。
+如果提供了先前的對話內容（文字或截圖），請先理解對話脈絡，讓改寫後的回覆讀起來像是針對那段對話的合理回應，語意銜接自然，不要憑空回覆。
+使用者輸入中，「對方說的內容」是對方（同事/主管/廠商）說的話，「我方已經回覆的內容」是使用者自己之前說過的話，請不要混淆兩者的立場。
+如果附上截圖，且使用者有給備註（例如指出哪一邊/哪個顏色是自己的訊息），請以該備註為準判斷誰是誰；如果沒有備註，才需要自己從畫面上的排版或顏色去推斷。
+要求：
+- 語氣：${toneLabels[currentTone]}
+- 保留使用者原本要拒絕或表達的核心立場，不要把意思改到面目全非
+- 不要加稱謂開頭（例如「您好」），直接給出可以貼上使用的內容本體即可
+- 避免過度卑微或大量道歉，維持專業、有分寸
+- 只輸出轉換後的訊息文字，不要加任何說明、標籤或引號`;
+
+  const contentBlocks = [];
+  if (pendingImage){
+    contentBlocks.push({
+      type: "image",
+      source: { type: "base64", media_type: pendingImage.mediaType, data: pendingImage.base64 }
+    });
+  }
+
+  let textBlock = '';
+  if (theirText || myText || pendingImage){
+    textBlock += '以下是先前對話的背景資訊：\n';
+    if (theirText) textBlock += '【對方說的內容】\n' + theirText + '\n\n';
+    if (myText) textBlock += '【我方已經回覆的內容】\n' + myText + '\n\n';
+    if (pendingImage && imgNote) textBlock += '【截圖備註】' + imgNote + '\n\n';
+  }
+  textBlock += '我想表達的意思：\n' + raw;
+  contentBlocks.push({ type: "text", text: textBlock });
+
+  try{
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6",
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: [
+          { role: "user", content: contentBlocks }
+        ]
+      })
+    });
+
+    const data = await response.json();
+    const textBlocks = (data.content || []).filter(b => b.type === 'text').map(b => b.text);
+    const result = textBlocks.join('\n').trim();
+
+    if (!result){
+      throw new Error('empty response');
+    }
+
+    outputEl.textContent = result;
+    copyBtn.style.display = 'inline-block';
+    copyBtn.textContent = '複製';
+  } catch(err){
+    console.error('Conversion error:', err);
+    outputEl.textContent = '轉換時發生問題，請再試一次。';
+    outputEl.classList.add('placeholder');
+  } finally {
+    convertBtn.disabled = false;
+    convertBtn.textContent = '轉換';
+  }
+});
+
+copyBtn.addEventListener('click', async () => {
+  try{
+    await navigator.clipboard.writeText(outputEl.textContent);
+    copyBtn.textContent = '已複製';
+    setTimeout(() => { copyBtn.textContent = '複製'; }, 1500);
+  } catch(err){
+    console.error('Copy failed:', err);
+  }
+});
+
+document.getElementById('clearAllBtn').addEventListener('click', () => {
+  theirTextEl.value = '';
+  myTextEl.value = '';
+  mainInputEl.value = '';
+  clearImage();
+
+  outputEl.textContent = '按下「轉換」，這裡會出現婉拒版本的訊息。';
+  outputEl.classList.add('placeholder');
+  copyBtn.style.display = 'none';
+
+  currentTone = 'balanced';
+  document.querySelectorAll('.tone-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('.tone-btn[data-tone="balanced"]').classList.add('active');
+});
+</script>
+</body>
+</html>
