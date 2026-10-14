@@ -2,508 +2,575 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>名古屋・大阪・京都 10日行程表</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700;800&family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#F4F6F4;
-    --paper:#FFFFFF;
-    --paper-alt:#EEF1EC;
-    --ink:#1E2A26;
-    --ink-dim:#6B7A72;
-    --line:#DDE3DC;
-    --navy:#233A4D;
-    --gold:#B9812E;
-    --gold-soft:#F3E3C6;
-    --red:#B23A3A;
-    --red-soft:#F5DEDE;
-    --teal:#3F8F72;
-    --teal-soft:#DCEEE5;
+    color-scheme: light;
+    --bg:#F4F6F4; --paper:#FFFFFF; --paper-alt:#EEF1EC;
+    --ink:#1E2A26; --ink-dim:#6B7A72; --line:#DDE3DC;
+    --navy:#233A4D; --gold:#B9812E; --gold-soft:#F3E3C6; --gold-line:rgba(185,129,46,0.4);
+    --red:#B23A3A; --red-soft:#F7E4E2; --red-line:rgba(178,58,58,0.35);
+    --teal:#3F8F72; --teal-soft:#DCEEE5; --teal-ink:#2C5C48; --teal-line:rgba(63,143,114,0.4);
+    --chip-bg:#FFFFFF; --hero-ink:#FFFFFF;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
   }
-  *{box-sizing:border-box;}
+  @media (prefers-color-scheme: dark){
+    :root{
+      color-scheme: dark;
+      --bg:#141B19; --paper:#1C2522; --paper-alt:#222D29;
+      --ink:#E6ECE8; --ink-dim:#9AA8A1; --line:#2F3B37;
+      --navy:#1A2B3A; --gold:#E0AE5C; --gold-soft:#3A2F1C; --gold-line:rgba(224,174,92,0.45);
+      --red:#F08A80; --red-soft:#3A2321; --red-line:rgba(240,138,128,0.4);
+      --teal:#6CC3A0; --teal-soft:#1D332B; --teal-ink:#9FDCC3; --teal-line:rgba(108,195,160,0.4);
+      --chip-bg:#16201D;
+    }
+  }
+  *,*::before,*::after{box-sizing:inherit;}
+  html{scroll-padding-top:env(safe-area-inset-top,0px);}
   html,body{margin:0;padding:0;}
-  body{
-    background:var(--bg);
-    color:var(--ink);
-    font-family:'Noto Sans TC', sans-serif;
-    -webkit-font-smoothing:antialiased;
-    min-height:100vh;
-  }
+  body{background:var(--bg); color:var(--ink); font-family:'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', sans-serif; -webkit-font-smoothing:antialiased; min-height:100vh;}
   ::selection{background:var(--gold-soft); color:var(--ink);}
-
+  button{font-family:inherit;}
+  :focus-visible{outline:2px solid var(--gold); outline-offset:2px;}
   .wrap{max-width:640px; margin:0 auto; padding:0 14px 70px;}
 
-  /* ---------- Header ---------- */
-  header.hero{
-    padding:28px 14px 20px;
-    background:var(--navy);
-    color:#fff;
-    position:relative;
-    overflow:hidden;
-  }
-  header.hero::before{
-    content:"";
-    position:absolute; inset:0;
-    background:
-      radial-gradient(circle at 90% -20%, rgba(185,129,46,0.35), transparent 55%),
-      radial-gradient(circle at 0% 120%, rgba(63,143,114,0.28), transparent 50%);
-    pointer-events:none;
-  }
+  header.hero{padding:28px 14px 20px; background:var(--navy); color:var(--hero-ink); position:relative; overflow:hidden;}
+  header.hero::before{content:""; position:absolute; inset:0; background:radial-gradient(circle at 90% -20%, rgba(185,129,46,0.35), transparent 55%), radial-gradient(circle at 0% 120%, rgba(63,143,114,0.28), transparent 50%); pointer-events:none;}
   .hero-inner{max-width:640px; margin:0 auto; position:relative;}
-  .eyebrow{
-    font-family:'JetBrains Mono', monospace;
-    font-size:11px;
-    letter-spacing:0.16em;
-    color:#E8C27E;
-    text-transform:uppercase;
-    margin:0 0 8px;
-  }
-  h1.title{
-    font-family:'Shippori Mincho', serif;
-    font-weight:800;
-    font-size:clamp(24px, 7vw, 32px);
-    line-height:1.3;
-    margin:0 0 6px;
-    letter-spacing:0.02em;
-  }
-  .title small{
-    display:block;
-    font-size:0.44em;
-    font-weight:500;
-    color:rgba(255,255,255,0.7);
-    margin-top:5px;
-    letter-spacing:0.06em;
-  }
-  .hero-meta{
-    display:flex; gap:10px; flex-wrap:wrap;
-    margin-top:14px;
-    font-family:'JetBrains Mono', monospace;
-    font-size:11.5px;
-    color:rgba(255,255,255,0.82);
-  }
-  .hero-meta span{
-    display:flex; align-items:center; gap:5px;
-    background:rgba(255,255,255,0.08);
-    padding:4px 9px;
-    border-radius:20px;
-  }
+  .eyebrow{font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.12em; color:#E8C27E; margin:0 0 8px;}
+  h1.title{font-family:'Shippori Mincho', serif; font-weight:800; font-size:clamp(24px, 7vw, 32px); line-height:1.3; margin:0 0 6px; letter-spacing:0.02em;}
+  .title small{display:block; font-size:0.44em; font-weight:500; color:rgba(255,255,255,0.7); margin-top:5px; letter-spacing:0.06em;}
+  .hero-meta{display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; font-size:11.5px; color:rgba(255,255,255,0.82);}
+  .hero-meta span{display:flex; align-items:center; gap:5px; background:rgba(255,255,255,0.08); padding:4px 9px; border-radius:20px;}
 
-  /* ---------- Route line ---------- */
-  .route-section{padding:18px 0 4px;}
-  .route-label{
-    font-family:'JetBrains Mono', monospace;
-    font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase;
-    color:var(--ink-dim); margin:0 14px 10px;
-  }
-  .route-scroll{
-    overflow-x:auto;
-    padding:6px 14px 14px;
-    -webkit-overflow-scrolling:touch;
-    scroll-snap-type:x proximity;
-  }
+  /* sync bar */
+  .syncbar{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:14px; padding:10px 12px; background:var(--paper); border:1px solid var(--line); border-radius:12px;}
+  .sync-btn{display:inline-flex; align-items:center; gap:6px; border:none; background:var(--navy); color:#fff; font-size:13.5px; font-weight:700; padding:9px 14px; border-radius:10px; cursor:pointer;}
+  .sync-btn:disabled{opacity:.6; cursor:progress;}
+  .sync-btn svg{width:15px; height:15px;}
+  .sync-btn.spinning svg{animation:spin 0.9s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  @media (prefers-reduced-motion: reduce){ .sync-btn.spinning svg{animation:none;} }
+  .sync-status{flex:1 1 160px; font-size:12px; color:var(--ink-dim); line-height:1.45;}
+  .sync-status.ok{color:var(--teal);}
+  .sync-status.err{color:var(--red);}
+  .sync-links{display:flex; gap:8px; width:100%; flex-wrap:wrap;}
+  .ghost-btn{font-size:12px; color:var(--ink-dim); background:none; border:1px solid var(--line); border-radius:8px; padding:5px 10px; cursor:pointer; text-decoration:none;}
+  .ghost-btn[aria-pressed="true"]{color:var(--gold); border-color:var(--gold-line); background:var(--gold-soft);}
+
+  .route-section{padding:14px 0 4px;}
+  .route-label{font-size:11px; letter-spacing:0.1em; color:var(--ink-dim); margin:0 14px 10px;}
+  .route-scroll{overflow-x:auto; padding:6px 14px 14px; -webkit-overflow-scrolling:touch; scroll-snap-type:x proximity;}
   .route-scroll::-webkit-scrollbar{height:5px;}
   .route-scroll::-webkit-scrollbar-thumb{background:var(--line); border-radius:4px;}
-
-  .route-line{
-    position:relative;
-    display:flex;
-    align-items:flex-start;
-    min-width:max-content;
-    padding-top:4px;
-  }
-  .route-line::before{
-    content:"";
-    position:absolute;
-    top:19px; left:20px; right:20px;
-    height:3px;
-    background:repeating-linear-gradient(90deg, var(--gold) 0 8px, transparent 8px 13px);
-    z-index:0;
-  }
-  .station{
-    position:relative;
-    z-index:1;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    width:74px;
-    flex:0 0 auto;
-    cursor:pointer;
-    background:none;
-    border:none;
-    padding:0 0 8px;
-    font-family:inherit;
-    color:inherit;
-    scroll-snap-align:center;
-  }
-  .station .dot{
-    width:38px; height:38px;
-    border-radius:50%;
-    background:#fff;
-    border:2.5px solid var(--line);
-    display:flex; align-items:center; justify-content:center;
-    font-size:16px;
-    transition:all .15s ease;
-    margin-bottom:6px;
-    box-shadow:0 1px 3px rgba(30,42,38,0.08);
-  }
-  .station .date{
-    font-family:'JetBrains Mono', monospace;
-    font-size:11px; font-weight:700;
-    color:var(--ink-dim);
-    transition:color .15s ease;
-  }
-  .station .dlabel{
-    font-size:9.5px;
-    color:var(--ink-dim);
-    margin-top:1px;
-    text-align:center;
-    line-height:1.25;
-    opacity:0.85;
-    max-width:70px;
-  }
-  .station.active .dot{
-    border-color:var(--gold);
-    background:var(--gold-soft);
-    box-shadow:0 0 0 4px rgba(185,129,46,0.14);
-    transform:scale(1.05);
-  }
+  .route-line{position:relative; display:flex; align-items:flex-start; min-width:max-content; padding-top:4px;}
+  .route-line::before{content:""; position:absolute; top:19px; left:20px; right:20px; height:3px; background:repeating-linear-gradient(90deg, var(--gold) 0 8px, transparent 8px 13px); z-index:0;}
+  .station{position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; width:74px; flex:0 0 auto; cursor:pointer; background:none; border:none; padding:0 0 8px; color:inherit; scroll-snap-align:center;}
+  .station .dot{width:38px; height:38px; border-radius:50%; background:var(--paper); border:2.5px solid var(--line); display:flex; align-items:center; justify-content:center; font-size:16px; transition:all .15s ease; margin-bottom:6px; position:relative;}
+  .station .flag{position:absolute; top:-3px; right:-3px; width:11px; height:11px; border-radius:50%; background:var(--red); border:2px solid var(--bg);}
+  .station .date{font-family:'JetBrains Mono', monospace; font-size:11px; font-weight:700; color:var(--ink-dim);}
+  .station .dlabel{font-size:9.5px; color:var(--ink-dim); margin-top:1px; text-align:center; line-height:1.25; max-width:70px;}
+  .station.active .dot{border-color:var(--gold); background:var(--gold-soft); box-shadow:0 0 0 4px rgba(185,129,46,0.14); transform:scale(1.05);}
   .station.active .date{color:var(--gold);}
 
-  /* ---------- Day panel ---------- */
-  .day-panel{
-    margin-top:8px;
-    background:var(--paper);
-    border:1px solid var(--line);
-    border-radius:14px;
-    overflow:hidden;
-  }
-  .day-panel-head{
-    padding:16px 16px 12px;
-    border-bottom:1px solid var(--line);
-    display:flex;
-    align-items:baseline;
-    justify-content:space-between;
-    gap:10px;
-    flex-wrap:wrap;
-    background:var(--paper-alt);
-  }
-  .day-panel-head h2{
-    font-family:'Shippori Mincho', serif;
-    font-size:19px;
-    margin:0;
-    display:flex; align-items:center; gap:8px;
-  }
-  .day-panel-head .theme{
-    font-family:'JetBrains Mono', monospace;
-    font-size:11px;
-    color:var(--teal);
-    letter-spacing:0.04em;
-  }
-
+  .day-panel{margin-top:8px; background:var(--paper); border:1px solid var(--line); border-radius:14px; overflow:hidden;}
+  .day-panel-head{padding:16px 16px 12px; border-bottom:1px solid var(--line); display:flex; align-items:baseline; justify-content:space-between; gap:10px; flex-wrap:wrap; background:var(--paper-alt);}
+  .day-panel-head h2{font-family:'Shippori Mincho', serif; font-size:19px; margin:0;}
+  .day-panel-head .theme{font-size:12px; color:var(--teal); font-weight:700;}
   .timeline{padding:4px 0;}
 
-  /* place row */
-  .row{
-    display:grid;
-    grid-template-columns:58px 1fr;
-    gap:0 12px;
-    padding:13px 16px;
-    border-bottom:1px solid var(--line);
-    align-items:start;
-  }
-  .row:last-child{border-bottom:none;}
-  .row .time{
-    font-family:'JetBrains Mono', monospace;
-    font-weight:700;
-    font-size:13.5px;
-    color:var(--gold);
-    padding-top:2px;
-    white-space:nowrap;
-  }
-  .row .content .activity{
-    font-size:15px;
-    font-weight:700;
-    color:var(--ink);
-    margin:0 0 3px;
-  }
-  .row .content .locrow{
-    display:flex;
-    align-items:center;
-    flex-wrap:wrap;
-    gap:8px;
-    margin-bottom:4px;
-  }
-  .maplink{
-    display:inline-flex;
-    align-items:center;
-    gap:5px;
-    font-size:12.5px;
-    font-weight:500;
-    color:var(--navy);
-    background:var(--gold-soft);
-    border:1px solid rgba(185,129,46,0.4);
-    padding:4px 10px 4px 8px;
-    border-radius:20px;
-    text-decoration:none;
-    transition:background .15s ease;
-  }
-  .maplink:active{background:#e9d3a6;}
+  .row,.transit-row,.tip-row{display:grid; grid-template-columns:58px 1fr; gap:0 12px; padding:13px 16px; border-bottom:1px solid var(--line); align-items:start;}
+  .timeline > div:last-child{border-bottom:none;}
+  .time{font-family:'JetBrains Mono', monospace; font-weight:700; font-size:13.5px; color:var(--gold); padding-top:2px; white-space:nowrap;}
+  .activity{font-size:15px; font-weight:700; margin:0 0 4px;}
+  .locrow{display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:4px;}
+  .maplink{display:inline-flex; align-items:center; gap:5px; font-size:12.5px; font-weight:500; color:var(--ink); background:var(--gold-soft); border:1px solid var(--gold-line); padding:4px 10px 4px 8px; border-radius:20px; text-decoration:none; max-width:100%;}
   .maplink svg{width:12px; height:12px; flex:0 0 auto;}
-  .locname-plain{font-size:13.5px; color:var(--ink-dim);}
-  .row .content .note{
-    font-size:12.5px;
-    color:var(--ink-dim);
-    line-height:1.5;
-    margin-top:2px;
-  }
+  .locname-plain{font-size:13.5px; color:var(--ink-dim); white-space:pre-line;}
+  .note{font-size:12.5px; color:var(--ink-dim); line-height:1.6; margin:2px 0 0; white-space:pre-line; overflow-wrap:anywhere;}
 
-  /* transit row */
-  .transit-row{
-    display:grid;
-    grid-template-columns:58px 1fr;
-    gap:0 12px;
-    padding:10px 16px;
-    background:var(--teal-soft);
-    border-bottom:1px dashed rgba(63,143,114,0.35);
-    align-items:start;
-  }
-  .transit-row .time{
-    font-family:'JetBrains Mono', monospace;
-    font-weight:700;
-    font-size:12.5px;
-    color:var(--teal);
-    padding-top:2px;
-    white-space:nowrap;
-  }
-  .transit-row .t-head{
-    display:flex;
-    align-items:center;
-    gap:6px;
-    font-size:13.5px;
-    font-weight:700;
-    color:#2C5C48;
-    margin-bottom:3px;
-  }
-  .transit-row .t-freq{
-    font-size:12px;
-    color:#3F6F5C;
-    line-height:1.5;
-    margin-bottom:6px;
-  }
-  .t-freq.freq-line{
-    color:#2C5C48;
-    font-weight:600;
-  }
-  .station-chips{
-    display:flex;
-    flex-wrap:wrap;
-    gap:6px;
-    margin-top:2px;
-  }
-  .chip{
-    display:inline-flex;
-    align-items:center;
-    gap:4px;
-    font-family:'JetBrains Mono', monospace;
-    font-size:11.5px;
-    font-weight:600;
-    color:#2C5C48;
-    background:#fff;
-    border:1px solid rgba(63,143,114,0.4);
-    padding:4px 9px;
-    border-radius:16px;
-    cursor:pointer;
-    transition:background .12s ease, transform .08s ease;
-    -webkit-tap-highlight-color:transparent;
-  }
+  .transit-row{padding:10px 16px; background:var(--teal-soft); border-bottom:1px dashed var(--teal-line);}
+  .transit-row .time{color:var(--teal); font-size:12.5px;}
+  .t-head{display:flex; align-items:center; gap:6px; font-size:13.5px; font-weight:700; color:var(--teal-ink); margin-bottom:3px;}
+  .transit-row .note{color:var(--teal-ink); opacity:.9;}
+
+  .tip-row{padding:10px 16px; background:var(--paper);}
+  .tip-row .time{font-size:12px; color:var(--ink-dim); font-weight:500;}
+  .tip{border-left:3px solid var(--teal); padding:2px 0 2px 10px;}
+  .tip.warn{border-left-color:var(--red);}
+  .tip.idea{border-left-color:var(--gold);}
+  .tip-kind{font-size:11px; font-weight:700; color:var(--teal); margin-bottom:2px;}
+  .tip.warn .tip-kind{color:var(--red);}
+  .tip.idea .tip-kind{color:var(--gold);}
+  .tip-text{font-size:12.5px; line-height:1.6; color:var(--ink);}
+  .tip-freq{font-size:12px; color:var(--teal-ink); font-weight:600; margin-top:3px;}
+  .hide-tips .tip-row{display:none;}
+
+  .station-chips{display:flex; flex-wrap:wrap; gap:6px; margin-top:6px;}
+  .chip{display:inline-flex; align-items:center; gap:4px; font-family:'JetBrains Mono', 'Noto Sans TC', monospace; font-size:11.5px; font-weight:600; color:var(--teal-ink); background:var(--chip-bg); border:1px solid var(--teal-line); padding:4px 9px; border-radius:16px; cursor:pointer; -webkit-tap-highlight-color:transparent;}
   .chip:active{transform:scale(0.96);}
   .chip.copied{background:var(--teal); color:#fff; border-color:var(--teal);}
   .chip svg{width:10px; height:10px; flex:0 0 auto;}
 
-  .empty-day{
-    padding:36px 16px;
-    text-align:center;
-    color:var(--ink-dim);
-    font-size:13.5px;
-  }
-
-  footer{
-    text-align:center;
-    padding:30px 14px 10px;
-    font-family:'JetBrains Mono', monospace;
-    font-size:10.5px;
-    color:var(--ink-dim);
-    opacity:0.7;
-  }
+  .empty-day{padding:36px 16px; text-align:center; color:var(--ink-dim); font-size:13.5px;}
+  footer{text-align:center; padding:30px 14px 10px; font-size:11px; color:var(--ink-dim);}
 </style>
 </head>
 <body>
-
 <header class="hero">
   <div class="hero-inner">
-    <p class="eyebrow">Trip Itinerary — 2026.10.21 → 10.30</p>
-    <h1 class="title">名古屋・大阪・京都
-      <small>10日の旅　ふたり旅</small>
-    </h1>
+    <p class="eyebrow">Trip Itinerary 2026.10.21 – 10.30</p>
+    <h1 class="title">名古屋・大阪・京都<small>10日の旅　ふたり旅</small></h1>
     <div class="hero-meta">
-      <span>🗾 10天</span>
-      <span>🚉 名古屋→大阪→京都</span>
-      <span>👘🎡🎋 主題日</span>
+      <span>🗾 10天</span><span>🚉 名古屋 → 大阪 → 京都</span><span>👘🎡🎋 主題日</span>
     </div>
   </div>
 </header>
 
 <div class="wrap">
-
-  <div class="route-section">
-    <p class="route-label">・點選車站切換當天・</p>
-    <div class="route-scroll">
-      <div class="route-line" id="routeLine"></div>
+  <div class="syncbar">
+    <button class="sync-btn" id="syncBtn" type="button">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M20 12a8 8 0 0 1-14.3 4.9M4 12A8 8 0 0 1 18.3 7.1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M18.5 3v4.3h-4.3M5.5 21v-4.3h4.3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      同步試算表
+    </button>
+    <div class="sync-status" id="syncStatus">讀取中…</div>
+    <div class="sync-links">
+      <button class="ghost-btn" id="tipsBtn" type="button" aria-pressed="true">💡 顯示交通建議與待確認</button>
+      <a class="ghost-btn" id="sheetLink" target="_blank" rel="noopener">開啟試算表</a>
     </div>
   </div>
 
+  <div class="route-section">
+    <p class="route-label">點選日期切換當天</p>
+    <div class="route-scroll"><div class="route-line" id="routeLine"></div></div>
+  </div>
   <div class="day-panel" id="dayPanel"></div>
-
 </div>
+<footer id="foot">名古屋・大阪・京都 10日行程</footer>
 
-<footer>名古屋・大阪・京都 10日行程　·　資料整理自共用試算表</footer>
+<script type="text/plain" id="snapshot">
+,10/21(三),,,10/22(四),,,10/23(五),,,10/24(六),,,10/25(日),,,10/26(一),,,10/27(二),,,10/28(三),,,10/29(四),,,10/30(五),,
+,行程,地點,備註,行程,地點,備註,行程,地點,備註,行程,地點,備註,行程,地點,備註,行程,地點,備註,行程,地點,備註,行程,地點,備註,行程,地點,備註,行程,地點,備註
+6：00,,,,,,,,,,,,,,,,,,,出門,,,,,,,,,,,
+6：30,,,,,,,,,,,,,,,,,,,搭車,,搭JR夢咲線到環球影城站,,,,,,,,,
+7：00,,,,,,,出門,伏見（愛知)車站,"1.去便利商店買一點吃的
+2.從飯店走路5分鐘",,,,,,,,,,,,,,,,出門,住宿出發,7:07,出門,,
+7：30,,,,,,,,藤丘（愛知）,"1.約24分鐘抵達，轉車
+2.下車後往2號出口，先出站
+3.出站後看到""Linimo""指示，跟著右轉，下地下道
+4.沿著指示走，進站，搭到""愛●地球博紀念公園""，約13分鐘",,,,,,,,,,開始排隊,,,,,,,,京阪本線 - 東西線 - 山陰本線,,,
+8：00,,,,,,,抵達大公園,愛●地球博紀念公園,"1.出示QRｃｏｄｅ，先經過兩棟圓形屋頂建築
+2.直走約5分鐘，過橋看到電梯
+3.搭電梯下樓，會看到大倉庫排隊隊伍",起床,,,,,,,,,,,,,,,步行,天滿橋搭谷町線,,大阪搭車,7:51發車,https://maps.app.goo.gl/Dbz8jUvYwHAxEvwo6
+8：30,,,,,,,入園,吉卜力公園,"先排整理券：魔女之谷(霍爾)
+1.霍爾當日入場券
+2.再霍爾的城堡膨鞭的小棚子
+3.依照整理券時間回去買入場票
+霍爾：大人1000/人，魔女的家400/人",,,,,,,出門,,,開園,任天堂世界入口,"用APP搶整理券,或視當天人潮直接排隊",,,,步行+東海道、山陽本線,東門下車，走到大阪車站，搭東海道、山陽本線到京都車站,注意不要坐到指定席,,,
+9：00,,,,,,,,,,出門,,,,,,,抵達大阪城,,咚奇剛瘋狂列車,,,,抵達和服店,https://okamoto-kimono.tw/kimono/selectPlan.html,JR山陰本線,搭山陰本線到龜岡,,抵達機場,關西機場,
+9：30,,,,,,,,,,抵達名古屋城,名古屋城,"步行到伏見(愛知)，在車站買""周末環保票""一日券
+搭""鶴舞線""到淺間町車站，約11分鐘",退房,,,,,,,,,,,,抵達龜岡搭小火車,龜岡,8:42,,,
+10：00,,,,,,,,,,,,,吃早午餐,"イトウ珈琲喫茶室 (走路30分鐘)
+Ito Coffee",https://maps.app.goo.gl/h8ALP16GTp3vA1VD8,,,,移動至哈利波特園區,,隔壁而已,,,,,,,,,
+10：30,,,,,,,,,,,,,,,,,,,哈利波特禁忌之旅,哈利波特魔法世界,避開中午,,穿和服(清水寺附近),,,,,,,
+11：00,,,,,,,,,,,,,,,,,,,活米村逛街+奶油啤酒,活米村,"買哈利波特周邊,喝奶油啤酒(無酒精)",,,,抵達嵯峨嵐山駅,嵐山,,,,
+11：30,,,,,,,,,,,,,,,,前往午餐,,約30分鐘,,,,,,,,嵐山竹林小徑,,,,
+12：00,,,,,,,,,,前往午餐,步行,約30分鐘,搭近鐵特急,,升級高級座位(像牙醫的座位)，+¥700,,,,移動至侏羅紀公園,,,,,,,拉拉熊茶房,https://maps.app.goo.gl/NuhM8z6EdjFeREHL8,上飛機,,
+12：30,,,,,,,,,,,,,,,,前往午餐,"牛舌的檸檬
+","已預約，12：30
+預約編號：SSSKAQTYWK
+https://maps.app.goo.gl/puFhv7JNiTXQZSMX8",午餐:芙莉蓮追憶餐廳,侏羅紀公園,"建議提早到,避開12-14點尖峰排隊",,,,,上島珈琲店 京都嵯峨嵐山店,https://maps.app.goo.gl/UkDivanb6eqB3LH19,,,
+13：00,,,,,,,,,,,,,抵達大阪,抵達大阪難波,,,,,,,,,,,嵯峨嵐山駅出發,,JR嵯峨野線,,,
+13：30,,,,搭車前往機場,租屋處,訂單編號：CJ3649，已付款,準備進去大倉庫,大倉庫,預約１４：００,午餐 ,"燒肉 馬喰一代 名古屋EAST
+最飛びヒレ家 馬喰一代 名古屋EAST","https://reurl.cc/KEM2W
+已預約，預約號碼129094
+(修改預約，需確認email)",點心,章魚燒,"梅田
+https://maps.app.goo.gl/zfLTV6qchnbSTC9z5",購物,錢幣戒指,https://maps.app.goo.gl/HN9wyDey6AVvyrXd7,移動至好萊塢區,,,午餐,有喜屋 清水吉晴庵,https://reurl.cc/WzRgqD,"抵達京都駅,轉乘JR奈良線",京都前往宇治,,,,
+14：00,,,,check in,名古屋榮華盛頓廣場飯店,"訂單編號：1616331272584095
+PIN 碼：1559
+無早餐",,,,,,,搭谷町線,,,,,,芙莉蓮周邊商店,好萊塢區,"買限定商品,熱門款容易早早售完",,,,宇治午餐,中村藤吉 宇治本店,Nakamura Tokichi Main Branch,,,
+14：30,,,,,,,,,,前往樂田神宮,名古屋車站,在名古屋車站，買隔天近鐵特急票,,,,,,,柯南周邊商店(有空再去),好萊塢區,只逛不玩設施,,,,散步+伴手禮,宇治 平等院,,14：15抵達桃園,,
+15：00,,,,,,,,,,,,,check in ,yksi STAY ＆ APARTMENT OSAKA,"預訂確認碼：1926283003746669694
+PIN 碼： 582891",,,,,,,,,,搭京阪,抵達大阪,,,,
+15：30,,,,,線上報到,線上報到,,,,,,,,,,,,,,,,,,,,,,,,
+16：00,,,,,安檢注意,"1.行充要有標示mAh，拿出來放籃子，飛機上不能用
+2.水要倒掉
+3.液體不可超過100ml(外包裝標示容量)，全不放透明夾鏈袋
+4.不可以帶任何肉類、蔬果
+5.手提可以有2件，合計<10kg
+",,,,,,,逛街,買衣服，逛百貨,觀望行李箱,,心齋橋,買行李箱,,,,,,,,,,,,
+16：30,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+17：00,,,,起飛,桃園機場,"時間：17:20飛機，3小時
+航班：虎航，IT76，第一航廈
+訂位代號：X53T4S
+起飛前2天可以線上自助報到
+報到完拿電子登機證+護照去安檢
 
+記得櫃台換日幣！",關園,,,,,,,,,,,,,,,,"文鈴：拉拉熊
+心瑜：做梅酒","1.文鈴：Rilakkuma Store Kyoto Shijo Kawaramachi
+2.心瑜：已預約17：00梅酒",,,,,,
+17：30,,,,,,,,,,,,,,,,購物,心齋橋PARCO,https://maps.app.goo.gl/vy6ZdX5TfQG41eur5,,,,,,,,,,,,
+18：00,,,,,,,吃晚餐,矢場豬排 ESCA店,"https://www.google.com/maps/place/%E7%9F%A2%E5%A0%B4%E8%B1%AC%E6%8E%92+ESCA%E5%BA%97/@35.1709921,136.8797233,17z/data=!3m2!4b1!5s0x600376dc5872cb01:0x4ceb5b05d5cb0ba8!4m6!3m5!1s0x600376e61a49b519:0x3f7bdb320289b56d!8m2!3d35.1709921!4d136.8797233!16s%2Fg%2F1tjv3fnz!18m1!1e1?entry=ttu&g_ep=EgoyMDI2MDcwOC4wIKXMDSoASAFQAw%3D%3D",,,,晚餐,麺匠の心つくし つるとんたん 本町楼,"拉麵店
+https://reurl.cc/MW4gRL",晚餐,"燒肉 Kurumi 心斎橋本店
+焼肉くるみ 心斎橋本店",已預約，18.00,,,,,,,,,,,,
+18：30,,,,,,,,,,,,,,,,宵夜,PABLO 心齋橋店,https://maps.app.goo.gl/FGvgbTu1AhdMRCkx6,,,,,,,,,,,,
+19：00,,,,,,,,,,,,,,,,,,,晚餐,鳥貴族,https://maps.app.goo.gl/QQWZ9QhxZPTjaLk29,,一蘭拉麵,"京都店
+https://reurl.cc/4YjO62",,,,,,
+19：30,,,,,,,返程,名古屋車站,搭回去伏見,,,,,,,,,,,,,,,,,,,,,
+20：00,,,,,,,買衣服or回飯店,伏見,步行回去,,,,,,,,,,,,,,,,,,,,,
+20：30,,,,,,,,,,,,,,,,,,,,,,返回住宿,,,,,隔天早上7:00要出門去機場,,,
+21：00,落地,名古屋國際機場,文鈴到名古屋,落地,名古屋國際機場,"1.落地時間：21:15
+沿著""到著""指示走，並行約5分鐘，中間都有廁所
+3.過檢疫櫃檯：很快，走過即可
+4.過入鏡審查：先按指紋+拍照，再拿護照+VJW的QR code。
+3.經過娶行李的地方，跟著""電子申告端末""指示走，去VJW專用櫃檯(10號)
+4.按白色的機台操作，脫下口罩，掃描護照+VJW
+5.出站",,,,,,,,,,,,,,,,,,,,,,,,
+21：30,,,,搭電車,電車,"1.出站後左轉,跟著電車指示方向走，直走後右轉
+2.到左手邊自動售票機買票：車票¥980+指定席¥450(沒買只能搭特急電車，3~6自由座)，可以現金或信用卡，買到""名鐵名古屋""
+3.拿實體車票去過閘門，去3號紅色月臺，上車後隨意入座，約37分鐘抵達名古屋車站
+",,,,,,,,,,,,,,,,,,,,,,,,
+22：00,,,,名古屋車站,轉搭東山線,"1.往2號車廂位置走上樓，拿車票出站
+2.往""名鐵百貨店""的方向搭手扶梯上去
+3.左轉到底右轉，出來看到馬路後左轉斑馬線後走1分鐘
+3.抵達JR線
+買ICOCA 卡(藍色或橘色的雞臺)
+4.往""金色時鐘""的方向走，從8號出口出去之後右邊，往下去東山線，前往伏見（愛知）",,,,,,,,,,,,,,,,,,,,,,,,
+,,,,抵達伏見（愛知,伏見（愛知）,約3分鐘抵達，3個站，步行5分鐘到飯店,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,和文鈴會合,名古屋榮華盛頓廣場飯店,,,,,,,,,,,,,,,,,,,,,,,,,</script>
 <script>
-const TRIP_DATA = {"itinerary": {"10/21(三)": [{"type": "place", "time": "21:00", "activity": "落地", "location": "名古屋國際機場", "note": "文鈴到名古屋", "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%90%8D%E5%8F%A4%E5%B1%8B%E5%9C%8B%E9%9A%9B%E6%A9%9F%E5%A0%B4"}], "10/22(四)": [{"type": "place", "time": "14:00", "activity": "check in", "location": "名古屋榮華盛頓廣場飯店", "note": "訂單編號：1616331272584095 PIN 碼：1559 無早餐", "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%90%8D%E5%8F%A4%E5%B1%8B%E6%A6%AE%E8%8F%AF%E7%9B%9B%E9%A0%93%E5%BB%A3%E5%A0%B4%E9%A3%AF%E5%BA%97"}, {"type": "place", "time": "21:00", "activity": "落地", "location": "名古屋國際機場", "note": "心瑜到名古屋", "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%90%8D%E5%8F%A4%E5%B1%8B%E5%9C%8B%E9%9A%9B%E6%A9%9F%E5%A0%B4"}, {"type": "transit", "time": "21:30", "activity": "", "location": "名鐵特急轉東山線(名古屋車站-伏見(愛知))轉步行6分鐘", "note": "", "route_text": "名鐵特急,轉東山線(名古屋車站→伏見(愛知)),再步行約6分鐘抵達飯店", "stations": ["名古屋駅", "伏見駅"], "freq": "名鐵特急約每20-30分一班;地下鐵東山線約每5分一班"}], "10/23(五)": [{"type": "transit", "time": "7:00", "activity": "出門", "location": "", "note": "", "route_text": null, "stations": [], "freq": null}, {"type": "transit", "time": "10:00", "activity": "", "location": "", "note": "", "route_text": "從飯店搭地下鐵東山線→藤が丘駅,轉愛知高速交通東部丘陵線(Linimo)→愛・地球博記念公園駅(ジブリパーク駅),步行即達吉卜力公園", "stations": ["藤が丘駅", "愛・地球博記念公園駅"], "freq": "地下鐵東山線約每5分一班;Linimo約每10分一班"}, {"type": "place", "time": "10:00", "activity": "入園", "location": "吉卜力公園", "note": "先排整理券", "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%90%89%E5%8D%9C%E5%8A%9B%E5%85%AC%E5%9C%92"}, {"type": "place", "time": "17:00", "activity": "關園", "location": "", "note": "", "maps_url": null}, {"type": "transit", "time": "18:00", "activity": "", "location": "", "note": "", "route_text": "愛・地球博記念公園駅搭Linimo→藤が丘駅,轉地下鐵東山線→名古屋駅,直達不用轉車,車站味增豬排就在名古屋駅周邊", "stations": ["愛・地球博記念公園駅", "藤が丘駅", "名古屋駅"], "freq": "Linimo約每10分一班;地下鐵東山線約每5分一班"}, {"type": "place", "time": "18:00", "activity": "吃晚餐", "location": "車站味增豬排", "note": "", "maps_url": "https://www.google.com/maps/search/?api=1&query=%E8%BB%8A%E7%AB%99%E5%91%B3%E5%A2%9E%E8%B1%AC%E6%8E%92"}], "10/24(六)": [{"type": "place", "time": "8:00", "activity": "起床", "location": "", "note": "", "maps_url": null}, {"type": "transit", "time": "9:00", "activity": "出門搭車", "location": "", "note": "", "route_text": null, "stations": [], "freq": null}, {"type": "place", "time": "9:30", "activity": "排隊領號碼牌", "location": "", "note": "", "maps_url": null}, {"type": "place", "time": "10:30", "activity": "10：40開始發號碼", "location": "", "note": "", "maps_url": null}, {"type": "place", "time": "11:00", "activity": "", "location": "樂田神宮逛街", "note": "", "maps_url": "https://www.google.com/maps/search/?api=1&query=%E6%A8%82%E7%94%B0%E7%A5%9E%E5%AE%AE%E9%80%9B%E8%A1%97"}, {"type": "transit", "time": "12:00", "activity": "", "location": "", "note": "", "route_text": "從飯店(伏見/榮駅一帶)搭地下鐵東山線→栄駅,轉名城線→矢場町駅,推薦蓬萊軒「松坂屋店」(矢場町駅3號出口直上,松坂屋百貨南館10F),比熱田本店近很多,且跟名古屋城同一條名城線,吃完直接搭車去,不用繞路", "stations": ["榮駅", "矢場町駅"], "freq": "地下鐵東山線約每5分一班;名城線約每5-6分一班"}, {"type": "place", "time": "12:00", "activity": "", "location": "吃蓬萊軒", "note": "", "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%90%83%E8%93%AC%E8%90%8A%E8%BB%92"}, {"type": "place", "time": "13:30", "activity": "", "location": "買蝦餅", "note": "", "maps_url": "https://www.google.com/maps/search/?api=1&query=%E8%B2%B7%E8%9D%A6%E9%A4%85"}, {"type": "transit", "time": "14:00", "activity": "", "location": "前往名古屋城", "note": "", "route_text": "蓬萊軒松坂屋店(矢場町駅,名城線)步行前往名古屋城,建議搭地下鐵名城線 矢場町駅→市役所駅,同一條線不用轉車,約10分鐘,步行到城", "stations": ["矢場町駅", "市役所駅"], "freq": "地下鐵名城線約每5-6分一班"}, {"type": "transit", "time": "15:00", "activity": "", "location": "抵達名古屋城", "note": "", "route_text": null, "stations": [], "freq": null}, {"type": "transit", "time": "17:00", "activity": "", "location": "搭車", "note": "", "route_text": "名古屋城(市役所駅,名城線)→轉乘地下鐵東山線→名古屋駅,馬喰一代名古屋EAST就在名古屋駅出口徒步2分", "stations": ["市役所駅", "榮駅", "名古屋駅"], "freq": "地下鐵名城線約每5-6分一班;東山線約每5分一班"}, {"type": "place", "time": "18:00", "activity": "晚餐", "location": "燒肉 馬喰一代 名古屋EAST 最飛びヒレ家 馬喰一代 名古屋EAST", "note": "已預約，預約號碼129094", "maps_url": "https://reurl.cc/KEM2W"}], "10/25(日)": [{"type": "place", "time": "9:30", "activity": "退房", "location": "", "note": "", "maps_url": null}, {"type": "place", "time": "10:00", "activity": "吃早午餐", "location": "イトウ珈琲喫茶室 (走路30分鐘) Ito Coffee", "note": "", "maps_url": "https://maps.app.goo.gl/h8ALP16GTp3vA1VD8"}, {"type": "transit", "time": "12:00", "activity": "搭車到大阪", "location": "", "note": "", "route_text": "建議搭新幹線ひかり号(名古屋駅→新大阪駅),自由席,車程約45-50分,班次約每20-30分一班;想快一點也可搭のぞみ号約35分,一樣班次密集", "stations": ["名古屋駅", "新大阪駅"], "freq": "ひかり／のぞみ加起來約每10-15分就有一班"}, {"type": "transit", "time": "13:00", "activity": "抵達大阪", "location": "", "note": "", "route_text": "抵達新大阪駅後不用急著找飯店置物,直接搭地下鐵御堂筋線→梅田駅(約1站5分),梅田置物櫃選擇多,可以先寄放行李再輕鬆逛街吃章魚燒", "stations": ["新大阪駅", "梅田駅"], "freq": "地下鐵御堂筋線約每3-5分一班"}, {"type": "place", "time": "13:30", "activity": "點心", "location": "章魚燒", "note": "梅田", "maps_url": "https://maps.app.goo.gl/zfLTV6qchnbSTC9z5"}, {"type": "place", "time": "15:00", "activity": "check in", "location": "yksi STAY ＆ APARTMENT OSAKA", "note": "預訂確認碼：1926283003746669694 PIN 碼： 582891", "maps_url": "https://www.google.com/maps/search/?api=1&query=yksi%20STAY%20%EF%BC%86%20APARTMENT%20OSAKA"}, {"type": "transit", "time": "16:00", "activity": "", "location": "", "note": "", "route_text": "逛完街後行李還在梅田置物櫃,取回行李搭地下鐵谷町線 東梅田駅→天満橋駅,直達不用轉車,約10分鐘,飯店走路即到", "stations": ["東梅田駅", "天満橋駅"], "freq": "地下鐵谷町線約每5-6分一班"}, {"type": "place", "time": "16:00", "activity": "逛街", "location": "買衣服，逛百貨", "note": "", "maps_url": "https://www.google.com/maps/search/?api=1&query=%E8%B2%B7%E8%A1%A3%E6%9C%8D%EF%BC%8C%E9%80%9B%E7%99%BE%E8%B2%A8"}, {"type": "transit", "time": "18:00", "activity": "", "location": "", "note": "", "route_text": "飯店(天満橋)搭京阪本線→北浜駅,轉地下鐵堺筋線→堺筋本町駅,つるとんたん本町楼就在附近,總車程約10分鐘", "stations": ["天満橋駅", "北浜駅", "堺筋本町駅"], "freq": "京阪本線約每10分一班;地下鐵堺筋線約每5-6分一班"}, {"type": "place", "time": "18:00", "activity": "晚餐", "location": "麺匠の心つくし つるとんたん 本町楼", "note": "拉麵店", "maps_url": "https://reurl.cc/MW4gRL"}], "10/26(一)": [{"type": "transit", "time": "8:30", "activity": "出門", "location": "", "note": "", "route_text": "飯店(天満橋一帶)離大阪城很近,約1公里,建議直接步行前往,約12-15分鐘,不用搭車", "stations": [], "freq": "步行,不需查詢班次"}, {"type": "transit", "time": "9:00", "activity": "", "location": "抵達大阪城", "note": "", "route_text": null, "stations": [], "freq": null}, {"type": "place", "time": "11:30", "activity": "前往午餐", "location": "大阪燒", "note": "", "maps_url": "https://maps.app.goo.gl/Nthwc7zgz7YqGJwg8"}, {"type": "place", "time": "12:00", "activity": "吃午餐", "location": "", "note": "", "maps_url": null}, {"type": "transit", "time": "13:00", "activity": "", "location": "", "note": "", "route_text": "地下鐵堺筋線／御堂筋線→動物園前駅,步行到通天閣(新世界)", "stations": ["動物園前駅"], "freq": "地下鐵約每5分一班"}, {"type": "place", "time": "13:00", "activity": "", "location": "通天閣", "note": "", "maps_url": "https://www.google.com/maps/search/?api=1&query=%E9%80%9A%E5%A4%A9%E9%96%A3"}, {"type": "transit", "time": "14:00", "activity": "", "location": "", "note": "", "route_text": "地下鐵御堂筋線／谷町線→天王寺駅,阿倍野Harukas直結天王寺駅", "stations": ["天王寺駅"], "freq": "地下鐵約每5分一班"}, {"type": "place", "time": "14:00", "activity": "下午茶", "location": "HARBS 近鐵阿倍野Harukas店", "note": "", "maps_url": "https://maps.app.goo.gl/qnztq4BENuF59Ug5"}, {"type": "transit", "time": "16:00", "activity": "", "location": "", "note": "", "route_text": "天王寺到心齋橋走路要40分鐘以上,不建議純走路,建議搭地下鐵御堂筋線 天王寺駅→心齋橋駅,約4站10分鐘,出站即達燒肉くるみ", "stations": ["天王寺駅", "心齋橋駅"], "freq": "地下鐵御堂筋線約每3-5分一班"}, {"type": "place", "time": "16:00", "activity": "", "location": "心齋橋", "note": "", "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%BF%83%E9%BD%8B%E6%A9%8B"}, {"type": "place", "time": "18:00", "activity": "晚餐", "location": "燒肉 Kurumi 心斎橋本店 焼肉くるみ 心斎橋本店", "note": "要預約！", "maps_url": "https://maps.app.goo.gl/XkeU8eoJRCh9o6o7A"}], "10/27(二)": [{"type": "transit", "time": "6:00", "activity": "出門", "location": "", "note": "", "route_text": null, "stations": [], "freq": null}, {"type": "transit", "time": "6:30", "activity": "搭車", "location": "", "note": "搭JR夢咲線到環球影城站", "route_text": "大阪駅搭JR大阪環狀線,西九条駅轉乘JRゆめ咲線→ユニバーサルシティ駅,出站即達環球影城", "stations": ["西九条駅", "ユニバーサルシティ駅"], "freq": "JRゆめ咲線約每15分一班,開園前後會加班"}, {"type": "transit", "time": "7:30", "activity": "開始排隊", "location": "", "note": "", "route_text": null, "stations": [], "freq": null}, {"type": "place", "time": "8:30", "activity": "開園", "location": "任天堂世界入口", "note": "用APP搶整理券,或視當天人潮直接排隊", "maps_url": "https://www.google.com/maps/search/?api=1&query=%E4%BB%BB%E5%A4%A9%E5%A0%82%E4%B8%96%E7%95%8C%E5%85%A5%E5%8F%A3"}, {"type": "place", "time": "9:00", "activity": "超級瑪利歐", "location": "任天堂世界", "note": "已含在整理券時段內", "maps_url": "https://www.google.com/maps/search/?api=1&query=%E4%BB%BB%E5%A4%A9%E5%A0%82%E4%B8%96%E7%95%8C"}, {"type": "transit", "time": "10:00", "activity": "移動至哈利波特園區", "location": "", "note": "隔壁而已", "route_text": null, "stations": [], "freq": null}, {"type": "place", "time": "10:30", "activity": "哈利波特禁忌之旅", "location": "哈利波特魔法世界", "note": "避開中午", "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%93%88%E5%88%A9%E6%B3%A2%E7%89%B9%E9%AD%94%E6%B3%95%E4%B8%96%E7%95%8C"}, {"type": "place", "time": "11:00", "activity": "活米村逛街+奶油啤酒", "location": "活米村", "note": "買哈利波特周邊,喝奶油啤酒(無酒精)", "maps_url": "https://www.google.com/maps/search/?api=1&query=%E6%B4%BB%E7%B1%B3%E6%9D%91"}, {"type": "transit", "time": "12:00", "activity": "移動至侏羅紀公園", "location": "", "note": "", "route_text": null, "stations": [], "freq": null}, {"type": "place", "time": "12:30", "activity": "午餐:芙莉蓮追憶餐廳", "location": "侏羅紀公園", "note": "建議提早到,避開12-14點尖峰排隊", "maps_url": "https://www.google.com/maps/search/?api=1&query=%E4%BE%8F%E7%BE%85%E7%B4%80%E5%85%AC%E5%9C%92"}, {"type": "transit", "time": "13:30", "activity": "移動至好萊塢區", "location": "", "note": "", "route_text": null, "stations": [], "freq": null}, {"type": "place", "time": "14:00", "activity": "芙莉蓮周邊商店", "location": "好萊塢區", "note": "買限定商品,熱門款容易早早售完", "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%A5%BD%E8%90%8A%E5%A1%A2%E5%8D%80"}, {"type": "place", "time": "14:30", "activity": "柯南周邊商店(有空再去)", "location": "好萊塢區", "note": "只逛不玩設施", "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%A5%BD%E8%90%8A%E5%A1%A2%E5%8D%80"}, {"type": "transit", "time": "19:00", "activity": "", "location": "", "note": "", "route_text": "ユニバーサルシティ駅搭JRゆめ咲線→西九条駅,直達不用轉車,約4分鐘,鳥貴族西九条店出站就到", "stations": ["ユニバーサルシティ駅", "西九条駅"], "freq": "JRゆめ咲線約每15分一班"}, {"type": "place", "time": "19:00", "activity": "晚餐", "location": "鳥貴族", "note": "", "maps_url": "https://maps.app.goo.gl/QQWZ9QhxZPTjaLk29"}], "10/28(三)": [{"type": "place", "time": "9:00", "activity": "", "location": "抵達和服店", "note": "", "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%B2%A1%E6%9C%AC%E5%92%8C%E6%9C%8D%E7%A7%9F%E5%80%9F%20%E6%B8%85%E6%B0%B4%E5%BA%97"}, {"type": "place", "time": "10:30", "activity": "", "location": "穿和服(清水寺附近)", "note": "", "maps_url": "https://www.google.com/maps/search/?api=1&query=%E7%A9%BF%E5%92%8C%E6%9C%8D%28%E6%B8%85%E6%B0%B4%E5%AF%BA%E9%99%84%E8%BF%91%29"}, {"type": "place", "time": "13:30", "activity": "午餐", "location": "有喜屋 清水吉晴庵", "note": "", "maps_url": "https://reurl.cc/WzRgqD"}, {"type": "place", "time": "15:00", "activity": "", "location": "逛街", "note": "", "maps_url": null}, {"type": "transit", "time": "18:00", "activity": "", "location": "", "note": "", "route_text": "清水寺周邊步行或搭巴士到河原町一帶,一蘭拉麵京都店位於木屋町通", "stations": ["河原町"], "freq": "市巴士約每10-15分一班,或步行約20-25分"}, {"type": "place", "time": "18:00", "activity": "", "location": "一蘭拉麵", "note": "京都店", "maps_url": "https://reurl.cc/4YjO62"}, {"type": "transit", "time": "20:30", "activity": "返回住宿", "location": "", "note": "", "route_text": "京都駅搭JR京都線新快速→大阪駅,車程約30分", "stations": ["京都駅", "大阪駅"], "freq": "JR京都線新快速約每15分一班"}], "10/29(四)": [{"type": "transit", "time": "7:00", "activity": "出門", "location": "住宿出發", "note": "7:07", "route_text": null, "stations": [], "freq": null}, {"type": "transit", "time": "7:30", "activity": "", "location": "", "note": "京阪本線 - 東西線 - 山陰本線", "route_text": "天満橋駅搭京阪本線→三条駅,轉京都市營地下鐵東西線→二条駅,轉JR山陰本線(嵯峨野線)→龜岡駅", "stations": ["天満橋駅", "三条駅", "二条駅", "龜岡駅"], "freq": "京阪本線約每10-15分一班;地下鐵東西線約每6-8分一班;JR山陰本線約每20-30分一班"}, {"type": "transit", "time": "8:30", "activity": "抵達龜岡搭小火車", "location": "龜岡", "note": "8:42", "route_text": "龜岡駅轉搭嵯峨野觀光小火車(トロッコ亀岡→トロッコ嵯峨),⚠️固定班次,需事先預約指定車次", "stations": ["トロッコ亀岡駅", "トロッコ嵯峨駅"], "freq": "固定班次(每小時整點30分發車):9:30、10:30、11:30、12:30、13:30、14:30、15:30、16:30,車程約26分,一定要事先預約"}, {"type": "transit", "time": "10:00", "activity": "抵達嵯峨嵐山駅", "location": "嵐山", "note": "", "route_text": null, "stations": [], "freq": null}, {"type": "place", "time": "10:30", "activity": "", "location": "嵐山竹林小徑", "note": "", "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%B5%90%E5%B1%B1%E7%AB%B9%E6%9E%97%E5%B0%8F%E5%BE%91"}, {"type": "place", "time": "11:00", "activity": "", "location": "拉拉熊茶房", "note": "", "maps_url": "https://maps.app.goo.gl/NuhM8z6EdjFeREHL8"}, {"type": "place", "time": "11:30", "activity": "", "location": "上島珈琲店 京都嵯峨嵐山店", "note": "", "maps_url": "https://maps.app.goo.gl/UkDivanb6eqB3LH19"}, {"type": "transit", "time": "12:00", "activity": "嵯峨嵐山駅出發", "location": "", "note": "JR嵯峨野線", "route_text": "嵯峨嵐山駅搭JR嵯峨野線→京都駅", "stations": ["嵯峨嵐山駅", "京都駅"], "freq": "JR嵯峨野線約每15-20分一班"}, {"type": "transit", "time": "12:30", "activity": "抵達京都駅,轉乘JR奈良線", "location": "", "note": "", "route_text": "京都駅轉乘JR奈良線(快速)→宇治駅", "stations": ["京都駅", "宇治駅"], "freq": "JR奈良線快速約每30分一班,普通約每15分一班"}, {"type": "place", "time": "13:00", "activity": "宇治午餐", "location": "中村藤吉 宇治本店", "note": "", "maps_url": "https://maps.app.goo.gl/p4AzUC1XQCtyWZqW6"}, {"type": "place", "time": "14:00", "activity": "散步+伴手禮", "location": "宇治 平等院", "note": "", "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%AE%87%E6%B2%BB%20%E5%B9%B3%E7%AD%89%E9%99%A2"}, {"type": "transit", "time": "18:00", "activity": "", "location": "", "note": "", "route_text": "宇治駅(JR奈良線)→京都駅,轉JR京都線新快速→大阪駅,轉地下鐵御堂筋線→心齋橋駅", "stations": ["宇治駅", "京都駅", "大阪駅", "心齋橋駅"], "freq": "JR奈良線約每15-30分一班;JR京都線新快速約每15分一班;地下鐵御堂筋線約每3-5分一班"}, {"type": "place", "time": "18:00", "activity": "晚餐", "location": "すき焼き しゃぶしゃぶ 豚々 心斎橋店", "note": "壽喜燒，沒有訂位，沒位置吃別間", "maps_url": "https://maps.app.goo.gl/zouxoArArank8GJa6"}, {"type": "transit", "time": "20:30", "activity": "", "location": "", "note": "隔天早上7:00要出門去機場", "route_text": null, "stations": [], "freq": null}], "10/30(五)": [{"type": "transit", "time": "7:00", "activity": "出門", "location": "", "note": "", "route_text": null, "stations": [], "freq": null}, {"type": "transit", "time": "9:00", "activity": "", "location": "", "note": "", "route_text": "難波駅搭南海電鉄特急ラピート→關西空港駅,或天王寺／新今宮駅搭JR特急HARUKA→關西空港駅", "stations": ["難波駅", "關西空港駅"], "freq": "南海特急ラピート約每30-60分一班;JR特急HARUKA約每30分一班"}, {"type": "transit", "time": "9:00", "activity": "抵達機場", "location": "關西機場", "note": "", "route_text": null, "stations": [], "freq": null}, {"type": "transit", "time": "12:00", "activity": "上飛機", "location": "", "note": "", "route_text": null, "stations": [], "freq": null}, {"type": "transit", "time": "14:30", "activity": "14：15抵達桃園", "location": "", "note": "", "route_text": null, "stations": [], "freq": null}]}, "dayMeta": {"10/21(三)": {"emoji": "✈️", "label": "抵達名古屋"}, "10/22(四)": {"emoji": "✈️", "label": "抵達名古屋"}, "10/23(五)": {"emoji": "🌳", "label": "吉卜力公園"}, "10/24(六)": {"emoji": "🏯", "label": "名古屋城"}, "10/25(日)": {"emoji": "🚄", "label": "移動至大阪"}, "10/26(一)": {"emoji": "🏯", "label": "大阪城・心齋橋"}, "10/27(二)": {"emoji": "🎡", "label": "環球影城"}, "10/28(三)": {"emoji": "👘", "label": "清水寺和服"}, "10/29(四)": {"emoji": "🎋", "label": "嵐山・宇治"}, "10/30(五)": {"emoji": "🛫", "label": "返程"}}};
+/* ====== 設定：試算表來源 ====== */
+const SHEET_ID = '1VnF_qjJIE1rrqgQfUjZq0MsJV7Sbavs2vSMwVv72vRM';
+const SHEET_GID = '0';               // 工作表1
+const SNAPSHOT_DATE = '2026/10/14 晚';  // 內建資料的版本日期
+const LS_CSV = 'tripSheetCSV_v1', LS_AT = 'tripSheetSyncedAt_v1', LS_TIPS = 'tripShowTips_v1';
 
-</script>
-<script>
-const PIN_SVG = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 22s7-7.58 7-13A7 7 0 0 0 5 9c0 5.42 7 13 7 13Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>`;
-const COPY_SVG = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="9" y="9" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M5 15V5a2 2 0 0 1 2-2h10" stroke="currentColor" stroke-width="1.8"/></svg>`;
-const CHECK_SVG = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+/* ====== 每天的標題（新日期沒列到也能顯示） ====== */
+const DAY_META = {
+  '10/21':{emoji:'✈️', label:'文鈴抵達'},
+  '10/22':{emoji:'✈️', label:'飛名古屋'},
+  '10/23':{emoji:'🌳', label:'吉卜力公園'},
+  '10/24':{emoji:'🏯', label:'名古屋城・熱田'},
+  '10/25':{emoji:'🚄', label:'移動至大阪'},
+  '10/26':{emoji:'🏯', label:'大阪城・心齋橋'},
+  '10/27':{emoji:'🎡', label:'環球影城'},
+  '10/28':{emoji:'👘', label:'清水寺和服'},
+  '10/29':{emoji:'🎋', label:'嵐山・宇治'},
+  '10/30':{emoji:'🛫', label:'返程'}
+};
 
-function copyStation(btn){
-  const text = btn.getAttribute('data-station');
-  const origHtml = btn.innerHTML;
-  const doFeedback = () => {
-    btn.innerHTML = `${CHECK_SVG}已複製`;
-    btn.classList.add('copied');
-    setTimeout(() => {
-      btn.innerHTML = origHtml;
-      btn.classList.remove('copied');
-    }, 1200);
-  };
-  if(navigator.clipboard && navigator.clipboard.writeText){
-    navigator.clipboard.writeText(text).then(doFeedback).catch(() => fallbackCopy(text, doFeedback));
-  } else {
-    fallbackCopy(text, doFeedback);
+/* ====== 交通建議與待確認（不在試算表裡，同步後仍會保留）======
+   kind: route=交通建議 / warn=待確認 / idea=建議
+   showIf / hideIf：用當天試算表文字判斷，修好之後提醒會自動消失 */
+const TIPS = {
+  '10/22':[
+    {time:'21:30', kind:'warn', text:'21:15 落地、過入境和領行李通常要 40–60 分鐘，實際大約 22:00–22:15 才搭得到車，23:00 前後到飯店。'},
+    {time:'22:00', kind:'idea', text:'名古屋 JR 售票機賣的是 TOICA（JR 東海），地下鐵賣 manaca，不是 ICOCA；這幾張在大阪、京都都能通用。若售票機暫停販售實體卡，可以用手機的 Suica / ICOCA。'}
+  ],
+  '10/23':[
+    {time:'7:00', kind:'route', text:'伏見搭東山線 → 藤が丘（約 25–30 分），轉 Linimo → 愛・地球博記念公園（約 13 分）。', stations:['伏見駅','藤が丘駅','愛・地球博記念公園駅'], freq:'東山線約每 5 分一班；Linimo 約每 10 分一班'},
+    {time:'8:00', kind:'idea', text:'平日 10:00 才開園，提早到是為了排霍爾城的當日入場券（大さんぽ券スタンダード 看室內要另外買）。大倉庫是 14:00 場，票號 KYS365169。'},
+    {time:'17:00', kind:'route', text:'關園後 Linimo → 藤が丘，轉東山線直達名古屋駅（不用再轉），約 50–60 分。矢場豬排 ESCA 在名古屋駅西口地下街。', stations:['愛・地球博記念公園駅','藤が丘駅','名古屋駅'], freq:'Linimo 約每 10 分；東山線約每 5 分'},
+    {time:'19:30', kind:'route', text:'名古屋駅東山線 → 伏見，2 站約 3 分。', stations:['名古屋駅','伏見駅']}
+  ],
+  '10/24':[
+    {time:'9:00', kind:'route', text:'伏見駅買「ドニチエコきっぷ」（土日一日券），搭鶴舞線 → 浅間町（2 站），步行約 10 分到名古屋城。天守閣目前封閉改建中，可參觀本丸御殿。', stations:['伏見駅','浅間町駅']},
+    {time:'12:00', kind:'route', text:'名古屋城走到名古屋駅約 3 公里、40–50 分。有一日券的話：浅間町搭鶴舞線 → 伏見，轉東山線 → 名古屋駅，約 15 分。', stations:['浅間町駅','伏見駅','名古屋駅']},
+    {time:'15:00', kind:'route', hideIf:'蓬萊軒', text:'先到近鉄名古屋駅買 10/25 11:30 的ひのとり（下車站選「大阪上本町」，Premium +¥700）。再用一日券搭東山線 → 栄，轉名城線 → 伝馬町，約 20 分（名鐵到神宮前更快但要另付車資）。', stations:['近鉄名古屋駅','栄駅','伝馬町駅']},
+    {time:'15:45', kind:'idea', hideIf:'蓬萊軒', text:'先到熱田蓬萊軒 本店抽號碼牌（晚餐 16:30 開，週六排很久），等叫號時去參拜熱田神宮。'},
+    {time:'18:00', kind:'idea', hideIf:'蓬萊軒', text:'晚餐：熱田蓬萊軒 本店，鰻魚三吃 ¥4000–5000，週三公休。'},
+    {time:'19:30', kind:'route', hideIf:'伝馬町', text:'回飯店：伝馬町駅搭名城線 → 上前津，轉鶴舞線 → 伏見，約 20 分，一日券可用。', stations:['伝馬町駅','上前津駅','伏見駅']}
+  ],
+  '10/25':[
+    {time:'9:40', kind:'route', hideIf:'久屋大通', text:'到 Ito Coffee：走路約 30 分；搭車的話伏見搭鶴舞線 → 丸の内，轉桜通線 → 久屋大通，約 15 分（含轉乘），計程車約 10 分。', stations:['伏見駅','丸の内駅','久屋大通駅'], freq:'鶴舞線、桜通線約每 5–10 分一班'},
+    {time:'9:40', kind:'warn', text:'名古屋市資料寫イトウコーヒー本店週日、週一公休（你的清單寫喫茶室每天開，可能是不同店面），10/25 是週日，出發前看一下 Google 地圖營業時間。'},
+    {time:'10:50', kind:'route', hideIf:'久屋大通', text:'久屋大通搭桜通線直達名古屋駅約 8 分，走到近鉄名古屋約 5 分，11:15 前到月台。', stations:['久屋大通駅','名古屋駅','近鉄名古屋駅']},
+    {time:'11:30', kind:'route', hideIf:'上本町', text:'改搭 11:30 近鐵特急，約 2 小時，在「大阪上本町」下車（約 13:25，以車票為準）。走到谷町九丁目搭谷町線 → 天満橋，約 8 分。', stations:['近鉄名古屋駅','大阪上本町駅','谷町九丁目駅','天満橋駅']},
+    {time:'13:50', kind:'warn', text:'15:00 才能 check in，先問 yksi STAY 能不能提早寄行李（公寓型常沒有櫃檯）。不行的話，章魚燒改在上本町或難波吃完再去飯店。'},
+    {time:'14:10', kind:'route', hideIf:'京阪シティモール', text:'放好行李後：天満橋搭谷町線 → 東梅田（2 站約 5 分）吃章魚燒，15:15 回飯店 check in。', stations:['天満橋駅','東梅田駅']},
+    {time:'16:00', kind:'idea', hideIf:'京阪シティモール', text:'逛住宿附近的百貨：京阪シティモール（天満橋駅直結），買衣服、看行李箱。'},
+    {time:'18:00', kind:'route', text:'天満橋搭京阪 → 北浜，轉堺筋線 → 堺筋本町，約 10 分。つるとんたん 是烏龍麵店。', stations:['天満橋駅','北浜駅','堺筋本町駅']}
+  ],
+  '10/26':[
+    {time:'8:30', kind:'route', text:'飯店（天満橋）到大阪城約 1 公里，步行 12–15 分即可。'},
+    {time:'18:30', kind:'idea', hideAfter:['PABLO','19:30'], text:'PABLO 已決定移到晚餐後，試算表記得把宵夜改到 20:00 左右那格。'},
+    {time:'21:00', kind:'route', text:'回飯店：心斎橋搭御堂筋線 → 淀屋橋，轉京阪 → 天満橋，約 15 分。', stations:['心斎橋駅','淀屋橋駅','天満橋駅']}
+  ],
+  '10/27':[
+    {time:'6:00', kind:'route', text:'天満橋搭谷町線 → 東梅田（2 站），步行到 JR 大阪駅，搭環狀線 → 西九条轉ゆめ咲線 → ユニバーサルシティ，約 35–40 分（部分班次大阪駅直通）。', stations:['天満橋駅','東梅田駅','大阪駅','西九条駅','ユニバーサルシティ駅'], freq:'ゆめ咲線早上約每 7–15 分一班'},
+    {time:'8:30', kind:'idea', text:'快通只含禁忌之旅，進園後先用 APP 抽任天堂世界整理券，咚奇剛才排得進去。禁忌之旅照快通上的時段去。'},
+    {time:'15:00', kind:'idea', text:'下午有空：柯南周邊、小小兵樂園。芙莉蓮餐廳只點飲料拿杯墊，不用卡正餐時段。'},
+    {time:'20:30', kind:'route', text:'回飯店：ゆめ咲線 → 西九条，轉環狀線 → 京橋，再搭京阪 → 天満橋，約 30 分。', stations:['ユニバーサルシティ駅','西九条駅','京橋駅','天満橋駅']}
+  ],
+  '10/28':[
+    {time:'7:50', kind:'warn', hideIf:'京阪|出門', text:'試算表沒有去京都的交通。9:00 要到和服店，大約 7:50 就要出門。'},
+    {time:'7:50', kind:'route', text:'天満橋搭京阪特急 → 清水五条或祇園四条（約 50 分），再步行 20 分左右（上坡）或搭計程車到清水寺一帶。', stations:['天満橋駅','清水五条駅','祇園四条駅'], freq:'京阪特急約每 10 分一班'},
+    {time:'16:15', kind:'route', text:'還完和服去四条河原町：清水一帶步行約 25 分，或搭計程車約 10 分。和服 17:00 前要還。', stations:['四条河原町']},
+    {time:'20:30', kind:'route', text:'一蘭京都店（河原町）步行到祇園四条駅，搭京阪特急直達天満橋約 50 分，不用繞去京都駅。', stations:['祇園四条駅','天満橋駅']}
+  ],
+  '10/29':[
+    {time:'7:00', kind:'warn', showIf:'東西線', text:'7:30 那格「京阪本線-東西線-山陰本線」是舊路線，8:00–9:00 是新路線，兩條並存容易看錯，建議刪掉舊的。'},
+    {time:'7:07', kind:'route', text:'谷町線天満橋 → 東梅田，走到 JR 大阪駅搭 JR 京都線新快速 → 京都（約 30 分，9 號車 Aシート 是指定席不要坐），轉嵯峨野線。トロッコ亀岡駅離「馬堀駅」比較近（步行約 10 分），可以在馬堀下車。', stations:['東梅田駅','大阪駅','京都駅','馬堀駅','トロッコ亀岡駅'], freq:'新快速約每 15 分；嵯峨野線約每 15–30 分'},
+    {time:'9:30', kind:'warn', text:'搭 9:30 小火車，約 9:55 就到トロッコ嵯峨，不是 11:00。竹林、拉拉熊茶房、上島珈琲都可以往前約 1 小時。'},
+    {time:'14:00', kind:'idea', text:'宇治可以待久一點：14:00 午餐、15:00 平等院（17:30 關門）、16:30 散步買伴手禮。'},
+    {time:'17:00', kind:'warn', text:'宇治很多店 17:00–18:00 就關，晚餐想在宇治吃，最好 17:30 前坐下；不然回大阪再吃。'},
+    {time:'18:00', kind:'route', text:'平等院走到「京阪宇治駅」約 10 分（和 JR 宇治駅不同站），搭宇治線 → 中書島，轉京阪特急 → 天満橋，約 55 分。回大阪後逛街，記得留時間打包。', stations:['宇治駅(京阪)','中書島駅','天満橋駅']}
+  ],
+  '10/30':[
+    {time:'7:00', kind:'warn', text:'「7:51 發車」的連結我讀不到，請在試算表寫上搭什麼、在哪一站上車（例如 HARUKA・大阪駅）。天満橋到大阪駅約 15–20 分，7:00 出門剛好。'},
+    {time:'12:00', kind:'warn', text:'回程航班號、訂位代號、起飛時間還沒填（去程有），建議補上。'}
+  ]
+};
+
+/* ====== 工具 ====== */
+const PIN_SVG = '<svg viewBox="0 0 24 24" fill="none"><path d="M12 22s7-7.58 7-13A7 7 0 0 0 5 9c0 5.42 7 13 7 13Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>';
+const LINK_SVG = '<svg viewBox="0 0 24 24" fill="none"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+const COPY_SVG = '<svg viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M5 15V5a2 2 0 0 1 2-2h10" stroke="currentColor" stroke-width="1.8"/></svg>';
+const CHECK_SVG = '<svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const lsGet = k => { try { return localStorage.getItem(k); } catch(e){ return null; } };
+const lsSet = (k,v) => { try { localStorage.setItem(k,v); } catch(e){} };
+
+function toHalf(s){
+  return String(s||'').replace(/[０-９]/g, c => String.fromCharCode(c.charCodeAt(0)-0xFEE0)).replace(/：/g, ':').trim();
+}
+function toMin(t){ const m = /^(\d{1,2}):(\d{2})/.exec(t||''); return m ? (+m[1])*60 + (+m[2]) : null; }
+
+/* CSV 解析（支援引號內換行） */
+function parseCSV(text){
+  const rows = []; let row = [], cell = '', q = false;
+  text = String(text).replace(/^\uFEFF/, '').replace(/^[\r\n]+/, '');
+  for(let i=0;i<text.length;i++){
+    const c = text[i];
+    if(q){
+      if(c === '"'){ if(text[i+1] === '"'){ cell += '"'; i++; } else q = false; }
+      else cell += c;
+    } else if(c === '"') q = true;
+    else if(c === ','){ row.push(cell); cell=''; }
+    else if(c === '\n' || c === '\r'){
+      if(c === '\r' && text[i+1] === '\n') i++;
+      row.push(cell); rows.push(row); row=[]; cell='';
+    } else cell += c;
   }
+  if(cell !== '' || row.length){ row.push(cell); rows.push(row); }
+  return rows;
 }
 
-function fallbackCopy(text, cb){
-  const ta = document.createElement('textarea');
-  ta.value = text;
-  ta.style.position = 'fixed';
-  ta.style.opacity = '0';
-  document.body.appendChild(ta);
-  ta.select();
-  try { document.execCommand('copy'); } catch(e){}
-  document.body.removeChild(ta);
-  cb();
+const URL_RE = /https?:\/\/[^\s"'，、）)]+/g;
+const TRANSIT_RE = /(搭|轉乘|轉搭|電車|出門|步行|移動至|返程|返回住宿|發車|出發|線(?!上)|抵達.{0,6}(駅|站|機場|大阪(?!城)))/;
+const FLIGHT_RE = /(落地|起飛|上飛機|抵達桃園)/;
+const NO_MAP_RE = /(買|逛|報到|注意|：|安檢)/;
+
+/* 把試算表轉成每天的行程 */
+function sheetToItinerary(rows){
+  const header = rows[0] || [];
+  const days = [];
+  header.forEach((h, i) => { const v = (h||'').trim(); if(/^\d{1,2}\/\d{1,2}/.test(v)) days.push({key:v, col:i}); });
+  if(!days.length) throw new Error('找不到日期欄位（第一列應該是 10/21(三) 這種格式）');
+
+  // 找資料起始列：跳過「行程,地點,備註」那列
+  let start = 1;
+  if(rows[1] && rows[1].some(c => /行程|地點|備註/.test(c||''))) start = 2;
+
+  const out = {};
+  days.forEach(d => out[d.key] = {rows:[], text:''});
+  let lastTime = '';
+  for(let r = start; r < rows.length; r++){
+    const row = rows[r] || [];
+    let t = toHalf(row[0]);
+    let cont = false;
+    if(!t){ t = lastTime; cont = true; } else lastTime = t;
+    days.forEach(d => {
+      const a = (row[d.col]||'').trim(), l = (row[d.col+1]||'').trim(), n = (row[d.col+2]||'').trim();
+      if(!a && !l && !n) return;
+      const urls = [...(l+'\n'+n).matchAll(URL_RE)].map(m => m[0]);
+      const strip = s => s.replace(URL_RE, '').replace(/\n{2,}/g, '\n').trim();
+      const loc = strip(l), note = strip(n);
+      const both = (a || loc) ? (a + ' ' + loc) : note;
+      let type = 'place';
+      if(!urls.length){
+        if(FLIGHT_RE.test(both)) type = 'flight';
+        else if(TRANSIT_RE.test(both)) type = 'transit';
+      }
+      const item = {type, time: cont ? '' : t, sortMin: toMin(t) === null ? null : toMin(t) + (cont ? 0.5 : 0), activity:a, location:loc, note, urls};
+      out[d.key].rows.push(item);
+      out[d.key].text += ' ' + a + ' ' + l + ' ' + n;
+    });
+  }
+  return {days: days.map(d => d.key), data: out};
 }
 
-const days = Object.keys(TRIP_DATA.itinerary);
-let activeDay = days[0];
+/* ====== 狀態 ====== */
+let TRIP = null, activeDay = null, showTips = lsGet(LS_TIPS) !== '0';
 
-function escapeHtml(str){
-  const div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
+function dayShort(key){ return (key.match(/^\d{1,2}\/\d{1,2}/)||[''])[0]; }
+function tipsFor(key){
+  const list = TIPS[dayShort(key)] || [];
+  const text = (TRIP.data[key] && TRIP.data[key].text) || '';
+  const rows = (TRIP.data[key] && TRIP.data[key].rows) || [];
+  return list.filter(t => {
+    if(t.showIf && !new RegExp(t.showIf).test(text)) return false;
+    if(t.hideIf && new RegExp(t.hideIf).test(text)) return false;
+    if(t.hideAfter){
+      const [pat, tm] = t.hideAfter, lim = toMin(tm);
+      if(rows.some(r => new RegExp(pat).test(r.activity+' '+r.location+' '+r.note) && (r.sortMin ?? 0) >= lim)) return false;
+    }
+    return true;
+  });
+}
+
+function mapsHref(q){ return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q); }
+
+function renderRow(e){
+  if(e.type === 'transit' || e.type === 'flight'){
+    const icon = e.type === 'flight' ? '✈️' : '🚃';
+    const head = [e.activity, e.location].filter(Boolean).join('　');
+    const label = head || e.note || '交通移動';
+    const note = head ? e.note : '';
+    return `<div class="transit-row"><div class="time">${esc(e.time)}</div><div>
+      <div class="t-head">${icon} ${esc(label)}</div>
+      ${note ? `<p class="note">${esc(note)}</p>` : ''}
+    </div></div>`;
+  }
+  const lines = (e.location||'').split('\n');
+  const firstLine = lines[0].replace(/^抵達/, '').trim();
+  const mapUrls = e.urls.filter(u => /maps|goo\.gl|reurl/.test(u));
+  const webUrls = e.urls.filter(u => !mapUrls.includes(u));
+  let links = '', usedFirst = false;
+  mapUrls.forEach((u, i) => {
+    const text = (i === 0 && firstLine) ? firstLine : '地圖';
+    if(i === 0 && firstLine) usedFirst = true;
+    links += `<a class="maplink" href="${esc(u)}" target="_blank" rel="noopener">${PIN_SVG}${esc(text)}</a>`;
+  });
+  if(!mapUrls.length && firstLine && firstLine.length <= 40 && !NO_MAP_RE.test(firstLine)){
+    links += `<a class="maplink" href="${mapsHref(firstLine)}" target="_blank" rel="noopener">${PIN_SVG}${esc(firstLine)}</a>`;
+    usedFirst = true;
+  }
+  webUrls.forEach(u => { links += `<a class="maplink" href="${esc(u)}" target="_blank" rel="noopener">${LINK_SVG}網站</a>`; });
+  const extraLoc = usedFirst ? lines.slice(1).join('\n').trim() : (e.location||'');
+  return `<div class="row"><div class="time">${esc(e.time)}</div><div>
+    ${e.activity ? `<p class="activity">${esc(e.activity)}</p>` : ''}
+    ${(links || extraLoc) ? `<div class="locrow">${links}${extraLoc ? `<span class="locname-plain">${esc(extraLoc)}</span>` : ''}</div>` : ''}
+    ${e.note ? `<p class="note">${esc(e.note)}</p>` : ''}
+  </div></div>`;
+}
+
+function renderTip(t){
+  const kindText = {route:'🚃 交通建議', warn:'⚠️ 待確認', idea:'💡 建議'}[t.kind] || '💡 建議';
+  const chips = (t.stations||[]).length ? `<div class="station-chips">${t.stations.map(s => `<button class="chip" type="button" data-station="${esc(s)}">${COPY_SVG}${esc(s)}</button>`).join('')}</div>` : '';
+  return `<div class="tip-row"><div class="time">${esc(t.time)}</div>
+    <div class="tip ${t.kind}"><div class="tip-kind">${kindText}</div>
+      <div class="tip-text">${esc(t.text)}</div>
+      ${t.freq ? `<div class="tip-freq">🕐 ${esc(t.freq)}</div>` : ''}${chips}
+    </div></div>`;
 }
 
 function renderRoute(){
   const line = document.getElementById('routeLine');
-  line.innerHTML = days.map(d => {
-    const meta = TRIP_DATA.dayMeta[d] || {emoji:'📍', label:''};
-    const dateStr = d.match(/^([\d/]+)/)[1];
-    const weekday = d.match(/\(([^)]+)\)/)[1];
-    return `<button class="station${d===activeDay ? ' active':''}" data-day="${d}">
-      <div class="dot">${meta.emoji}</div>
-      <div class="date">${dateStr}</div>
-      <div class="dlabel">${weekday}・${meta.label}</div>
+  line.innerHTML = TRIP.days.map(d => {
+    const meta = DAY_META[dayShort(d)] || {emoji:'📍', label:''};
+    const wd = (d.match(/\(([^)]+)\)/)||['',''])[1];
+    const hasWarn = tipsFor(d).some(t => t.kind === 'warn');
+    return `<button class="station${d===activeDay?' active':''}" type="button" data-day="${esc(d)}" aria-label="${esc(d)} ${esc(meta.label)}">
+      <div class="dot">${meta.emoji}${hasWarn && showTips ? '<span class="flag" title="有待確認事項"></span>' : ''}</div>
+      <div class="date">${esc(dayShort(d))}</div>
+      <div class="dlabel">${esc(wd)}${meta.label ? '・'+esc(meta.label) : ''}</div>
     </button>`;
   }).join('');
-
-  line.querySelectorAll('.station').forEach(btn => {
-    btn.addEventListener('click', () => {
-      activeDay = btn.getAttribute('data-day');
-      renderRoute();
-      renderDay();
-      document.getElementById('dayPanel').scrollIntoView({behavior:'smooth', block:'start'});
-    });
-  });
-
-  const activeEl = line.querySelector('.station.active');
-  if(activeEl) activeEl.scrollIntoView({inline:'center', block:'nearest'});
+  line.querySelectorAll('.station').forEach(b => b.addEventListener('click', () => {
+    activeDay = b.dataset.day; lsSet('tripActiveDay', activeDay);
+    renderRoute(); renderDay();
+    document.getElementById('dayPanel').scrollIntoView({behavior:'smooth', block:'start'});
+  }));
+  const a = line.querySelector('.station.active'); if(a && a.scrollIntoView) try{ a.scrollIntoView({inline:'center', block:'nearest'}); }catch(e){}
 }
 
 function renderDay(){
   const panel = document.getElementById('dayPanel');
-  const meta = TRIP_DATA.dayMeta[activeDay] || {emoji:'📍', label:''};
-  const entries = TRIP_DATA.itinerary[activeDay] || [];
-
-  let rowsHtml = '';
-  if(entries.length === 0){
-    rowsHtml = `<div class="empty-day">這天還沒有排定行程</div>`;
-  } else {
-    rowsHtml = entries.map(e => {
-      if(e.type === 'transit'){
-        const hasContent = e.activity || e.location || e.note || e.route_text;
-        if(!hasContent) return '';
-        const label = [e.activity, e.location].filter(Boolean).join(' ');
-        const stations = e.stations || [];
-        const chipsHtml = stations.length ? `<div class="station-chips">${stations.map(s => `<button class="chip" data-station="${escapeHtml(s)}" onclick="copyStation(this)">${COPY_SVG}${escapeHtml(s)}</button>`).join('')}</div>` : '';
-        return `<div class="transit-row">
-          <div class="time">${e.time}</div>
-          <div>
-            ${label ? `<div class="t-head">🚃 ${escapeHtml(label)}</div>` : `<div class="t-head">🚃 交通移動</div>`}
-            ${e.route_text ? `<div class="t-freq">${escapeHtml(e.route_text)}</div>` : ''}
-            ${e.freq ? `<div class="t-freq freq-line">🕐 ${escapeHtml(e.freq)}</div>` : ''}
-            ${e.note ? `<div class="t-freq">${escapeHtml(e.note)}</div>` : ''}
-            ${chipsHtml}
-          </div>
-        </div>`;
-      } else {
-        const hasActivity = e.activity && e.activity.trim().length>0;
-        const hasLocation = e.location && e.location.trim().length>0;
-        let locHtml = '';
-        if(hasLocation){
-          if(e.maps_url){
-            locHtml = `<a class="maplink" href="${e.maps_url}" target="_blank" rel="noopener">${PIN_SVG}${escapeHtml(e.location)}</a>`;
-          } else {
-            locHtml = `<span class="locname-plain">${escapeHtml(e.location)}</span>`;
-          }
-        }
-        return `<div class="row">
-          <div class="time">${e.time}</div>
-          <div class="content">
-            ${hasActivity ? `<p class="activity">${escapeHtml(e.activity)}</p>` : ''}
-            ${hasLocation ? `<div class="locrow">${locHtml}</div>` : ''}
-            ${e.note ? `<p class="note">${escapeHtml(e.note)}</p>` : ''}
-          </div>
-        </div>`;
-      }
-    }).join('');
-  }
-
-  panel.innerHTML = `
-    <div class="day-panel-head">
-      <h2>${meta.emoji} ${activeDay}</h2>
-      <span class="theme">${meta.label}</span>
-    </div>
-    <div class="timeline">${rowsHtml}</div>
-  `;
+  const meta = DAY_META[dayShort(activeDay)] || {emoji:'📍', label:''};
+  const rows = (TRIP.data[activeDay] || {rows:[]}).rows;
+  const tips = tipsFor(activeDay);
+  // 合併：依時間排序，同時間「試算表內容」在前、建議在後
+  const items = [];
+  rows.forEach((r,i) => items.push({k:0, m:r.sortMin ?? 0, i, html:renderRow(r)}));
+  tips.forEach((t,i) => items.push({k:1, m:toMin(t.time) ?? 0, i, html:renderTip(t)}));
+  items.sort((a,b) => a.m - b.m || a.k - b.k || a.i - b.i);
+  panel.innerHTML = `<div class="day-panel-head"><h2>${meta.emoji} ${esc(activeDay)}</h2><span class="theme">${esc(meta.label)}</span></div>
+    <div class="timeline${showTips ? '' : ' hide-tips'}">${items.length ? items.map(x => x.html).join('') : '<div class="empty-day">這天還沒有排行程，可以在試算表填好後按「同步試算表」</div>'}</div>`;
+  panel.querySelectorAll('.chip').forEach(b => b.addEventListener('click', () => copyStation(b)));
 }
 
-renderRoute();
-renderDay();
+function copyStation(btn){
+  const text = btn.dataset.station, orig = btn.innerHTML;
+  const done = () => { btn.innerHTML = CHECK_SVG + '已複製'; btn.classList.add('copied'); setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('copied'); }, 1200); };
+  const fallback = () => { const ta = document.createElement('textarea'); ta.value = text; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy');}catch(e){} ta.remove(); done(); };
+  if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done).catch(fallback); else fallback();
+}
+
+function load(csvText){
+  TRIP = sheetToItinerary(parseCSV(csvText));
+  if(!activeDay || !TRIP.days.includes(activeDay)){
+    const saved = lsGet('tripActiveDay');
+    activeDay = TRIP.days.includes(saved) ? saved : TRIP.days[0];
+  }
+  renderRoute(); renderDay();
+}
+
+function setStatus(msg, cls){ const s = document.getElementById('syncStatus'); s.textContent = msg; s.className = 'sync-status' + (cls ? ' '+cls : ''); }
+function fmt(d){ const p = n => String(n).padStart(2,'0'); return `${d.getMonth()+1}/${d.getDate()} ${p(d.getHours())}:${p(d.getMinutes())}`; }
+
+/* ====== 同步 ====== */
+async function syncSheet(){
+  const btn = document.getElementById('syncBtn');
+  btn.disabled = true; btn.classList.add('spinning'); setStatus('正在讀取試算表…');
+  const bust = '&_=' + Date.now();
+  const sources = [
+    `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${SHEET_GID}${bust}`,
+    `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&headers=0&gid=${SHEET_GID}${bust}`
+  ];
+  let lastErr = null;
+  for(const url of sources){
+    try{
+      const res = await fetch(url, {cache:'no-store'});
+      if(!res.ok) throw new Error('HTTP ' + res.status);
+      const text = await res.text();
+      if(/^\s*</.test(text)) throw new Error('試算表沒有公開分享');
+      const parsed = sheetToItinerary(parseCSV(text)); // 先驗證格式
+      const count = parsed.days.reduce((n,d) => n + parsed.data[d].rows.length, 0);
+      lsSet(LS_CSV, text); const now = new Date(); lsSet(LS_AT, now.toISOString());
+      load(text);
+      setStatus(`已同步 ${fmt(now)}・${parsed.days.length} 天 ${count} 筆`, 'ok');
+      btn.disabled = false; btn.classList.remove('spinning');
+      return;
+    } catch(e){ lastErr = e; }
+  }
+  setStatus(`同步失敗：${lastErr ? lastErr.message : '未知錯誤'}。請確認有網路，且試算表「知道連結的人可以檢視」。目前顯示的是上次的資料。`, 'err');
+  btn.disabled = false; btn.classList.remove('spinning');
+}
+
+/* ====== 啟動 ====== */
+document.getElementById('sheetLink').href = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit#gid=${SHEET_GID}`;
+document.getElementById('syncBtn').addEventListener('click', syncSheet);
+const tipsBtn = document.getElementById('tipsBtn');
+function paintTipsBtn(){ tipsBtn.setAttribute('aria-pressed', showTips ? 'true' : 'false'); tipsBtn.textContent = showTips ? '💡 隱藏交通建議與待確認' : '💡 顯示交通建議與待確認'; }
+tipsBtn.addEventListener('click', () => { showTips = !showTips; lsSet(LS_TIPS, showTips ? '1' : '0'); paintTipsBtn(); renderRoute(); renderDay(); });
+paintTipsBtn();
+
+(function init(){
+  const cached = lsGet(LS_CSV), at = lsGet(LS_AT);
+  try{
+    if(cached){ load(cached); setStatus(`上次同步 ${at ? fmt(new Date(at)) : ''}，試算表有改就按左邊按鈕`); return; }
+  } catch(e){ /* 快取壞掉就用內建資料 */ }
+  load(document.getElementById('snapshot').textContent);
+  setStatus(`目前是內建資料（${SNAPSHOT_DATE} 版），按左邊按鈕抓最新試算表`);
+})();
+
 </script>
 </body>
 </html>
